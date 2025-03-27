@@ -7,3 +7,18 @@ __pycache__/
 *.pyo
 venv/
 set_github_secrets.sh
+
+# AWS関連ファイル
+task-definition.json
+*.tfstate
+*.tfstate.backup
+.terraform/
+terraform.tfvars
+aws-credentials.json
+
+# その他の機密情報
+*credentials*
+*secret*
+*api-key*
+*.pem
+*.key
