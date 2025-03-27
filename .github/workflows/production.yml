@@ -85,7 +85,7 @@ jobs:
     - name: Amazon ECSへのデプロイ
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
       with:
-        task-definition: task-definition-secure.json
+        task-definition: task-definition.json
         service: cas-api-service
         cluster: cas-api-cluster
         wait-for-service-stability: true
