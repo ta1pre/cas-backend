@@ -6,5 +6,4 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
-
-
+set_github_secrets.sh
