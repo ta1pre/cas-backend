@@ -31,7 +31,9 @@ jobs:
 
       ## 3. ECRログイン
       - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: true
 
       ## 4. Dockerイメージをビルド
       - name: Build Docker image
@@ -53,8 +55,7 @@ jobs:
         run: |
           TASK_DEFINITION_ARN=$(aws ecs register-task-definition \
             --family Fargate \
-            --container-definitions '[
-              {
+            --container-definitions '[{
                 "name": "fastapi-container",
                 "image": "'"${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"'",
                 "cpu": 256,
@@ -84,8 +85,7 @@ jobs:
                     "awslogs-stream-prefix": "ecs"
                   }
                 }
-              }
-            ]' \
+              }]' \
             --network-mode awsvpc \
             --requires-compatibilities FARGATE \
             --execution-role-arn "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecsTaskExecutionRole" \
