@@ -82,6 +82,22 @@ jobs:
         docker push "${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
         echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
     
+    - name: 現在のタスク定義を取得
+      id: get-task-def
+      run: |
+        aws ecs describe-task-definition --task-definition cas-api --query taskDefinition > task-definition.json
+    
+    - name: タスク定義を更新
+      id: update-task-def
+      run: |
+        # イメージを更新
+        jq '.containerDefinitions[0].image = "${{ steps.push-image.outputs.image }}"' task-definition.json > updated-task-definition.json
+        mv updated-task-definition.json task-definition.json
+        
+        # タスク定義からAWSが管理するフィールドを削除
+        jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task-definition.json > cleaned-task-definition.json
+        mv cleaned-task-definition.json task-definition.json
+    
     - name: Amazon ECSへのデプロイ
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
       with:
