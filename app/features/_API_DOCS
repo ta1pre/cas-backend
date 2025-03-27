@@ -1,0 +1,170 @@
+認証付きAPIを作成し、フロントエンドから接続確認する方法
+1. バックエンド (FastAPI) の準備
+認証付きでAPIを作成するため、まず FastAPI側に認証付きのエンドポイントを用意 します。
+
+1-1. 認証が適用されるルーター (setup_routers.py)
+まず、setup_routers.py に Depends(get_current_user) を設定 し、
+このルーター配下のエンドポイントすべてに認証を適用します。
+
+python
+コピーする
+編集する
+# app/features/setup/endpoints/setup_routers.py
+from fastapi import APIRouter, Depends
+from app.core.security import get_current_user  
+
+# ✅ 認証が適用されるルーター
+setup_router = APIRouter(
+    dependencies=[Depends(get_current_user)],  # ここで認証を適用
+    tags=["Setup"]
+)
+
+# ステータス用のエンドポイントをインクルード
+from .setup_status import router as status_router
+setup_router.include_router(status_router, prefix="/status", tags=["Setup - Status"])
+ここで Depends(get_current_user) を指定しているため、
+このルーター配下のすべてのエンドポイントで認証が必要 になります。
+この設定があるので、各エンドポイントごとに Depends(get_current_user) を記述する必要はありません。
+
+1-2. シンプルな認証付きエンドポイント (setup_status.py)
+次に、認証付きで「OK」を返すだけのシンプルなエンドポイント を作成します。
+
+python
+コピーする
+編集する
+# app/features/setup/endpoints/setup_status.py
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.post("/complete_status")
+async def complete_status():
+    """
+    ✅ 認証付きのシンプルなAPI
+    ✅ FastAPI側で正常に動作しているか確認するためのエンドポイント
+    """
+    return {"message": "OK"}
+このエンドポイントは POST /api/v1/setup/status/complete_status でアクセス可能 です。
+リクエストボディは不要で、正しく認証されると { "message": "OK" } を返します。
+
+2. フロントエンド (Next.js/React) の準備
+次に、フロントエンド側でこのAPIに認証付きでリクエストを送る処理 を作成します。
+
+2-1. 認証トークンの取得 (useUser を利用)
+フロントエンドでAPIを叩く際、認証が必要なので、
+useUser() を利用してトークン (token) を取得 します。
+
+typescript
+コピーする
+編集する
+import { useState, useEffect } from "react";
+import axios from "axios";
+import useUser from "@/hooks/useUser";  // ✅ トークンを取得するフックを利用
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+/**
+ * ✅ シンプルに認証付きでAPIを叩く
+ * @param token 認証トークン (Bearer Token)
+ * @returns     APIからのレスポンスメッセージ or 「API接続に失敗しました」
+ */
+export const checkApiConnection = async (token: string): Promise<string> => {
+  if (!token) {
+    console.error("【checkApiConnection】認証トークンがありません");
+    throw new Error("認証トークンがありません");
+  }
+
+  try {
+    // ✅ 認証付きで API を叩く
+    const response = await axios.post(
+      `${apiUrl}/api/v1/setup/status/complete_status`,
+      {},  // ✅ 送信データなし
+      { headers: { "Authorization": `Bearer ${token}` } }
+    );
+
+    console.log("✅ API 接続成功:", response.data);
+    return response.data.message || "成功";
+  } catch (error) {
+    console.error("❌ API 接続に失敗:", error);
+    return "API接続に失敗しました";
+  }
+};
+この関数は、トークン (token) を引数にとり、認証付きでAPIを実行する処理 です。
+
+2-2. フロントエンドのコンポーネント (CompleteStep.tsx)
+次に、上記の checkApiConnection を実際に呼び出して、
+APIのレスポンスを画面に表示するコンポーネント を作成します。
+
+typescript
+コピーする
+編集する
+import { useState, useEffect } from "react";
+import useUser from "@/hooks/useUser";
+import { checkApiConnection } from "@/api/checkApiConnection"; // ✅ 作成した関数を import
+
+export default function CompleteStep() {
+  const [message, setMessage] = useState<string | null>(null);
+  const user = useUser();
+  const token = user?.token;  // ✅ `useUser()` で認証トークンを取得
+
+  useEffect(() => {
+    if (!token) return;  // ✅ `token` が取得できるまで API を叩かない
+
+    checkApiConnection(token)
+      .then(setMessage)  // ✅ 成功時のレスポンスを画面に表示
+      .catch(() => setMessage("API接続に失敗しました"));  // ✅ エラー時
+  }, [token]);  // ✅ `token` が取得されたタイミングで API を実行
+
+  return (
+    <div>
+      <h2>セットアップ完了！</h2>
+      <p>お疲れ様でした。</p>
+      {message && <p>APIレスポンス: {message}</p>}  {/* ✅ ここにAPIの返り値を表示 */}
+    </div>
+  );
+}
+useUser() で token を取得
+useEffect() で token が 取得できたタイミングで API を実行
+APIのレスポンスを setMessage() で状態管理し、画面に表示
+3. 動作確認
+FastAPI を起動する
+sh
+コピーする
+編集する
+uvicorn app.main:app --reload
+cURL で API を手動テスト
+sh
+コピーする
+編集する
+curl -X POST 'http://localhost:8000/api/v1/setup/status/complete_status' \
+-H 'Authorization: Bearer <YOUR_TOKEN>'
+成功時のレスポンス
+
+json
+コピーする
+編集する
+{
+    "message": "OK"
+}
+失敗時のレスポンス (認証なし)
+
+json
+コピーする
+編集する
+{
+    "detail": "Not authenticated"
+}
+フロントエンドの表示を確認
+"APIレスポンス: OK" が表示される
+もし "API接続に失敗しました" が表示される場合は、console.log で token の値やエラー内容を確認する
+4. まとめ
+FastAPI 側
+
+ルーター (setup_routers.py) に Depends(get_current_user) を設定し、認証を適用
+シンプルな認証付きエンドポイント (setup_status.py) を作成
+認証されると {"message": "OK"} を返す
+フロントエンド側
+
+useUser() を使って token を取得
+checkApiConnection() で 認証付き API を実行
+useEffect() で token を監視し、API の結果を表示

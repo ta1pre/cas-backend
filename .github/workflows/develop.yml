@@ -1,0 +1,76 @@
+name: 開発環境へのデプロイ
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Pythonのセットアップ
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 依存関係のインストール
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: テスト実行
+      run: |
+        pytest
+  
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 環境変数ファイルの設定
+      run: |
+        cp .env.development .env
+    
+    - name: AWS認証情報の設定
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-1
+    
+    - name: Amazon ECRへのログイン
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+    
+    - name: イメージのビルド、タグ付け、ECRへのプッシュ
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: cas-api
+        IMAGE_TAG: dev-${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+    
+    - name: Amazon ECSタスク定義の更新
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition-secure.json
+        container-name: cas-api
+        image: ${{ steps.build-image.outputs.image }}
+    
+    - name: Amazon ECSへのデプロイ
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: cas-api-service
+        cluster: cas-api-cluster
+        wait-for-service-stability: true

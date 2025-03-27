@@ -1,0 +1,8 @@
+{
+  "HealthCheckPort": "8000",
+  "HealthCheckProtocol": "HTTP",
+  "HealthCheckPath": "/",
+  "Matcher": {
+    "HttpCode": "200"
+  }
+}

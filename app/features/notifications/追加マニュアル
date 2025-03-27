@@ -1,0 +1,79 @@
+"""
+==============================
+📌 【通知処理の追加方法】(マニュアル)
+==============================
+
+この `dispatcher.py` は、通知処理を一元管理し、適切な通知ハンドラー (`handlers/` 以下のファイル) に振り分ける役割を持ちます。
+新しい通知処理を追加する場合、以下の手順に従ってください。
+
+🔹 **1. `handlers/` に通知処理用の新しいファイルを作成**
+   - `app/features/notifications/handlers/` 配下に `reservation_updated.py` などの新しいファイルを作成する。
+   - ファイル名は `reservation_xxx.py` のように、`send_xxx` 形式の関数名と一致させること。
+
+🔹 **2. `send_` から始まる関数を定義**
+   - 例えば、`reservation_updated.py` なら以下のように作成する：
+
+   ```python
+   from sqlalchemy.orm import Session
+   from app.features.notifications.templates import get_template
+   from app.features.notifications.variables import get_reservation_variables
+   from app.features.notifications.line import send_line_message
+   from app.features.notifications.repository.getlineID_repository import get_user_line_id  
+
+   def send_reservation_updated(db: Session, reservation_id: int, user_id: int):
+       """
+       予約更新時の通知を送る
+       """
+       # 1️⃣ 予約情報を取得
+       variables = get_reservation_variables(db, reservation_id)
+
+       # 2️⃣ メッセージを作成
+       template = get_template("reservation_updated")
+       message = template.format(**variables)
+
+       # 3️⃣ LINE ID を取得し、送信
+       line_id = get_user_line_id(db, user_id)
+       if line_id:
+           send_line_message(line_id, message)
+       else:
+           print(f"❌ ユーザー {user_id} のLINE IDが見つかりません")
+🔹 3. dispatcher.send("reservation_updated", db=db, reservation_id=1001, user_id=41) で呼び出し
+
+reservation_updated というキーで自動的に send_reservation_updated() が呼ばれる。
+🔹 4. TEMPLATES に文言を追加
+
+app/features/notifications/templates.py にメッセージテンプレートを追加：
+python
+コピーする
+編集する
+TEMPLATES = {
+    "reservation_updated": "予約が変更されました。\n\n📍 場所: {location}\n📅 新しい日時: {date} {time}"
+}
+これで、新しい通知処理を追加する準備が完了します！ 🚀 """
+
+✅ handlers/ フォルダ内の全ファイルを自動でインポート
+NOTIFICATION_HANDLERS = {}
+
+for , module_name, _ in pkgutil.iter_modules(handlers.path): module = importlib.import_module(f"app.features.notifications.handlers.{module_name}") handler_func = getattr(module, f"send{module_name}", None) if handler_func: NOTIFICATION_HANDLERS[module_name] = handler_func
+
+def send(notification_type, **kwargs): """ 通知を適切な処理に振り分ける（インポートも自動化） """ handler = NOTIFICATION_HANDLERS.get(notification_type) if handler: handler(**kwargs) else: print(f"❌ 未知の通知タイプ: {notification_type}")
+
+yaml
+コピーする
+編集する
+
+---
+
+### ✅ **このマニュアルのポイント**
+1️⃣ **どこにファイルを作るか (`handlers/` に新規ファイルを作る) を明記！**  
+2️⃣ **関数の命名ルール (`send_xxx`) を統一し、間違いが起きないように！**  
+3️⃣ **テンプレート (`TEMPLATES`) の追加も説明！**  
+4️⃣ **具体的なコード例を入れて、実際の追加作業が分かりやすいように！**  
+
+🚀 **これで「通知の追加手順」がすぐ分かる！このまま進めよう！** 🎯
+
+
+
+
+
+

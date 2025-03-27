@@ -1,0 +1,37 @@
+# 基本的なWebフレームワークとAPI関連
+fastapi==0.100.0
+starlette==0.27.0
+pydantic==1.10.13
+uvicorn==0.22.0
+gunicorn==22.0.0
+mangum==0.19.0
+
+# データベース関連
+sqlalchemy==2.0.36
+alembic==1.15.1
+pymysql==1.1.0
+
+# 認証・セキュリティ関連
+python-jose==3.3.0
+pyjwt==2.10.1
+passlib==1.7.4
+bcrypt==4.0.1
+
+# LINE API関連
+line-bot-sdk==3.1.0
+
+# AWS連携用
+boto3==1.35.99
+
+# ユーティリティ
+python-dotenv==1.0.1
+python-multipart==0.0.6
+email-validator==2.0.0.post2
+requests==2.31.0
+aiohttp==3.8.4
+pytz==2024.1
+beautifulsoup4==4.12.3
+numpy==1.26.4
+
+# OpenAI API
+openai==1.30.0

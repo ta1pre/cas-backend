@@ -1,0 +1,11 @@
+{
+  "cluster": "cas-api-cluster",
+  "service": "cas-api-service",
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:ap-northeast-1:800067001720:targetgroup/cas-api-tg-port8000/681dcaa6e2c825ee",
+      "containerName": "cas-api",
+      "containerPort": 8000
+    }
+  ]
+}

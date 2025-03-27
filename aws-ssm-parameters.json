@@ -1,0 +1,68 @@
+[
+  {
+    "Name": "/cas-api/production/DATABASE_URL",
+    "Type": "SecureString",
+    "Value": "mysql+pymysql://username:password@your-db-host.region.rds.amazonaws.com/dbname",
+    "Description": "本番環境のデータベース接続情報"
+  },
+  {
+    "Name": "/cas-api/production/SECRET_KEY",
+    "Type": "SecureString",
+    "Value": "your-secret-key-value",
+    "Description": "JWTトークン生成用のシークレットキー"
+  },
+  {
+    "Name": "/cas-api/production/LINE_CHANNEL_SECRET",
+    "Type": "SecureString",
+    "Value": "your-line-channel-secret",
+    "Description": "LINE Messaging APIのチャンネルシークレット"
+  },
+  {
+    "Name": "/cas-api/production/LINE_CHANNEL_ACCESS_TOKEN",
+    "Type": "SecureString",
+    "Value": "your-line-channel-access-token",
+    "Description": "LINE Messaging APIのアクセストークン"
+  },
+  {
+    "Name": "/cas-api/production/LINE_LOGIN_CHANNEL_ID",
+    "Type": "SecureString",
+    "Value": "your-line-login-channel-id",
+    "Description": "LINE Loginのチャンネルid"
+  },
+  {
+    "Name": "/cas-api/production/LINE_LOGIN_CHANNEL_SECRET",
+    "Type": "SecureString",
+    "Value": "your-line-login-channel-secret",
+    "Description": "LINE Loginのチャンネルシークレット"
+  },
+  {
+    "Name": "/cas-api/production/OPENAI_API_KEY",
+    "Type": "SecureString",
+    "Value": "your-openai-api-key",
+    "Description": "OpenAI APIキー"
+  },
+  {
+    "Name": "/cas-api/production/AWS_ACCESS_KEY_ID",
+    "Type": "SecureString",
+    "Value": "your-aws-access-key-id",
+    "Description": "AWS S3アクセス用のアクセスキーID"
+  },
+  {
+    "Name": "/cas-api/production/AWS_SECRET_ACCESS_KEY",
+    "Type": "SecureString",
+    "Value": "your-aws-secret-access-key",
+    "Description": "AWS S3アクセス用のシークレットアクセスキー"
+  },
+  {
+    "Name": "/cas-api/production/MICROCMS_API_KEY",
+    "Type": "SecureString",
+    "Value": "your-microcms-api-key",
+    "Description": "microCMS APIキー"
+  },
+  {
+    "Name": "/cas-api/production/REFRESH_SECRET_KEY",
+    "Type": "SecureString",
+    "Value": "your-refresh-secret-key",
+    "Description": "リフレッシュトークン用のシークレットキー"
+  }
+]

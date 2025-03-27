@@ -1,0 +1,91 @@
+name: 本番環境へのデプロイ
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 本番環境用環境変数ファイルの設定
+      run: |
+        cp .env.example .env
+    
+    - name: 環境変数の設定
+      run: |
+        echo "FRONTEND_URL=https://cas.tokyo" >> .env
+        echo "REDIRECT_URI=https://api.cas.tokyo/api/v1/account/line/callback" >> .env
+        echo "AWS_S3_BUCKET_NAME=cast-media" >> .env
+        echo "AWS_S3_REGION=ap-northeast-1" >> .env
+        echo "ENVIRONMENT=production" >> .env
+        echo "ALGORITHM=HS256" >> .env
+        echo "ACCESS_TOKEN_EXPIRE_MINUTES=120" >> .env
+        echo "REFRESH_TOKEN_EXPIRE_DAYS=90" >> .env
+        echo "LINE_BOT_BASIC_ID=@696unbpu" >> .env
+        echo "MICROCMS_API_URL=https://23t441tj5w.microcms.io/api/v1/help" >> .env
+        echo "ALLOWED_ORIGINS=https://cas.tokyo,https://api.cas.tokyo" >> .env
+    
+    - name: DATABASE_URLを環境変数ファイルに設定
+      run: |
+        echo "DATABASE_URL=${{ secrets['DATABASE_URL'] }}" >> .env
+    
+    - name: シークレットキーを環境変数ファイルに設定
+      run: |
+        echo "SECRET_KEY=${{ secrets['SECRET_KEY'] }}" >> .env
+        echo "REFRESH_SECRET_KEY=${{ secrets['REFRESH_SECRET_KEY'] }}" >> .env
+    
+    - name: LINE関連のシークレットキーを環境変数ファイルに設定
+      run: |
+        echo "LINE_CHANNEL_SECRET=${{ secrets['LINE_CHANNEL_SECRET'] }}" >> .env
+        echo "LINE_CHANNEL_ACCESS_TOKEN=${{ secrets['LINE_CHANNEL_ACCESS_TOKEN'] }}" >> .env
+        echo "LINE_LOGIN_CHANNEL_ID=${{ secrets['LINE_LOGIN_CHANNEL_ID'] }}" >> .env
+        echo "LINE_LOGIN_CHANNEL_SECRET=${{ secrets['LINE_LOGIN_CHANNEL_SECRET'] }}" >> .env
+    
+    - name: AWS関連のシークレットキーを環境変数ファイルに設定
+      run: |
+        echo "AWS_ACCESS_KEY_ID=${{ secrets['AWS_ACCESS_KEY_ID'] }}" >> .env
+        echo "AWS_SECRET_ACCESS_KEY=${{ secrets['AWS_SECRET_ACCESS_KEY'] }}" >> .env
+    
+    - name: API関連のシークレットキーを環境変数ファイルに設定
+      run: |
+        echo "MICROCMS_API_KEY=${{ secrets['MICROCMS_API_KEY'] }}" >> .env
+        echo "OPENAI_API_KEY=${{ secrets['OPENAI_API_KEY'] }}" >> .env
+    
+    - name: AWS認証情報の設定
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets['AWS_ACCESS_KEY_ID'] }}
+        aws-secret-access-key: ${{ secrets['AWS_SECRET_ACCESS_KEY'] }}
+        aws-region: ap-northeast-1
+    
+    - name: Amazon ECRへのログイン
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+    
+    - name: Dockerイメージのビルド
+      run: |
+        ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+        ECR_REPOSITORY="cas-api"
+        IMAGE_TAG="${{ github.sha }}"
+        docker build -t "${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" .
+    
+    - name: Dockerイメージのプッシュ
+      id: push-image
+      run: |
+        ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+        ECR_REPOSITORY="cas-api"
+        IMAGE_TAG="${{ github.sha }}"
+        docker push "${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
+        echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
+    
+    - name: Amazon ECSへのデプロイ
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      with:
+        task-definition: task-definition-secure.json
+        service: cas-api-service
+        cluster: cas-api-cluster
+        wait-for-service-stability: true

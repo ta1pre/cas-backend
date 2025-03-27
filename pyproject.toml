@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "fastapi-app"
+version = "0.1.0"
+description = "FastAPI application"
+authors = ["Your Name <your.email@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.100.0"
+uvicorn = "^0.22.0"
+gunicorn = "^22.0.0"
+mangum = "^0.17.0"
+sqlalchemy = "^2.0.0"
+pydantic = "1.10.13"
+pymysql = "^1.1.0"
+psycopg2-binary = "^2.9.9"
+alembic = "^1.12.0"
+python-dotenv = "^1.0.0"
+python-jose = "^3.3.0"
+passlib = "^1.7.4"
+python-multipart = "^0.0.6"
+line-bot-sdk = "^3.1.0"
+boto3 = "^1.35.0"
+requests = "^2.31.0"
+aiohttp = "^3.8.4"
+pytz = "^2024.1"
+beautifulsoup4 = "^4.12.3"
+numpy = "^1.26.4"
+openai = "^1.30.0"
+pyproj = "^3.6.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0.0"
+black = "^24.0.0"
+isort = "^5.12.0"
+flake8 = "^7.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
