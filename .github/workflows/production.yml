@@ -51,6 +51,26 @@ jobs:
         jq '.containerDefinitions[0].image = "${{ steps.push-image.outputs.image }}"' task-definition.json > updated-task-definition.json
         mv updated-task-definition.json task-definition.json
         
+        # 環境変数を追加
+        jq '.containerDefinitions[0].environment = [
+          {"name": "DATABASE_URL", "value": "${{ secrets.DATABASE_URL }}"},
+          {"name": "FRONTEND_URL", "value": "${{ secrets.FRONTEND_URL }}"},
+          {"name": "LINE_LOGIN_CHANNEL_ID", "value": "${{ secrets.LINE_LOGIN_CHANNEL_ID }}"},
+          {"name": "LINE_LOGIN_CHANNEL_SECRET", "value": "${{ secrets.LINE_LOGIN_CHANNEL_SECRET }}"},
+          {"name": "LINE_CHANNEL_ACCESS_TOKEN", "value": "${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}"},
+          {"name": "LINE_CHANNEL_SECRET", "value": "${{ secrets.LINE_CHANNEL_SECRET }}"},
+          {"name": "REDIRECT_URI", "value": "${{ secrets.REDIRECT_URI }}"},
+          {"name": "SECRET_KEY", "value": "${{ secrets.SECRET_KEY }}"},
+          {"name": "ALGORITHM", "value": "${{ secrets.ALGORITHM }}"},
+          {"name": "REFRESH_SECRET_KEY", "value": "${{ secrets.REFRESH_SECRET_KEY }}"},
+          {"name": "ACCESS_TOKEN_EXPIRE_MINUTES", "value": "${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}"},
+          {"name": "REFRESH_TOKEN_EXPIRE_DAYS", "value": "${{ secrets.REFRESH_TOKEN_EXPIRE_DAYS }}"},
+          {"name": "OPENAI_API_KEY", "value": "${{ secrets.OPENAI_API_KEY }}"},
+          {"name": "MICROCMS_API_URL", "value": "${{ secrets.MICROCMS_API_URL }}"},
+          {"name": "MICROCMS_API_KEY", "value": "${{ secrets.MICROCMS_API_KEY }}"}
+        ]' task-definition.json > updated-task-definition.json
+        mv updated-task-definition.json task-definition.json
+        
         # タスク定義からAWSが管理するフィールドを削除
         jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task-definition.json > cleaned-task-definition.json
         mv cleaned-task-definition.json task-definition.json
