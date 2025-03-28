@@ -1,6 +1,10 @@
 import requests
 from fastapi import HTTPException
 from app.core.config import LINE_CHANNEL_ACCESS_TOKEN
+import logging
+
+# ロガーの設定
+logger = logging.getLogger("line_client")
 
 LINE_REPLY_URL = "https://api.line.me/v2/bot/message/reply"
 
@@ -9,9 +13,11 @@ def send_line_reply(reply_token: str, message: str, quick_reply: bool = False):
     LINEユーザーへ返信（Quick Reply もまとめて送るオプションあり）
     """
     if not reply_token:
-        print("❌ 無効な reply_token が渡されました")
+        logger.error("❌ 無効な reply_token が渡されました")
         return
 
+    logger.debug(f"LINE_CHANNEL_ACCESS_TOKEN exists: {bool(LINE_CHANNEL_ACCESS_TOKEN)}")
+    
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}"
@@ -51,9 +57,18 @@ def send_line_reply(reply_token: str, message: str, quick_reply: bool = False):
         "messages": messages
     }
 
-    response = requests.post(LINE_REPLY_URL, headers=headers, json=data)
-    if response.status_code != 200:
-        print(f"❌ LINEメッセージ送信失敗: {response.status_code}, {response.text}")
+    logger.debug(f"LINE APIにリクエスト送信: {reply_token}")
+    try:
+        response = requests.post(LINE_REPLY_URL, headers=headers, json=data)
+        logger.debug(f"LINE APIレスポンス: ステータスコード={response.status_code}, レスポンス={response.text}")
+        
+        if response.status_code != 200:
+            logger.error(f"❌ LINEメッセージ送信失敗: {response.status_code}, {response.text}")
+            return False
+        return True
+    except Exception as e:
+        logger.error(f"❌ LINE API呼び出し中に例外が発生: {str(e)}")
+        return False
 
 def handle_yes_no_response(user_id: str, user_message: str, reply_token: str, user_conversations: dict):
     """

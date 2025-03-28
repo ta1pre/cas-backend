@@ -6,14 +6,18 @@ from app.core.config import FRONTEND_URL  # 追加
 
 
 logging.basicConfig(
-    level=logging.INFO,  # INFO レベルのログを出力
-    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.DEBUG,  # DEBUG レベルのログを出力するように変更
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",  # モジュール名も表示
     handlers=[
         logging.StreamHandler()  # ターミナルに出力
     ]
 )
 
+# 特定のモジュールのログレベルを設定
 logger = logging.getLogger(__name__)
+logging.getLogger("webhook").setLevel(logging.DEBUG)
+logging.getLogger("line_client").setLevel(logging.DEBUG)
+logging.getLogger("faq_search").setLevel(logging.DEBUG)
 
 
 app = FastAPI()

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
@@ -6,21 +7,17 @@ from app.features.linebot.services.user_info import fetch_user_info_by_line_id
 from app.features.linebot.services.faq_search import search_faq
 from app.features.linebot.services.line_client import send_line_reply
 from app.scripts.fetch_microcms_faq import fetch_and_embed_faq
-from fastapi import APIRouter, Query, HTTPException  # Query を追加
-from fastapi.responses import StreamingResponse  # StreamingResponse を追加
-from app.features.linebot.services.user_info import fetch_user_info_by_line_id  # `user_info` を取得する関数をインポート
-import os
-import logging
-import json
+from fastapi import APIRouter, Query, HTTPException  # Queryを追加
+from fastapi.responses import StreamingResponse  # StreamingResponseを追加
+from app.features.linebot.services.user_info import fetch_user_info_by_line_id  # user_infoを取得する関数をインポート
 
-# ロガーの設定
+
+# ロガー設定
 logger = logging.getLogger("webhook")
-logger.setLevel(logging.DEBUG)
-
 
 router = APIRouter()
 
-# データベース依存関係を取得
+# データベースセッションを取得する関数
 def get_db():
     db = SessionLocal()
     try:
@@ -32,51 +29,47 @@ def get_db():
 @router.post("/w")
 async def messaging_webhook(request: Request, db: Session = Depends(get_db)):
     """
-    LINE Webhook のエンドポイント
+    LINE Webhookエンドポイント
     """
     try:
-        # リクエストヘッダーをログに記録
-        logger.debug(f"Webhook headers: {dict(request.headers)}")
+        # ヘッダーを取得
+        headers = dict(request.headers)
+        logger.debug(f"Webhook headers: {headers}")
         
         # リクエストボディを取得
         body = await request.body()
         logger.debug(f"Webhook raw body: {body}")
         
-        # 環境変数のデバッグ出力
-        line_channel_secret = os.environ.get("LINE_CHANNEL_SECRET")
-        line_channel_access_token = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")
-        logger.debug(f"LINE_CHANNEL_SECRET exists: {line_channel_secret is not None}")
-        logger.debug(f"LINE_CHANNEL_ACCESS_TOKEN exists: {line_channel_access_token is not None}")
+        body_json = await request.json()
+        logger.debug(f"Webhook body JSON: {body_json}")
         
-        try:
-            body_json = await request.json()
-            logger.debug(f"Webhook body JSON: {json.dumps(body_json)}")
-            events = body_json.get("events", [])
-        except Exception as json_error:
-            logger.error(f"JSON解析エラー: {json_error}")
-            raise HTTPException(status_code=400, detail=f"Invalid JSON: {str(json_error)}")
+        events = body_json.get("events", [])
 
+        # イベントが存在しない場合
         if not events:
-            logger.warning("No events found in the request")
-            raise HTTPException(status_code=400, detail="No events found in the request")
+            logger.info("イベントが存在しないので検証成功とみなします（正常なWebhookリクエストではありません）")
+            return {"message": "Webhook verification successful"}
 
         for event in events:
-            logger.debug(f"Processing event: {json.dumps(event)}")
+            logger.debug(f"イベント処理: {event}")
             if event.get("type") == "message" and event["message"]["type"] == "text":
                 line_id = event["source"]["userId"]
                 reply_token = event["replyToken"]
                 user_message = event["message"]["text"]
                 
-                logger.debug(f"User message: {user_message}")
-                logger.debug(f"LINE ID: {line_id}")
-                logger.debug(f"Reply token: {reply_token}")
+                logger.debug(f"ユーザーからのメッセージ: {user_message}, reply_token: {reply_token}")
 
-                # `user_info` を取得
+                # ユーザー情報を取得
                 user_info = fetch_user_info_by_line_id(db, line_id)
-                logger.debug(f"User info: {user_info}")
+                logger.debug(f"ユーザー情報: {user_info}")
 
-                # `search_faq()` 内で `send_line_reply()` を呼ぶため、ここでは `reply` を返すだけ
-                search_faq(user_message, user_info, reply_token)
+                # search_faq()内でsend_line_reply()を実行し、ここではreplyを返さない
+                try:
+                    result = search_faq(user_message, user_info, reply_token)
+                    logger.debug(f"search_faqの結果: {result}")
+                except Exception as e:
+                    logger.error(f"search_faqのエラー: {str(e)}")
+                    raise
 
         return {"message": "Webhook received successfully"}
 
@@ -84,27 +77,26 @@ async def messaging_webhook(request: Request, db: Session = Depends(get_db)):
         logger.error(f"HTTPException: {e.detail}")
         raise e
     except Exception as e:
-        logger.error(f" Webhookエラー: {e}")
-        logger.exception("詳細なエラー情報:")
-        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+        logger.error(f"Webhookエラー: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
     
 @router.api_route("/update-faq/", methods=["GET", "POST"])
-async def update_faq(pw: str = Query(None, alias="pw")):  
+async def update_faq(pw: str = Query(None, alias="pw")):  # "pw"を追加
     """
-    MicroCMSからFAQデータを取得し、埋め込みを生成して保存するAPI
+    MicroCMSからFAQを取得し、更新するAPI
     """
 
-    # 簡単なパスワード認証
-    AUTH_PASSWORD = "amayakachite"  
-    if pw != AUTH_PASSWORD:  
+    # 認証パスワード
+    AUTH_PASSWORD = "amayakachite"  # 認証パスワードを設定
+    if pw != AUTH_PASSWORD:  # "password"を"pw"に変更
         raise HTTPException(status_code=401, detail="Unauthorized: パスワードが違います")
 
-    # ストリーミングレスポンスで「更新中...」を表示
+    # ストリーミングレスポンスで更新中...を表示
     async def event_generator():
-        yield "data: FAQ更新を開始しました...\n\n"  
+        yield "data: FAQ更新中...\n\n"  # 表示文字を変更
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, fetch_and_embed_faq)
-        yield "data: FAQ更新が完了しました！\n\n"  
+        yield "data: FAQ更新完了！！\n\n"  # 表示文字を変更
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
