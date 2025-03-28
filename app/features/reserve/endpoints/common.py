@@ -66,7 +66,7 @@ def change_status_endpoint(
     このルールにより、新しいステータスを追加する際に `{next_status}_service.py` を作るだけで対応可能。
     """
     try:
-        logging.info(f"🟡 next_status={next_status}, 受信データ: {request.model_dump()}")
+        logging.info(f"🟡 next_status={next_status}, 受信データ: {request.dict()}")
 
         # 動的に `{next_status}/{next_status}_service.py` を読み込む
         service_module_name = f"app.features.reserve.change_status.{next_status}.{next_status}_service"

@@ -67,3 +67,4 @@ def get_reservation_list(request: dict, db: Session = Depends(get_db)):
 
     response_obj = get_customer_reservation_list(db, user_id, page, limit)
     return response_obj  # ← これを1つのオブジェクトとして返す
+    
