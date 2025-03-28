@@ -19,8 +19,10 @@ else:
 is_aws = os.getenv("AWS_EXECUTION_ENV") is not None or os.getenv("AWS_LAMBDA_FUNCTION_NAME") is not None
 if is_aws:
     print("\n===== AWS環境で実行中 =====\n")
+    logger.info("AWS環境で実行中")
 else:
     print("\n===== ローカル環境で実行中 =====\n")
+    logger.info("ローカル環境で実行中")
 
 # データベース
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -44,15 +46,22 @@ def check_env_var(name, value, show_full=False):
     if value:
         if show_full:
             print(f"✅ {name}: {value}")
+            logger.info(f"環境変数 {name} が設定されています")
         else:
             val_length = len(value)
             if val_length > 10:
                 masked_val = value[:5] + "*" * (val_length - 10) + value[-5:]
                 print(f"✅ {name}: {masked_val} (長さ: {val_length}文字)")
+                logger.info(f"環境変数 {name} が設定されています (長さ: {val_length}文字)")
             else:
                 print(f"✅ {name}: {'*' * val_length} (長さ: {val_length}文字)")
+                logger.info(f"環境変数 {name} が設定されています (長さ: {val_length}文字)")
     else:
         print(f"❌ {name} が設定されていません")
+        logger.error(f"環境変数 {name} が設定されていません")
+        if name in ["LINE_CHANNEL_ACCESS_TOKEN", "LINE_CHANNEL_SECRET"]:
+            print(f"⚠️ {name} が設定されていないため、LINE Messaging APIが正常に動作しません")
+            logger.critical(f"{name} が設定されていないため、LINE Messaging APIが正常に動作しません")
 
 # 必要な環境変数の値を確認
 print("\n===== 必要な環境変数の値を確認 =====\n")
@@ -62,12 +71,42 @@ check_env_var("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
 check_env_var("DATABASE_URL", DATABASE_URL, True)
 check_env_var("REDIRECT_URI", REDIRECT_URI, True)
 
-# AWS環境の場合、環境変数の値を出力
+# AWS環境の場合、環境変数の値を詳細出力
 if is_aws:
     print("\n===== AWS環境で環境変数の値を出力 =====\n")
-    print(f"LINE_CHANNEL_ACCESS_TOKEN: {LINE_CHANNEL_ACCESS_TOKEN}")
-    print(f"LINE_CHANNEL_SECRET: {LINE_CHANNEL_SECRET}")
-    print(f"OPENAI_API_KEY: {os.getenv('OPENAI_API_KEY')}")
+    logger.info("AWS環境で環境変数の詳細確認を開始")
+    
+    # LINE Messaging API関連の環境変数を詳細チェック
+    if LINE_CHANNEL_ACCESS_TOKEN:
+        token_length = len(LINE_CHANNEL_ACCESS_TOKEN)
+        print(f"LINE_CHANNEL_ACCESS_TOKEN: {LINE_CHANNEL_ACCESS_TOKEN[:5]}...{LINE_CHANNEL_ACCESS_TOKEN[-5:]} (長さ: {token_length}文字)")
+        logger.info(f"LINE_CHANNEL_ACCESS_TOKEN の長さは {token_length} 文字です")
+        
+        # トークンの形式チェック
+        if not LINE_CHANNEL_ACCESS_TOKEN.startswith("Bearer") and not LINE_CHANNEL_ACCESS_TOKEN.startswith("bearer"):
+            print("ℹ️ LINE_CHANNEL_ACCESS_TOKEN は 'Bearer' で始まっていません。自動的に追加されます。")
+            logger.warning("LINE_CHANNEL_ACCESS_TOKEN は 'Bearer' で始まっていません")
+    else:
+        print("❌ LINE_CHANNEL_ACCESS_TOKEN が設定されていません！")
+        logger.critical("LINE_CHANNEL_ACCESS_TOKEN が設定されていません！")
+    
+    if LINE_CHANNEL_SECRET:
+        secret_length = len(LINE_CHANNEL_SECRET)
+        print(f"LINE_CHANNEL_SECRET: {LINE_CHANNEL_SECRET[:3]}...{LINE_CHANNEL_SECRET[-3:]} (長さ: {secret_length}文字)")
+        logger.info(f"LINE_CHANNEL_SECRET の長さは {secret_length} 文字です")
+    else:
+        print("❌ LINE_CHANNEL_SECRET が設定されていません！署名検証ができません！")
+        logger.critical("LINE_CHANNEL_SECRET が設定されていません！署名検証ができません！")
+    
+    # OpenAI APIキーの確認
+    openai_key = os.getenv("OPENAI_API_KEY")
+    if openai_key:
+        key_length = len(openai_key)
+        print(f"OPENAI_API_KEY: {openai_key[:3]}...{openai_key[-3:]} (長さ: {key_length}文字)")
+        logger.info(f"OPENAI_API_KEY の長さは {key_length} 文字です")
+    else:
+        print("❌ OPENAI_API_KEY が設定されていません！")
+        logger.critical("OPENAI_API_KEY が設定されていません！")
 
 # `TEST_VARIABLE` を読み込む
 TEST_VARIABLE = os.getenv("TEST_VARIABLE")
@@ -112,3 +151,15 @@ if is_aws:
     print("\n===== AWS環境で全環境変数をダンプ =====\n")
     all_env = dump_all_env_vars()
     print(json.dumps(all_env, indent=2, ensure_ascii=False))
+    logger.info("AWS環境で全環境変数のダンプを完了")
+    
+    # AWS特有の環境変数の確認
+    aws_vars = {
+        "AWS_REGION": os.getenv("AWS_REGION"),
+        "AWS_LAMBDA_FUNCTION_NAME": os.getenv("AWS_LAMBDA_FUNCTION_NAME"),
+        "AWS_LAMBDA_FUNCTION_VERSION": os.getenv("AWS_LAMBDA_FUNCTION_VERSION"),
+        "AWS_EXECUTION_ENV": os.getenv("AWS_EXECUTION_ENV")
+    }
+    print("\n===== AWS特有の環境変数 =====\n")
+    print(json.dumps(aws_vars, indent=2, ensure_ascii=False))
+    logger.info("AWS特有の環境変数の確認を完了")

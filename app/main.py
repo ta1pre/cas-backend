@@ -2,22 +2,60 @@ from fastapi import FastAPI
 from app.api.v1.routers.master_router import master_router  # 直接指定
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+import os
+import sys
 from app.core.config import FRONTEND_URL  # 追加
 
+# AWS環境かどうかを判定
+is_aws = os.getenv("AWS_EXECUTION_ENV") is not None or os.getenv("AWS_LAMBDA_FUNCTION_NAME") is not None
+
+# ログレベル
+log_level = logging.DEBUG if not is_aws else logging.INFO
 
 logging.basicConfig(
-    level=logging.DEBUG,  # DEBUG レベルのログを出力するように変更
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",  # モジュール名も表示
+    level=log_level,  
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",  
     handlers=[
-        logging.StreamHandler()  # ターミナルに出力
+        logging.StreamHandler()  
     ]
 )
 
-# 特定のモジュールのログレベルを設定
+# ロガー
 logger = logging.getLogger(__name__)
-logging.getLogger("webhook").setLevel(logging.DEBUG)
-logging.getLogger("line_client").setLevel(logging.DEBUG)
-logging.getLogger("faq_search").setLevel(logging.DEBUG)
+
+# ログレベル設定
+if is_aws:
+    logger.info("AWS環境で動作中、ログレベルを設定します")
+    # AWS環境でログレベルを調整
+    logging.getLogger("uvicorn").setLevel(logging.WARNING)
+    logging.getLogger("fastapi").setLevel(logging.WARNING)
+    
+    # LINE関連のログレベルを調整
+    logging.getLogger("webhook").setLevel(logging.INFO)
+    logging.getLogger("line_client").setLevel(logging.INFO)
+    logging.getLogger("faq_search").setLevel(logging.INFO)
+    logging.getLogger("config").setLevel(logging.INFO)
+    
+    # 例外処理
+    def handle_exception(exc_type, exc_value, exc_traceback):
+        if issubclass(exc_type, KeyboardInterrupt):
+            # Ctrl+Cなどによる終了はデフォルトの処理を実行
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            return
+        
+        logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    
+    # 例外処理を設定
+    sys.excepthook = handle_exception
+    
+    logger.info("AWS環境用のログレベル設定を完了しました")
+else:
+    logger.info("ローカル環境で動作中、デバッグログを有効にします")
+    # ローカル環境でデバッグログを有効にする
+    logging.getLogger("webhook").setLevel(logging.DEBUG)
+    logging.getLogger("line_client").setLevel(logging.DEBUG)
+    logging.getLogger("faq_search").setLevel(logging.DEBUG)
+    logging.getLogger("config").setLevel(logging.DEBUG)
 
 
 app = FastAPI()
@@ -27,7 +65,10 @@ app.include_router(master_router, prefix="/api/v1")
 
 @app.get("/")
 def root():
-    return {"msg": "Hello from local!"}
+    if is_aws:
+        return {"msg": "Hello from AWS production!", "env": "production"}
+    else:
+        return {"msg": "Hello from local!", "env": "development"}
 
 origins = [
     FRONTEND_URL,
@@ -41,3 +82,6 @@ app.add_middleware(
     allow_methods=["*"],  # すべてのHTTPメソッドを許可
     allow_headers=["*"],  # すべてのヘッダーを許可
 )
+
+# アプリケーション起動完了ログ
+logger.info(f"Application startup complete. Running in {'AWS' if is_aws else 'local'} environment.")
