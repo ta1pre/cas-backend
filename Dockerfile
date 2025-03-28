@@ -59,4 +59,4 @@ USER appuser
 HEALTHCHECK CMD curl -f http://localhost:8000/api/v1/health || exit 1
 
 # FastAPIアプリを起動
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
