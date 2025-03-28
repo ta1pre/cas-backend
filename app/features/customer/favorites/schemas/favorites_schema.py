@@ -25,6 +25,7 @@ class FavoriteResponse(FavoriteBase):
 
     class Config:
         from_attributes = True
+        orm_mode = True
 
 class FavoriteList(BaseModel):
     favorites: List[FavoriteResponse]
