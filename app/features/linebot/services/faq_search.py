@@ -3,7 +3,10 @@ import numpy as np
 from bs4 import BeautifulSoup
 from app.features.linebot.services.openai_client import get_openai_reply, client
 from app.features.linebot.services.line_client import send_line_reply
-from app.core.config import is_aws, logger
+import logging # 標準のloggingをimport
+
+# ロガーを取得
+logger = logging.getLogger(__name__)
 
 # ユーザーごとの会話履歴
 USER_CONVERSATIONS = {}
@@ -36,9 +39,8 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
     FAQデータを検索し、ユーザーの履歴を考慮して回答を生成
     """
     try:
-        # 環境情報をログに記録
-        env_info = "AWS環境" if is_aws else "ローカル環境"
-        logger.info(f"search_faq関数が呼び出されました: user_message={user_message}, reply_token={reply_token}, 環境={env_info}")
+        # 環境情報のログを削除
+        logger.info(f"search_faq関数が呼び出されました: user_message={user_message}, reply_token={reply_token}") # シンプルなログに変更
         user_id = user_info.get('id')
 
         if not user_id:
