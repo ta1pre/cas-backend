@@ -7,10 +7,9 @@ import traceback
 from bs4 import BeautifulSoup
 from app.features.linebot.services.openai_client import get_openai_reply, client
 from app.features.linebot.services.line_client import send_line_reply
-from app.core.config import is_aws_environment
 
-# ロガーの設定
-logger = logging.getLogger("faq_search")
+# ロガーを取得
+logger = logging.getLogger(__name__)
 
 # ユーザーごとの会話履歴
 USER_CONVERSATIONS = {}
@@ -65,9 +64,8 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
     """
     start_time = time.time()
     try:
-        # 環境情報をログに記録
-        env_info = "AWS環境" if is_aws_environment() else "ローカル環境"
-        logger.info(f"search_faq関数が呼び出されました: user_message={user_message}, reply_token={reply_token}, 環境={env_info}")
+        # 環境情報のログを削除
+        logger.info(f"search_faq関数が呼び出されました: user_message={user_message}, reply_token={reply_token}") # シンプルなログに変更
         user_id = user_info.get('id')
 
         if not user_id:
@@ -80,21 +78,20 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
         user_sex = user_info.get('sex', 'NULL')
         logger.debug(f"ユーザー{user_id}の情報: nickname={user_nickname}, sex={user_sex}")
 
-        # リセットの場合、履歴を削除し、削除後の履歴をログに出力
+        # `YES` の場合、履歴を削除し、削除後の履歴をログに出力
         if user_message.upper() == "リセット":
             if user_id in USER_CONVERSATIONS:
                 USER_CONVERSATIONS[user_id].clear()  # キーを保持しつつ内容をクリア
                 del USER_CONVERSATIONS[user_id]  # キーごと完全削除
 
-            logger.info(f"{user_id} の履歴を削除しました")
-            message = "ありがとうございました。またお気軽に質問してくださいね"
-            send_reply_with_retry(reply_token, message)
-            return message
+            print(f" {user_id} の履歴を削除しました")
+            send_line_reply(reply_token, "ありがとうございました。またお気軽に質問してくださいね😊")
+            return  
 
-        # 履歴をログに出力
-        logger.debug(f"{user_id} の現在の履歴: {USER_CONVERSATIONS.get(user_id, '履歴なし')}")
+        # 履歴をログに出力（デバッグ用）
+        print(f" {user_id} の現在の履歴: {USER_CONVERSATIONS.get(user_id, '履歴なし')}")
 
-        # 履歴を保存
+        # 履歴を保存（存在しない場合は作成）
         if user_id not in USER_CONVERSATIONS:
             USER_CONVERSATIONS[user_id] = []
 
@@ -104,24 +101,9 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
 
         USER_CONVERSATIONS[user_id].append({"user": user_message})
 
-        # microcms_faq_embeddings.json からFAQデータを読み込む
-        try:
-            # ファイルの存在確認
-            if not os.path.exists(FAQ_DATA_PATH):
-                logger.error(f"FAQデータファイルが見つかりません: {FAQ_DATA_PATH}")
-                message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
-                send_reply_with_retry(reply_token, message)
-                return message
-                
-            with open(FAQ_DATA_PATH, 'r') as f:
-                faqs = json.load(f)
-            logger.debug(f"FAQデータを正常に読み込みました: {len(faqs)}件")
-        except Exception as e:
-            logger.error(f"FAQデータの読み込み中にエラー: {str(e)}")
-            logger.error(traceback.format_exc())
-            message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
-            send_reply_with_retry(reply_token, message)
-            return message
+        # `microcms_faq_embeddings.json` からFAQデータを読み込む
+        with open('app/data/microcms_faq_embeddings.json', 'r') as f:
+            faqs = json.load(f)
 
         # 性別でFAQをフィルタリング
         matched_faqs = [
@@ -130,17 +112,8 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
         ]
         logger.debug(f"性別{user_sex}にマッチしたFAQ: {len(matched_faqs)}件")
 
-        # ユーザーの質問に最も近いFAQを 複数 取得
-        try:
-            user_embedding = get_embedding(user_message)
-            logger.debug("ユーザーメッセージのEmbeddingを取得しました")
-        except Exception as e:
-            logger.error(f"ユーザーメッセージのEmbedding取得中にエラー: {str(e)}")
-            logger.error(traceback.format_exc())
-            message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
-            send_reply_with_retry(reply_token, message)
-            return message
-            
+        # ユーザーの質問に最も近いFAQを **複数** 取得（スコア0.85以上）
+        user_embedding = get_embedding(user_message)
         relevant_faqs = []
         try:
             for faq in matched_faqs:
@@ -149,98 +122,81 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
                 if similarity > 0.85:  # 類似度が0.85以上のものを収集
                     relevant_faqs.append((faq, similarity))
 
-            # 類似度の高い順にソート
+            # 類似度の高い順にソート（最も関連性の高いFAQから順に処理）
             relevant_faqs.sort(key=lambda x: x[1], reverse=True)
-            logger.debug(f"関連するFAQが{len(relevant_faqs)}件見つかりました")
-        except Exception as e:
-            logger.error(f"FAQ類似度計算中にエラー: {str(e)}")
-            logger.error(traceback.format_exc())
-            message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
-            send_reply_with_retry(reply_token, message)
-            return message
 
-        # 過去の会話履歴を取得
-        conversation_history = "\n".join(
-            [f"ユーザー: {conv['user']}" if 'user' in conv else f"ボット: {conv['bot']}" 
-            for conv in USER_CONVERSATIONS[user_id][-10:]]
-        ) if USER_CONVERSATIONS[user_id] else "履歴なし"
+            # 過去の会話履歴を取得（最新5~10ターン分）
+            conversation_history = "\n".join(
+                [f"ユーザー: {conv['user']}" if 'user' in conv else f"ボット: {conv['bot']}" 
+                for conv in USER_CONVERSATIONS[user_id][-10:]]
+            ) if USER_CONVERSATIONS[user_id] else "履歴なし"
 
-        # FAQが1つ以上見つかった場合
-        if relevant_faqs:
-            try:
-                cleaned_faq_answers = "\n".join(
-                    [clean_html(faq['answer']) for faq, _ in relevant_faqs]
-                )
+            # FAQが1つ以上見つかった場合、それらを **要約・統合**
+            if relevant_faqs:
+                try:
+                    cleaned_faq_answers = "\n".join(
+                        [clean_html(faq['answer']) for faq, _ in relevant_faqs]
+                    )
 
+                    system_prompt = (
+                        f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
+                        f"---\n"
+                        f"{conversation_history}\n"
+                        f"---\n"
+                        f"ユーザーの最新の質問: {user_message}\n"
+                        f"以下のFAQの情報を **簡潔かつ手短に要約** して、分かりやすい回答を作成してください。\n"
+                        f"FAQの内容:\n"
+                        f"{cleaned_faq_answers}"
+                    )
+                    logger.debug("FAQから回答を生成します")
+                except Exception as e:
+                    logger.error(f"FAQ回答準備中にエラー: {str(e)}")
+                    logger.error(traceback.format_exc())
+                    message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
+                    send_reply_with_retry(reply_token, message)
+                    return message
+
+                reply = get_openai_reply(user_message, system_prompt)
+
+            # FAQで見つからなかった場合は、履歴を考慮して OpenAI に質問
+            else:
                 system_prompt = (
                     f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
                     f"---\n"
                     f"{conversation_history}\n"
                     f"---\n"
                     f"ユーザーの最新の質問: {user_message}\n"
-                    f"以下のFAQの情報を **簡潔かつ手短に要約** して、分かりやすい回答を作成してください。\n"
-                    f"FAQの内容:\n"
-                    f"{cleaned_faq_answers}"
+                    f"過去の会話を踏まえて、自然な返答をしてください。"
+                    f"接客サービスの内容に関係なさそうな場合はその件には答えなくていいです。"
+                    f"相手の質問が曖昧な場合は聞き返して下さい。"
+                    f"内容について曖昧な場合は答えないでサポートへ問い合わせを促して下さい。"
+                    f"雑な回答は避け、サポートへの問い合わせを促して下さい。"
+                    f"基本的に相手は弊社のキャストです。よって、サービスについての質問しかしてこない前提です。"
                 )
-                logger.debug("FAQから回答を生成します")
+                logger.debug("一般的な回答を生成します")
+
+            # OpenAIから回答を取得
+            try:
+                reply = get_openai_reply(user_message, system_prompt)
+                logger.debug(f"OpenAIから回答を取得しました: {reply[:50]}...")
             except Exception as e:
-                logger.error(f"FAQ回答準備中にエラー: {str(e)}")
+                logger.error(f"OpenAIからの回答取得中にエラー: {str(e)}")
                 logger.error(traceback.format_exc())
-                message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
+                message = "現在、サービスが込み合っています。しばらくしてから再度お試しください。"
                 send_reply_with_retry(reply_token, message)
                 return message
 
-        # FAQで見つからなかった場合
-        else:
-            system_prompt = (
-                f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
-                f"---\n"
-                f"{conversation_history}\n"
-                f"---\n"
-                f"ユーザーの最新の質問: {user_message}\n"
-                f"過去の会話を踏まえて、自然な返答をしてください。"
-                f"接客サービスの内容に関係なさそうな場合はその件には答えなくていいです。"
-                f"相手の質問が曖昧な場合は聞き返して下さい。"
-                f"内容について曖昧な場合は答えないでサポートへ問い合わせを促して下さい。"
-                f"雑な回答は避け、サポートへの問い合わせを促して下さい。"
-                f"基本的に相手は弊社のキャストです。よって、サービスについての質問しかしてこない前提です。"
-            )
-            logger.debug("一般的な回答を生成します")
+            # 履歴に Bot の回答も追加
+            USER_CONVERSATIONS[user_id].append({"bot": reply})
 
-        # OpenAIから回答を取得
-        try:
-            reply = get_openai_reply(user_message, system_prompt)
-            logger.debug(f"OpenAIから回答を取得しました: {reply[:50]}...")
+            # LINEへメッセージ送信
+            send_line_reply(reply_token, reply)
+
+            return reply
+
         except Exception as e:
-            logger.error(f"OpenAIからの回答取得中にエラー: {str(e)}")
-            logger.error(traceback.format_exc())
-            message = "現在、サービスが込み合っています。しばらくしてから再度お試しください。"
-            send_reply_with_retry(reply_token, message)
-            return message
-
-        # 履歴に Bot の回答も追加
-        USER_CONVERSATIONS[user_id].append({"bot": reply})
-
-        # LINEへメッセージ送信
-        send_result = send_reply_with_retry(reply_token, reply)
-        
-        if not send_result:
-            logger.error("3回の再試行後もLINEへの送信が失敗しました")
-            return "LINEへの送信が失敗しました。"
-        
-        logger.info(f"FAQ検索処理完了: 処理時間={time.time() - start_time:.2f}秒")
-        return reply
-
-    except Exception as e:
-        logger.error(f"FAQ検索中に予期せぬエラー: {str(e)}")
-        logger.error(traceback.format_exc())
-        try:
-            message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
-            send_reply_with_retry(reply_token, message)
-        except Exception as inner_e:
-            logger.error(f"エラー通知送信中にさらにエラー: {str(inner_e)}")
-            logger.error(traceback.format_exc())
-        return "FAQ検索中にエラーが発生しました。"
+            print(f" FAQ検索中にエラー: {e}")
+            return "FAQ検索中にエラーが発生しました。"
 
 # LINEへの送信を再試行する関数
 def send_reply_with_retry(reply_token, message, max_retries=3, retry_delay=1):

@@ -9,15 +9,22 @@ __pycache__/
 venv/
 set_github_secrets.sh
 
-# AWS関連ファイル
+# AWSu95a2u9023u30d5u30a1u30a4u30eb
 task-definition.json
+task-definition-dual-port.json
+task-definition-updated.json
+task-definition-new.json
+task-definition-secure.json
 *.tfstate
 *.tfstate.backup
 .terraform/
 terraform.tfvars
 aws-credentials.json
 
-# その他の機密情報
+# backupu30c7u30a3u30ecu30afu30c8u30ea
+backup/
+
+# u305du306eu4ed6u306eu6a5fu5bc6u60c5u5831
 *credentials*
 *secret*
 *api-key*

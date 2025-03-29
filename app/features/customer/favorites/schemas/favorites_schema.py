@@ -24,7 +24,7 @@ class FavoriteResponse(FavoriteBase):
     cast_info: Optional[CastInfo] = None
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class FavoriteList(BaseModel):
     favorites: List[FavoriteResponse]
