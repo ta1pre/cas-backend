@@ -121,82 +121,88 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
                 similarity = cosine_similarity(user_embedding, faq_embedding)
                 if similarity > 0.85:  # 類似度が0.85以上のものを収集
                     relevant_faqs.append((faq, similarity))
+        except Exception as e:
+            logger.error(f"FAQの類似度計算中にエラー: {str(e)}")
+            logger.error(traceback.format_exc())
+            message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
+            send_reply_with_retry(reply_token, message)
+            return message
 
-            # 類似度の高い順にソート（最も関連性の高いFAQから順に処理）
-            relevant_faqs.sort(key=lambda x: x[1], reverse=True)
+        # 類似度の高い順にソート（最も関連性の高いFAQから順に処理）
+        relevant_faqs.sort(key=lambda x: x[1], reverse=True)
 
-            # 過去の会話履歴を取得（最新5~10ターン分）
-            conversation_history = "\n".join(
-                [f"ユーザー: {conv['user']}" if 'user' in conv else f"ボット: {conv['bot']}" 
-                for conv in USER_CONVERSATIONS[user_id][-10:]]
-            ) if USER_CONVERSATIONS[user_id] else "履歴なし"
+        # 過去の会話履歴を取得（最新5~10ターン分）
+        conversation_history = "\n".join(
+            [f"ユーザー: {conv['user']}" if 'user' in conv else f"ボット: {conv['bot']}" 
+            for conv in USER_CONVERSATIONS[user_id][-10:]]
+        ) if USER_CONVERSATIONS[user_id] else "履歴なし"
 
-            # FAQが1つ以上見つかった場合、それらを **要約・統合**
-            if relevant_faqs:
-                try:
-                    cleaned_faq_answers = "\n".join(
-                        [clean_html(faq['answer']) for faq, _ in relevant_faqs]
-                    )
+        # FAQが1つ以上見つかった場合、それらを **要約・統合**
+        if relevant_faqs:
+            try:
+                cleaned_faq_answers = "\n".join(
+                    [clean_html(faq['answer']) for faq, _ in relevant_faqs]
+                )
 
-                    system_prompt = (
-                        f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
-                        f"---\n"
-                        f"{conversation_history}\n"
-                        f"---\n"
-                        f"ユーザーの最新の質問: {user_message}\n"
-                        f"以下のFAQの情報を **簡潔かつ手短に要約** して、分かりやすい回答を作成してください。\n"
-                        f"FAQの内容:\n"
-                        f"{cleaned_faq_answers}"
-                    )
-                    logger.debug("FAQから回答を生成します")
-                except Exception as e:
-                    logger.error(f"FAQ回答準備中にエラー: {str(e)}")
-                    logger.error(traceback.format_exc())
-                    message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
-                    send_reply_with_retry(reply_token, message)
-                    return message
-
-                reply = get_openai_reply(user_message, system_prompt)
-
-            # FAQで見つからなかった場合は、履歴を考慮して OpenAI に質問
-            else:
                 system_prompt = (
                     f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
                     f"---\n"
                     f"{conversation_history}\n"
                     f"---\n"
                     f"ユーザーの最新の質問: {user_message}\n"
-                    f"過去の会話を踏まえて、自然な返答をしてください。"
-                    f"接客サービスの内容に関係なさそうな場合はその件には答えなくていいです。"
-                    f"相手の質問が曖昧な場合は聞き返して下さい。"
-                    f"内容について曖昧な場合は答えないでサポートへ問い合わせを促して下さい。"
-                    f"雑な回答は避け、サポートへの問い合わせを促して下さい。"
-                    f"基本的に相手は弊社のキャストです。よって、サービスについての質問しかしてこない前提です。"
+                    f"以下のFAQの情報を **簡潔かつ手短に要約** して、分かりやすい回答を作成してください。\n"
+                    f"FAQの内容:\n"
+                    f"{cleaned_faq_answers}"
                 )
-                logger.debug("一般的な回答を生成します")
-
-            # OpenAIから回答を取得
-            try:
-                reply = get_openai_reply(user_message, system_prompt)
-                logger.debug(f"OpenAIから回答を取得しました: {reply[:50]}...")
+                logger.debug("FAQから回答を生成します")
             except Exception as e:
-                logger.error(f"OpenAIからの回答取得中にエラー: {str(e)}")
+                logger.error(f"FAQ回答準備中にエラー: {str(e)}")
                 logger.error(traceback.format_exc())
-                message = "現在、サービスが込み合っています。しばらくしてから再度お試しください。"
+                message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
                 send_reply_with_retry(reply_token, message)
                 return message
 
-            # 履歴に Bot の回答も追加
-            USER_CONVERSATIONS[user_id].append({"bot": reply})
+            reply = get_openai_reply(user_message, system_prompt)
 
-            # LINEへメッセージ送信
-            send_line_reply(reply_token, reply)
+        # FAQで見つからなかった場合は、履歴を考慮して OpenAI に質問
+        else:
+            system_prompt = (
+                f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
+                f"---\n"
+                f"{conversation_history}\n"
+                f"---\n"
+                f"ユーザーの最新の質問: {user_message}\n"
+                f"過去の会話を踏まえて、自然な返答をしてください。"
+                f"接客サービスの内容に関係なさそうな場合はその件には答えなくていいです。"
+                f"相手の質問が曖昧な場合は聞き返して下さい。"
+                f"内容について曖昧な場合は答えないでサポートへ問い合わせを促して下さい。"
+                f"雑な回答は避け、サポートへの問い合わせを促して下さい。"
+                f"基本的に相手は弊社のキャストです。よって、サービスについての質問しかしてこない前提です。"
+            )
+            logger.debug("一般的な回答を生成します")
 
-            return reply
-
+        # OpenAIから回答を取得
+        try:
+            reply = get_openai_reply(user_message, system_prompt)
+            logger.debug(f"OpenAIから回答を取得しました: {reply[:50]}...")
         except Exception as e:
-            print(f" FAQ検索中にエラー: {e}")
-            return "FAQ検索中にエラーが発生しました。"
+            logger.error(f"OpenAIからの回答取得中にエラー: {str(e)}")
+            logger.error(traceback.format_exc())
+            message = "現在、サービスが込み合っています。しばらくしてから再度お試しください。"
+            send_reply_with_retry(reply_token, message)
+            return message
+
+        # 履歴に Bot の回答も追加
+        USER_CONVERSATIONS[user_id].append({"bot": reply})
+
+        # LINEへメッセージ送信
+        send_line_reply(reply_token, reply)
+
+        return reply
+
+    except Exception as e:
+        print(f" FAQ検索中にエラー: {e}")
+        return "FAQ検索中にエラーが発生しました。"
 
 # LINEへの送信を再試行する関数
 def send_reply_with_retry(reply_token, message, max_retries=3, retry_delay=1):
