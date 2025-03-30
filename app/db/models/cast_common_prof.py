@@ -11,8 +11,8 @@ def jst_now():
 class CastCommonProf(Base):
     __tablename__ = "cast_common_prof"
 
-    cast_id = Column(Integer, primary_key=True, nullable=False)  # ✅ cast_id は必須
-    cast_type = Column(Enum('A', 'B', 'AB', create_constraint=True), nullable=True, default=None)  # ✅ ENUM 変更
+    cast_id = Column(Integer, primary_key=True, nullable=False)  # cast_id は必須
+    cast_type = Column(Enum('A', 'B', 'AB', create_constraint=True), nullable=True, default=None)  # ENUM 変更
     rank_id = Column(Integer, ForeignKey("cast_rank.id", ondelete="SET NULL"), nullable=True)
     name = Column(String(255), nullable=True)
     age = Column(Integer, nullable=True)

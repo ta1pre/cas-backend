@@ -73,3 +73,11 @@ master_router.include_router(reserve_router, prefix="/reserve", tags=["Reserve"]
 # 駅の距離を計算！ディレクトリ「_駅の距離」　INSERT DISTANCE ルーター（新規）
 # from app.features.insertDistances.insert_distance_router import insert_distance_router
 # master_router.include_router(insert_distance_router, prefix="/insert-distance", tags=["Insert Distance"])
+
+# Cast Profile (New)
+from app.features.cast.prof.endpoints.prof_routers import prof_router
+master_router.include_router(
+    prof_router,  
+    prefix="/cast/prof",
+    tags=["Cast Profile"]
+)  
