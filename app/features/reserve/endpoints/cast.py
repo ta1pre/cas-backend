@@ -118,6 +118,7 @@ def edit_reservation_endpoint(request: CastReservationEditRequest, db: Session =
     print(f"DEBUG - [編集API] キャストID: {request.cast_id}")
     print(f"DEBUG - [編集API] 選択オプション: {request.option_ids}")
     print(f"DEBUG - [編集API] カスタムオプション: {request.custom_options}")
+    print(f"DEBUG - [編集API] 交通費: {request.transportation_fee}")
     
     # カスタムオプションの詳細をログ出力
     for i, opt in enumerate(request.custom_options):

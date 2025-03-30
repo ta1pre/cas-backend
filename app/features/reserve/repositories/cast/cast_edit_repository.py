@@ -46,7 +46,9 @@ def update_reservation(db: Session, reservation_data: dict):
         
         # 交通費を更新
         if "transportation_fee" in reservation_data:
+            print(f"DEBUG - [リポジトリ層] 交通費を更新: {reservation_data['transportation_fee']}")
             reservation.traffic_fee = reservation_data["transportation_fee"]
+            print(f"DEBUG - [リポジトリ層] 更新後の交通費: {reservation.traffic_fee}")
         
         # locationの処理
         # 1. 数値のみ（駅ID）の場合
