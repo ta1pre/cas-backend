@@ -30,10 +30,16 @@ def update_reservation(db: Session, reservation_data: dict):
         ResvReservation: 更新された予約情報
     """
     try:
+        # リポジトリ層の処理内容をDBログに残す（デバッグ用）
+        print(f"DEBUG - [リポジトリ層] リクエスト内容: {reservation_data}")
+        
         reservation = db.query(ResvReservation).filter(ResvReservation.id == reservation_data["reservation_id"]).first()
 
         if not reservation:
             raise ValueError(f"Reservation not found: {reservation_data['reservation_id']}")
+        
+        # 現在の交通費を更新
+        print(f"DEBUG - [リポジトリ層] 更新前の交通費: {reservation.traffic_fee}")
         
         # 予約情報を更新
         reservation.cast_id = reservation_data["cast_id"]
@@ -78,6 +84,9 @@ def update_reservation(db: Session, reservation_data: dict):
         
         db.commit()
         db.refresh(reservation)
+        
+        # コミット後の交通費を更新
+        print(f"DEBUG - [リポジトリ層] コミット後の交通費: {reservation.traffic_fee}")
         
         return reservation
     except Exception as e:
