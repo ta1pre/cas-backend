@@ -7,7 +7,8 @@ from app.db.models.cast_common_prof import CastCommonProf # For type hinting
 # 絶対パスでインポートに変更（同一ファイルからのインポートを避ける）
 from app.features.customer.area.service.station_service import get_nearest_stations
 from app.db.models.station import Station
-from typing import Dict, Any
+from app.db.models.prefectures import Prefecture
+from typing import Dict, Any, List
 import logging
 
 # ロガーの設定
@@ -59,6 +60,55 @@ def get_station_by_id(db: Session, station_id):
     logger.warning(f"駅が見つかりませんでした: {station_id}")
     return None
 
+# 都道府県IDまたは駅IDから都道府県名を取得する関数を定義
+def get_prefecture_names(db: Session, prefecture_ids: str) -> List[str]:
+    """都道府県IDまたは駅IDから都道府県名を取得する"""
+    logger.info(f"都道府県名取得開始: prefecture_ids={prefecture_ids}")
+    if not prefecture_ids:
+        logger.info("都道府県IDが空のため、空リストを返します")
+        return []
+    
+    # カンマ区切りの文字列をリストに変換
+    try:
+        id_list_str = [id_str.strip() for id_str in prefecture_ids.split(',') if id_str.strip()]
+        logger.info(f"分割後のID文字列一覧: {id_list_str}")
+        
+        # 結果を格納するリスト
+        result = []
+        
+        for id_str in id_list_str:
+            # 1. まず都道府県IDとして処理を試みる（1〜47の範囲）
+            try:
+                id_num = int(id_str)
+                if 1 <= id_num <= 47:  # 都道府県IDの範囲内
+                    prefecture = db.query(Prefecture).filter(Prefecture.id == id_num).first()
+                    if prefecture:
+                        result.append(prefecture.name)
+                        logger.info(f"都道府県ID {id_num} から都道府県名 {prefecture.name} を取得")
+                        continue
+            except ValueError:
+                pass
+            
+            # 2. 都道府県IDとして見つからない場合は駅IDとして処理
+            try:
+                # 駅IDとして処理
+                station = get_station_by_id(db, id_str)
+                if station and station.prefecture_id:
+                    # 駅の都道府県IDから都道府県名を取得
+                    prefecture = db.query(Prefecture).filter(Prefecture.id == station.prefecture_id).first()
+                    if prefecture:
+                        result.append(prefecture.name)
+                        logger.info(f"駅ID {id_str} から都道府県名 {prefecture.name} を取得")
+                        continue
+            except Exception as e:
+                logger.error(f"駅IDからの都道府県取得エラー: {e}")
+        
+        logger.info(f"最終的に取得した都道府県名: {result}")
+        return result
+    except Exception as e:
+        logger.error(f"都道府県名取得エラー: {e}")
+        return []
+
 def get_profile_service(db: Session, cast_id: int) -> Dict[str, Any]:
     """キャストプロフィール取得サービス"""
     profile = prof_repository.get_cast_prof(db, cast_id)
@@ -95,6 +145,12 @@ def get_profile_service(db: Session, cast_id: int) -> Dict[str, Any]:
         "created_at": profile.created_at,
         "updated_at": profile.updated_at,
     }
+    
+    # support_areaから都道府県名を取得
+    logger.info(f"support_area値: {profile.support_area}")
+    support_area_names = get_prefecture_names(db, profile.support_area)
+    logger.info(f"取得したsupport_area_names: {support_area_names}")
+    profile_dict["support_area_names"] = support_area_names
     
     # dispatch_prefectureに関する特別な処理
     # ログを出力するが同じ値を何度も取得しないよう注意
