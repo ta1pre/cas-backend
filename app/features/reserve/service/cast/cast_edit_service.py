@@ -61,7 +61,8 @@ def edit_reservation(
         "end_time": req.end_time,
         "location": req.location,
         "reservation_note": req.reservation_note,
-        "status": req.status
+        "status": req.status,
+        "transportation_fee": req.transportation_fee
     }
     updated_reservation = update_reservation(
         db,

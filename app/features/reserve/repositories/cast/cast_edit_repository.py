@@ -24,6 +24,7 @@ def update_reservation(db: Session, reservation_data: dict):
             - location: 場所
             - reservation_note: 予約メモ
             - status: ステータス
+            - transportation_fee: 交通費
 
     Returns:
         ResvReservation: 更新された予約情報
@@ -42,6 +43,10 @@ def update_reservation(db: Session, reservation_data: dict):
         reservation.location = reservation_data["location"]
         reservation.reservation_note = reservation_data["reservation_note"]
         reservation.status = reservation_data["status"]
+        
+        # 交通費を更新
+        if "transportation_fee" in reservation_data:
+            reservation.traffic_fee = reservation_data["transportation_fee"]
         
         # locationの処理
         # 1. 数値のみ（駅ID）の場合

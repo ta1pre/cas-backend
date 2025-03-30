@@ -21,6 +21,7 @@ class CastReservationEditRequest(BaseModel):
     status: str = Field("waiting_user_confirm", description="予約ステータス")
     option_ids: List[int] = Field(default=[], description="選択オプションIDリスト")
     custom_options: List[CustomOption] = Field(default=[], description="カスタムオプションリスト")
+    transportation_fee: Optional[int] = Field(0, description="交通費")
 
 
 class CastReservationEditResponse(BaseModel):
