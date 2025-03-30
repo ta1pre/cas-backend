@@ -15,6 +15,7 @@ class CastReservationDetailResponse(BaseModel):
     """予約詳細レスポンススキーマ"""
     reservation_id: int
     user_name: str
+    course_id: int
     course_name: str
     start_time: datetime
     end_time: datetime

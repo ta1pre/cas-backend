@@ -24,22 +24,15 @@ def update_reservation(db: Session, reservation_data: dict):
             - location: 場所
             - reservation_note: 予約メモ
             - status: ステータス
-            - transportation_fee: 交通費
 
     Returns:
         ResvReservation: 更新された予約情報
     """
     try:
-        # リポジトリ層の処理内容をDBログに残す（デバッグ用）
-        print(f"DEBUG - [リポジトリ層] リクエスト内容: {reservation_data}")
-        
         reservation = db.query(ResvReservation).filter(ResvReservation.id == reservation_data["reservation_id"]).first()
 
         if not reservation:
             raise ValueError(f"Reservation not found: {reservation_data['reservation_id']}")
-        
-        # 現在の交通費を更新
-        print(f"DEBUG - [リポジトリ層] 更新前の交通費: {reservation.traffic_fee}")
         
         # 予約情報を更新
         reservation.cast_id = reservation_data["cast_id"]
@@ -49,12 +42,9 @@ def update_reservation(db: Session, reservation_data: dict):
         reservation.location = reservation_data["location"]
         reservation.reservation_note = reservation_data["reservation_note"]
         reservation.status = reservation_data["status"]
-        
-        # 交通費を更新
+        # ★ 追加: 交通費を更新
         if "transportation_fee" in reservation_data:
-            print(f"DEBUG - [リポジトリ層] 交通費を更新: {reservation_data['transportation_fee']}")
             reservation.traffic_fee = reservation_data["transportation_fee"]
-            print(f"DEBUG - [リポジトリ層] 更新後の交通費: {reservation.traffic_fee}")
         
         # locationの処理
         # 1. 数値のみ（駅ID）の場合
@@ -84,9 +74,6 @@ def update_reservation(db: Session, reservation_data: dict):
         
         db.commit()
         db.refresh(reservation)
-        
-        # コミット後の交通費を更新
-        print(f"DEBUG - [リポジトリ層] コミット後の交通費: {reservation.traffic_fee}")
         
         return reservation
     except Exception as e:

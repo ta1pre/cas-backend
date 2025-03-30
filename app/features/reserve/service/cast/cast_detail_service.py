@@ -20,6 +20,7 @@ def get_reservation_detail(db: Session, reservation_id: int, cast_id: int) -> Ca
     {
         "reservation_id": int,
         "user_name": str,
+        "course_id": int,
         "course_name": str,
         "start_time": datetime,
         "end_time": datetime,
@@ -33,6 +34,7 @@ def get_reservation_detail(db: Session, reservation_id: int, cast_id: int) -> Ca
         "options_fee": int,      # オプション料金合計
         "traffic_fee": int,      # 交通費
         "reservation_fee": int,  # 予約基本料金
+        "course_fee": int,       # コース料金（キャスト報酬）
         "total_points": int,     # 合計金額（ポイント）
         
         # オプション詳細
@@ -47,6 +49,9 @@ def get_reservation_detail(db: Session, reservation_id: int, cast_id: int) -> Ca
         ],
         
         "status": str,
+        "cast_label": str,
+        "description": str,
+        "color_code": str,
         "reservation_note": str,
         "cancel_reason": str
     }
@@ -56,6 +61,7 @@ def get_reservation_detail(db: Session, reservation_id: int, cast_id: int) -> Ca
         select(
             ResvReservation.id.label("reservation_id"),
             User.nick_name.label("user_name"),
+            ResvReservation.course_id, # 追加
             PointDetailsCourse.course_name,
             PointDetailsCourse.cast_reward_points.label("course_fee"),  # コース料金（キャスト報酬）
             ResvReservation.start_time,
@@ -163,6 +169,7 @@ def get_reservation_detail(db: Session, reservation_id: int, cast_id: int) -> Ca
     response = CastReservationDetailResponse(
         reservation_id=reservation["reservation_id"],
         user_name=reservation["user_name"],
+        course_id=reservation["course_id"], # 追加
         course_name=reservation["course_name"],
         start_time=reservation["start_time"],
         end_time=reservation["end_time"],

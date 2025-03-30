@@ -62,7 +62,8 @@ def edit_reservation(
         "location": req.location,
         "reservation_note": req.reservation_note,
         "status": req.status,
-        "transportation_fee": req.transportation_fee
+        # ★ 追加: 交通費を更新データに含める
+        "transportation_fee": req.transportation_fee 
     }
     updated_reservation = update_reservation(
         db,
