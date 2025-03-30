@@ -21,7 +21,7 @@ customer_router = APIRouter()
 
 @customer_router.post("/offer", response_model=OfferReservationResponse)
 def offer_reservation(data: OfferReservationCreate, db: Session = Depends(get_db)):
-    print("📡 受け取ったデータ:", data.model_dump())  # ✅ ここで受信データを確認
+    print("📡 受け取ったデータ:", data.dict())  # ✅ model_dump() を dict() に変更
     return create_reservation(db, data)
 
 
