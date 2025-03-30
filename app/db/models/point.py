@@ -26,12 +26,12 @@ class PointTransaction(Base):
     rule_id = Column(Integer, ForeignKey("pnt_details_rules.id", ondelete="SET NULL"), nullable=True)  # ✅ ルールID（外部キー）
     related_id = Column(Integer, nullable=True)  # ✅ 関連ID（予約IDなど）
     related_table = Column(Enum("reservation", "event", "coupon", "purchase", "manual_adjustment", name="related_table_enum"), nullable=True)  # ✅ 関連テーブル種別
-    transaction_type = Column(Enum("deposit", "refund", "release", "event_bonus", "manual_adjustment", "purchase", name="transaction_type_enum"), nullable=False)  # ✅ 取引タイプ
+    transaction_type = Column(Enum("deposit", "refund", "release", "event_bonus", "manual_adjustment", "purchase", "reservation_payment", name="transaction_type_enum"), nullable=False)  # ✅ 取引タイプ
     point_change = Column(Integer, nullable=False)  # ✅ 変更ポイント数
     point_source = Column(Enum("regular", "bonus", name="point_source_enum"), nullable=False, default="regular")  # ✅ ポイント種別
     balance_after = Column(Integer, nullable=False)  # ✅ 取引後の残高
+    description = Column(String(255), nullable=True)  # ✅ 取引の説明（履歴表示用）
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
 
     # ✅ ルールとのリレーション
     rule = relationship("PointRule", backref="transactions")
