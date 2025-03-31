@@ -27,6 +27,11 @@ def update_profile(request: ProfileUpdateRequest, db: Session = Depends(get_db))
     # user_type を更新
     user.user_type = request.user_type
     user.sex = "female" if request.user_type == "cast" else "male"
+    
+    # キャストタイプを設定（新規追加）
+    if request.user_type == "cast" and request.cast_type:
+        user.cast_type = request.cast_type
+    
     db.commit()
 
     # ✅ customer の場合、nick_name を更新し、CastCommonProf + 画像を削除
@@ -64,12 +69,15 @@ def update_profile(request: ProfileUpdateRequest, db: Session = Depends(get_db))
         cast_profile.name = request.profile_data.get("cast_name")
         cast_profile.age = request.profile_data.get("age")
         cast_profile.height = request.profile_data.get("height")
+        # キャストタイプを設定（新規追加）
+        if request.cast_type:
+            cast_profile.cast_type = 'A' if request.cast_type == 'cas' else 'B'
     else:
         # 新規作成 (rank_id を 1 に設定)
         try:
             cast_profile = CastCommonProf(
                 cast_id=request.user_id,
-                cast_type='A',
+                cast_type='A' if not request.cast_type or request.cast_type == 'cas' else 'B',
                 rank_id=1,
                 name=request.profile_data.get("cast_name"),
                 age=request.profile_data.get("age"),
@@ -92,7 +100,8 @@ def update_profile(request: ProfileUpdateRequest, db: Session = Depends(get_db))
         "cast_name": cast_profile.name,
         "age": cast_profile.age,
         "height": cast_profile.height,
-        "rank_id": cast_profile.rank_id
+        "rank_id": cast_profile.rank_id,
+        "cast_type": cast_profile.cast_type
     }
 
 #ステータス確認
