@@ -81,3 +81,7 @@ master_router.include_router(
     prefix="/cast/prof",
     tags=["Cast Profile"]
 )  
+
+# POSTS - ミニブログ機能
+from app.features.posts.endpoints.post_routers import posts_router
+master_router.include_router(posts_router, prefix="/posts", tags=["Posts"])

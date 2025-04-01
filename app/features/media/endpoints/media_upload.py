@@ -130,3 +130,53 @@ def delete_media(
 
     print("[INFO] ✅ 画像削除成功")
     return {"status": "success", "message": "S3とDBのメディアが削除されました。"}
+
+# メディアのターゲット情報を更新するエンドポイント
+class UpdateMediaTargetRequest(BaseModel):
+    media_id: int = Field(..., description="メディアID")
+    target_type: str = Field(..., description="ターゲットタイプ（例：post, profile）")
+    target_id: int = Field(..., description="ターゲットID（例：投稿ID）")
+
+@router.post("/update-target")
+def update_media_target(
+    request: UpdateMediaTargetRequest,
+    db: Session = Depends(get_db),
+    current_user: int = Depends(get_current_user)
+):
+    """
+    メディアのターゲット情報（target_typeとtarget_id）を更新する
+    主に、仮IDでアップロードした画像を実際の投稿IDに紐付ける際に使用
+    """
+    try:
+        # メディアIDから該当レコードを検索
+        media = db.query(MediaFile).filter(MediaFile.id == request.media_id).first()
+        
+        if not media:
+            raise HTTPException(status_code=404, detail=f"メディアID {request.media_id} が見つかりません")
+        
+        # ターゲット情報を更新
+        media.target_type = request.target_type
+        media.target_id = request.target_id
+        
+        db.commit()
+        db.refresh(media)
+        
+        print(f"[INFO] ✅ メディア(ID: {media.id})のターゲット情報を更新: {media.target_type}/{media.target_id}")
+        return {
+            "status": "success", 
+            "message": "メディアのターゲット情報を更新しました",
+            "media": {
+                "id": media.id,
+                "file_url": media.file_url,
+                "target_type": media.target_type,
+                "target_id": media.target_id
+            }
+        }
+        
+    except HTTPException as he:
+        # HTTPExceptionはそのまま再送
+        raise he
+    except Exception as e:
+        db.rollback()
+        print(f"[ERROR] メディアのターゲット情報更新エラー: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"メディアのターゲット情報更新に失敗しました: {str(e)}")
