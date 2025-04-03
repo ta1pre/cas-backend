@@ -23,6 +23,8 @@ class CastReservationEditRequest(BaseModel):
     custom_options: List[CustomOption] = Field(default=[], description="カスタムオプションリスト")
     # ★ 追加: 交通費フィールド
     transportation_fee: Optional[int] = Field(None, description="交通費") 
+    # ★ 追加: オプション合計金額フィールド
+    option_points: Optional[int] = Field(None, description="オプション合計金額")
 
 
 class CastReservationEditResponse(BaseModel):

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 from sqlalchemy import func
 
@@ -8,7 +8,6 @@ from app.db.models.resv_status_history import ResvStatusHistory
 from app.db.models.resv_reservation_option import ResvReservationOption
 from app.features.reserve.schemas.cast.cast_edit_schema import CustomOption
 from app.features.reserve.repositories.common.price_calculator import calculate_reservation_points
-
 
 from app.db.models.station import Station
 
@@ -37,9 +36,58 @@ def update_reservation(db: Session, reservation_data: dict):
             raise ValueError(f"Reservation not found: {reservation_data['reservation_id']}")
         
         # 予約情報を更新
+        print(f"DEBUG - [リポジトリ層] 予約更新開始: reservation_id={reservation_data['reservation_id']}")
+        print(f"DEBUG - [リポジトリ層] 更新内容: {reservation_data}")
+        
         reservation.cast_id = reservation_data["cast_id"]
+        print(f"DEBUG - [リポジトリ層] cast_idを更新: {reservation.cast_id}")
+        
         reservation.course_id = reservation_data["course_id"]  # コースIDを更新
-        reservation.start_time = reservation_data["start_time"]
+        print(f"DEBUG - [リポジトリ層] course_idを更新: {reservation.course_id}")
+        
+        # start_timeの処理
+        if isinstance(reservation_data["start_time"], str):
+            # YYYY-MM-DD HH:MM:SS 形式の文字列をdatetimeに変換
+            # これは日本時間として解釈される
+            try:
+                start_time_local = datetime.strptime(reservation_data["start_time"], '%Y-%m-%d %H:%M:%S')
+                print(f"DEBUG - [リポジトリ層] 受信したローカル時間文字列 start_time: {reservation_data['start_time']}")
+                print(f"DEBUG - [リポジトリ層] パースされたローカル start_time: {start_time_local}")
+                reservation.start_time = start_time_local
+            except ValueError as e:
+                print(f"ERROR - [リポジトリ層] start_timeのパースに失敗: {e}")
+                # エラー処理: 必要に応じてデフォルト値設定や例外送出を行う
+                raise ValueError(f"Invalid start_time format: {reservation_data['start_time']}") from e
+        else:
+            # すでにdatetimeオブジェクトの場合はそのまま使用 (通常はこのパスは通らないはず)
+            reservation.start_time = reservation_data["start_time"]
+            print(f"DEBUG - [リポジトリ層] datetimeオブジェクトのstart_time: {reservation.start_time}")
+            
+        print(f"DEBUG - [リポジトリ層] start_timeを更新 (DB保存用): {reservation.start_time}")
+        
+        # end_timeの処理
+        if "end_time" in reservation_data and reservation_data["end_time"]:
+            if isinstance(reservation_data["end_time"], str):
+                # YYYY-MM-DD HH:MM:SS 形式の文字列をdatetimeに変換
+                try:
+                    end_time_local = datetime.strptime(reservation_data["end_time"], '%Y-%m-%d %H:%M:%S')
+                    print(f"DEBUG - [リポジトリ層] 受信したローカル時間文字列 end_time: {reservation_data['end_time']}")
+                    print(f"DEBUG - [リポジトリ層] パースされたローカル end_time: {end_time_local}")
+                    reservation.end_time = end_time_local
+                except ValueError as e:
+                    print(f"ERROR - [リポジトリ層] end_timeのパースに失敗: {e}")
+                    raise ValueError(f"Invalid end_time format: {reservation_data['end_time']}") from e
+            else:
+                # すでにdatetimeオブジェクトの場合はそのまま使用
+                reservation.end_time = reservation_data["end_time"]
+                print(f"DEBUG - [リポジトリ層] datetimeオブジェクトのend_time: {reservation.end_time}")
+                
+            print(f"DEBUG - [リポジトリ層] end_timeを更新 (DB保存用): {reservation.end_time}")
+            # end_timeが指定されている場合は、後で計算したend_timeを使用しない
+            use_specified_end_time = True
+        else:
+            use_specified_end_time = False
+            
         reservation.location = reservation_data["location"]
         reservation.reservation_note = reservation_data["reservation_note"]
         reservation.status = reservation_data["status"]
@@ -51,10 +99,16 @@ def update_reservation(db: Session, reservation_data: dict):
             reservation.traffic_fee = traffic_fee
         
         # オプションの合計を計算
-        option_points = db.query(func.sum(ResvReservationOption.option_price)).filter(
-            ResvReservationOption.reservation_id == reservation_data["reservation_id"],
-            ResvReservationOption.status == "active"
-        ).scalar() or 0
+        # サービス層から渡されたoption_pointsがあればそれを使用し、なければDBから計算する
+        if "option_points" in reservation_data and reservation_data["option_points"] is not None:
+            option_points = reservation_data["option_points"]
+            print(f"DEBUG - [リポジトリ層] サービス層から渡されたoption_points: {option_points}")
+        else:
+            option_points = db.query(func.sum(ResvReservationOption.option_price)).filter(
+                ResvReservationOption.reservation_id == reservation_data["reservation_id"],
+                ResvReservationOption.status == "active"
+            ).scalar() or 0
+            print(f"DEBUG - [リポジトリ層] DBから計算したoption_points: {option_points}")
         
         # 料金計算
         points_data = calculate_reservation_points(
@@ -71,13 +125,13 @@ def update_reservation(db: Session, reservation_data: dict):
         reservation.reservation_fee = points_data['reservation_fee']
         reservation.total_points = points_data['total_points']
         reservation.cast_reward_points = points_data['cast_reward_points']
-        reservation.end_time = reservation.start_time + points_data['end_time_delta']
         
-        # デバッグ
-        print(f"📝 予約情報更新: reservation_id={reservation_data['reservation_id']}, course_id={reservation.course_id}")
-        print(f"📝 料金情報: fee_type={points_data['fee_type']}, base_fee={points_data['base_fee']}, reservation_fee={points_data['reservation_fee']}")
-        print(f"📝 ポイント計算: course_base_points={points_data['course_base_points']}, course_points={points_data['course_points']}, total_points={points_data['total_points']}")
-        print(f"📝 キャスト報酬: cast_reward_points={points_data['cast_reward_points']} (reservation_fee={points_data['reservation_fee']} + option_points={option_points} + traffic_fee={traffic_fee})")
+        # end_timeを指定されなかった場合、計算したend_timeを使用
+        if not use_specified_end_time:
+            reservation.end_time = reservation.start_time + points_data['end_time_delta']
+            print(f"DEBUG - end_timeを計算した場合: {reservation.end_time}")
+        else:
+            print(f"DEBUG - 指定されたend_timeを使用: {reservation.end_time}")
         
         # locationの処理
         # 1. 数値のみ（駅ID）の場合
@@ -105,12 +159,20 @@ def update_reservation(db: Session, reservation_data: dict):
                 # フォーマットが不正な場合は位置情報更新をスキップ
                 pass
         
-        db.commit()
-        db.refresh(reservation)
+        # デバッグ
+        print(f"DEBUG - [リポジトリ層] 更新処理の最終段階")
+        print(f"DEBUG - [リポジトリ層] 更新後のデータ: start_time={reservation.start_time}, end_time={reservation.end_time}")
+        print(f"DEBUG - [リポジトリ層] 更新後のoption_points: {reservation.option_points}")
+        
+        # リポジトリ層ではコミットせず、データの更新のみを行う
+        # サービス層でコミットを行うため、ここではコミットしない
+        print(f"DEBUG - [リポジトリ層] 予約データ更新完了（コミットはサービス層で実行）: reservation_id={reservation_data['reservation_id']}")
         
         return reservation
     except Exception as e:
-        db.rollback()
+        print(f"ERROR - [リポジトリ層] 予約更新エラー: {str(e)}")
+        # ロールバックもサービス層で行うため、ここではロールバックしない
+        print(f"ERROR - [リポジトリ層] エラー発生（ロールバックはサービス層で実行）")
         raise e
 
 
@@ -201,11 +263,18 @@ def update_reservation_options(
             # 名前を追跡リストに追加
             custom_option_names.add(custom.name)
             
-            print(f"DEBUG - [リポジトリ層] カスタムオプション追加 #{i+1}: 名前={custom.name}, 価格={custom.price}")
+            # 価格を確実に数値型に変換
+            try:
+                option_price = int(custom.price)
+            except (ValueError, TypeError):
+                print(f"ERROR - [リポジトリ層] カスタムオプション価格変換エラー: 名前={custom.name}, 価格={custom.price}, 型={type(custom.price)}")
+                option_price = 0  # デフォルト値を設定
+            
+            print(f"DEBUG - [リポジトリ層] カスタムオプション追加 #{i+1}: 名前={custom.name}, 価格={option_price} (変換後)")
             option = ResvReservationOption(
                 reservation_id=reservation_id,
                 option_id=0,  # カスタムオプションの場合は0を設定
-                option_price=custom.price,
+                option_price=option_price,  # 変換後の価格を使用
                 custom_name=custom.name,
                 status="active"
             )
@@ -220,8 +289,8 @@ def update_reservation_options(
         print(f"DEBUG - [リポジトリ層] アクティブなオプション数: {len([o for o in all_options if o.status == 'active'])}個")
         print(f"DEBUG - [リポジトリ層] カスタムオプション数: {len([o for o in all_options if o.status == 'active' and o.option_id == 0])}個")
         
-        # コミット
-        db.commit()
+        # コミットはサービス層で行うため、ここではコミットしない
+        print(f"DEBUG - [リポジトリ層] オプション更新完了（コミットはサービス層で実行）: 予約ID={reservation_id}")
         
         # 予約情報を取得
         reservation = db.query(ResvReservation).filter(ResvReservation.id == reservation_id).first()
@@ -253,15 +322,14 @@ def update_reservation_options(
         reservation.total_points = points_data['total_points']
         reservation.cast_reward_points = points_data['cast_reward_points']
         
-        # コミット
-        db.commit()
-        
+        # コミットはサービス層で行うため、ここではコミットしない
         print(f"DEBUG - [リポジトリ層] オプション更新後の料金計算結果: total_points={points_data['total_points']}")
-        print(f"DEBUG - [リポジトリ層] オプション更新完了: コミット成功")
+        print(f"DEBUG - [リポジトリ層] オプション更新完了: コミットはサービス層で実行")
         return True
     except Exception as e:
         print(f"ERROR - [リポジトリ層] オプション更新中にエラー発生: {str(e)}")
-        db.rollback()
+        # ロールバックもサービス層で行うため、ここではロールバックしない
+        print(f"ERROR - [リポジトリ層] エラー発生（ロールバックはサービス層で実行）")
         return False
 
 
