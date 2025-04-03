@@ -1,11 +1,13 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import List, Optional
+from sqlalchemy import func
 
 from app.db.models.resv_reservation import ResvReservation
 from app.db.models.resv_status_history import ResvStatusHistory
 from app.db.models.resv_reservation_option import ResvReservationOption
 from app.features.reserve.schemas.cast.cast_edit_schema import CustomOption
+from app.features.reserve.repositories.common.price_calculator import calculate_reservation_points
 
 
 from app.db.models.station import Station
@@ -38,13 +40,44 @@ def update_reservation(db: Session, reservation_data: dict):
         reservation.cast_id = reservation_data["cast_id"]
         reservation.course_id = reservation_data["course_id"]  # コースIDを更新
         reservation.start_time = reservation_data["start_time"]
-        reservation.end_time = reservation_data["end_time"]
         reservation.location = reservation_data["location"]
         reservation.reservation_note = reservation_data["reservation_note"]
         reservation.status = reservation_data["status"]
-        # ★ 追加: 交通費を更新
+        
+        # 交通費を更新
+        traffic_fee = 0
         if "transportation_fee" in reservation_data:
-            reservation.traffic_fee = reservation_data["transportation_fee"]
+            traffic_fee = reservation_data["transportation_fee"]
+            reservation.traffic_fee = traffic_fee
+        
+        # オプションの合計を計算
+        option_points = db.query(func.sum(ResvReservationOption.option_price)).filter(
+            ResvReservationOption.reservation_id == reservation_data["reservation_id"],
+            ResvReservationOption.status == "active"
+        ).scalar() or 0
+        
+        # 料金計算
+        points_data = calculate_reservation_points(
+            db, 
+            reservation.course_id, 
+            reservation.cast_id, 
+            option_points, 
+            traffic_fee
+        )
+        
+        # 料金情報を更新
+        reservation.course_points = points_data['course_points']
+        reservation.option_points = option_points
+        reservation.reservation_fee = points_data['reservation_fee']
+        reservation.total_points = points_data['total_points']
+        reservation.cast_reward_points = points_data['cast_reward_points']
+        reservation.end_time = reservation.start_time + points_data['end_time_delta']
+        
+        # デバッグ
+        print(f"📝 予約情報更新: reservation_id={reservation_data['reservation_id']}, course_id={reservation.course_id}")
+        print(f"📝 料金情報: fee_type={points_data['fee_type']}, base_fee={points_data['base_fee']}, reservation_fee={points_data['reservation_fee']}")
+        print(f"📝 ポイント計算: course_base_points={points_data['course_base_points']}, course_points={points_data['course_points']}, total_points={points_data['total_points']}")
+        print(f"📝 キャスト報酬: cast_reward_points={points_data['cast_reward_points']} (reservation_fee={points_data['reservation_fee']} + option_points={option_points} + traffic_fee={traffic_fee})")
         
         # locationの処理
         # 1. 数値のみ（駅ID）の場合
@@ -189,6 +222,41 @@ def update_reservation_options(
         
         # コミット
         db.commit()
+        
+        # 予約情報を取得
+        reservation = db.query(ResvReservation).filter(ResvReservation.id == reservation_id).first()
+        if not reservation:
+            print(f"ERROR - [リポジトリ層] 予約情報取得エラー: ID={reservation_id}")
+            return False
+        
+        # オプションの合計を計算
+        option_points = db.query(func.sum(ResvReservationOption.option_price)).filter(
+            ResvReservationOption.reservation_id == reservation_id,
+            ResvReservationOption.status == "active"
+        ).scalar() or 0
+        
+        # 交通費を取得
+        traffic_fee = reservation.traffic_fee or 0
+        
+        # 料金計算
+        points_data = calculate_reservation_points(
+            db, 
+            reservation.course_id, 
+            reservation.cast_id, 
+            option_points, 
+            traffic_fee
+        )
+        
+        # 料金情報を更新
+        reservation.course_points = points_data['course_points']
+        reservation.option_points = option_points
+        reservation.total_points = points_data['total_points']
+        reservation.cast_reward_points = points_data['cast_reward_points']
+        
+        # コミット
+        db.commit()
+        
+        print(f"DEBUG - [リポジトリ層] オプション更新後の料金計算結果: total_points={points_data['total_points']}")
         print(f"DEBUG - [リポジトリ層] オプション更新完了: コミット成功")
         return True
     except Exception as e:

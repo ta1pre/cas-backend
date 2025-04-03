@@ -1,7 +1,7 @@
 # Cast Profile Schemas
 
 from pydantic import BaseModel, Field
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 from datetime import datetime
 
 class CastProfBase(BaseModel):
@@ -17,6 +17,7 @@ class CastProfBase(BaseModel):
     blood_type: Optional[str] = Field(None, max_length=10, description="血液型")
     hobby: Optional[str] = Field(None, max_length=255, description="趣味")
     reservation_fee: Optional[int] = Field(None, ge=0, description="予約料金") # マイナス値不可
+    reservation_fee_deli: Optional[int] = Field(None, ge=0, description="デリバリー用予約料金") # マイナス値不可
     self_introduction: Optional[str] = Field(None, max_length=255, description="自己紹介")
     job: Optional[str] = Field(None, max_length=255, description="職業")
     dispatch_prefecture: Optional[str] = Field(None, max_length=255, description="派遣可能都道府県")
@@ -25,13 +26,14 @@ class CastProfBase(BaseModel):
 class CastProfRead(CastProfBase):
     cast_id: int = Field(..., description="キャストID")
     rank_id: Optional[int] = Field(None, description="ランクID")
-    popularity: int = Field(..., description="人気度")
-    rating: float = Field(..., description="評価")
+    popularity: Optional[int] = Field(0, description="人気度")  
+    rating: Optional[float] = Field(0.0, description="評価")  
     is_active: Optional[int] = Field(None, description="アクティブ状態")
     available_at: Optional[datetime] = Field(None, description="利用可能日時")
     created_at: Optional[datetime] = Field(None, description="作成日時")
     updated_at: Optional[datetime] = Field(None, description="更新日時")
     station_name: Optional[str] = Field(None, description="駅名")  # 駅名フィールドを追加
+    support_area_names: Optional[List[str]] = Field(None, description="対応可能エリア名") # 追加
 
     class Config:
         orm_mode = True # SQLAlchemyモデルから自動変換

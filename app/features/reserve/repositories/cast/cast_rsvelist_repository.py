@@ -32,6 +32,7 @@ def get_cast_reservations(db: Session, cast_id: int, limit: int, offset: int):
             PointDetailsCourse.course_name,
             PointDetailsCourse.cost_points.label("course_price"),
             ResvReservation.traffic_fee,
+            ResvReservation.cast_reward_points,  # 追加: キャスト報酬ポイント
             ResvStatusDetail.color_code,
             ResvReservation.location,
             Station.name.label("station_name"),

@@ -134,6 +134,7 @@ def get_profile_service(db: Session, cast_id: int) -> Dict[str, Any]:
         "blood_type": profile.blood_type,
         "hobby": profile.hobby,
         "reservation_fee": profile.reservation_fee,
+        "reservation_fee_deli": profile.reservation_fee_deli,
         "self_introduction": profile.self_introduction,
         "job": profile.job,
         "dispatch_prefecture": profile.dispatch_prefecture,  # そのまま文字列として保持
@@ -173,6 +174,56 @@ def get_profile_service(db: Session, cast_id: int) -> Dict[str, Any]:
         logger.info(f"駅名/都道府県名としてそのまま使用: {station_name}")
     
     profile_dict["station_name"] = station_name
+    
+    # デバッグログ: 返却する辞書の内容と型を出力
+    logger.info("--- 返却する profile_dict の内容 ---")
+    for key, value in profile_dict.items():
+        logger.info(f"{key}: {value} (Type: {type(value)})")
+    logger.info("------------------------------------")
+    
+    # popularityとratingの値をNoneから0または0.0に変更
+    if profile_dict["popularity"] is None:
+        profile_dict["popularity"] = 0
+        logger.info("popularityがNoneだったので0に変更しました")
+    
+    if profile_dict["rating"] is None:
+        profile_dict["rating"] = 0.0
+        logger.info("ratingがNoneだったので0.0に変更しました")
+    
+    # hipフィールドの値をチェックし、不正な値の場合は補正
+    if "hip" in profile_dict and profile_dict["hip"] is not None:
+        if profile_dict["hip"] < 50 or profile_dict["hip"] > 150:
+            logger.warning(f"hipの値({profile_dict['hip']})が不正です。補正します。")
+            # バストの値を使用するか、デフォルト値を使用
+            if "bust" in profile_dict and profile_dict["bust"] is not None and 50 <= profile_dict["bust"] <= 150:
+                profile_dict["hip"] = profile_dict["bust"]
+                logger.info(f"hipの値をbustの値({profile_dict['bust']})に変更しました")
+            else:
+                profile_dict["hip"] = 85  # デフォルト値
+                logger.info("hipの値をデフォルト値(85)に変更しました")
+    
+    # 日付フィールドのNoneチェック
+    from datetime import datetime
+    current_time = datetime.now()
+    
+    # available_atがNoneの場合は現在時刻を設定
+    if profile_dict.get("available_at") is None:
+        profile_dict["available_at"] = current_time
+        logger.info("available_atがNoneだったので現在時刻に設定しました")
+    
+    # created_atがNoneの場合は現在時刻を設定
+    if profile_dict.get("created_at") is None:
+        profile_dict["created_at"] = current_time
+        logger.info("created_atがNoneだったので現在時刻に設定しました")
+    
+    # reservation_fee_deliの型を明示的に変換 (念のため)
+    if "reservation_fee_deli" in profile_dict and profile_dict["reservation_fee_deli"] is not None:
+        try:
+            profile_dict["reservation_fee_deli"] = int(profile_dict["reservation_fee_deli"])
+            logger.info(f"reservation_fee_deli を int に変換しました: {profile_dict['reservation_fee_deli']}")
+        except (ValueError, TypeError):
+            logger.error(f"reservation_fee_deli を int に変換できませんでした: {profile_dict.get('reservation_fee_deli')}")
+            profile_dict["reservation_fee_deli"] = None
     
     return profile_dict
 

@@ -3,7 +3,7 @@ from app.db.models.point_details import PointDetailsCourse
 from app.db.models.cast_common_prof import CastCommonProf
 
 def get_courses_by_cast_id(cast_id: int, db: Session):
-    """キャストIDから90分コースを取得"""
+    """キャストIDからコースを取得（時間制限なし）"""
     cast = db.query(CastCommonProf).filter(CastCommonProf.cast_id == cast_id).first()
     if not cast:
         return []
@@ -17,6 +17,7 @@ def get_courses_by_cast_id(cast_id: int, db: Session):
     return (
         db.query(PointDetailsCourse)
         .filter(PointDetailsCourse.course_type.in_(course_types))
-        .filter(PointDetailsCourse.duration_minutes == 90)  # ✅ 90分コースを取得
+        # ✅ コースの制限を削除
+        .order_by(PointDetailsCourse.course_type, PointDetailsCourse.duration_minutes)  # ✅ コースタイプと時間順にソート
         .all()
     )

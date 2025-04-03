@@ -22,6 +22,7 @@ def format_cast_reservation_data(reservation):
         station_name=reservation.station_name,
         course_price=reservation.course_price,
         traffic_fee=reservation.traffic_fee,
+        cast_reward_points=reservation.cast_reward_points,  # ✅ Add cast_reward_points
         color_code=reservation.color_code,
         last_message_time=reservation.last_message_time,
         last_message_preview=reservation.last_message_preview

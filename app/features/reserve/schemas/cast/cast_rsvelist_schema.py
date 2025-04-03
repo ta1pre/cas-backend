@@ -16,6 +16,7 @@ class CastRsveListItemResponse(BaseModel):
     station_name: Optional[str] = None
     course_price: int
     traffic_fee: int
+    cast_reward_points: Optional[int] = None  # ✅ キャスト報酬ポイント
     last_message_time: Optional[datetime] = None
     last_message_preview: Optional[str] = None
     color_code: Optional[str] = None

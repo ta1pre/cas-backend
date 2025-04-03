@@ -26,6 +26,7 @@ class CastCommonProf(Base):
     hobby = Column(String(255), nullable=True)
     profile_image_url = Column(String(255), nullable=True)
     reservation_fee = Column(Integer, nullable=True)
+    reservation_fee_deli = Column(Integer, nullable=True)
     popularity = Column(Integer, default=0, nullable=False) 
     rating = Column(Float, default=0, nullable=False) 
     self_introduction = Column(String(255), nullable=True)
