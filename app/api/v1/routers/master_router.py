@@ -80,7 +80,15 @@ master_router.include_router(
     prof_router,  
     prefix="/cast/prof",
     tags=["Cast Profile"]
-)  
+)
+
+# User Profile（ユーザープロフィール情報）
+from app.features.customer.user_profile.endpoints.user_profile_routers import user_profile_router
+master_router.include_router(
+    user_profile_router,
+    prefix="/user",
+    tags=["User Profile"]
+)
 
 # POSTS - ミニブログ機能
 from app.features.posts.endpoints.post_routers import posts_router
