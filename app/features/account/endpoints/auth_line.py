@@ -16,8 +16,12 @@ from app.core.config import (
 import requests
 from datetime import datetime
 import pytz
+import logging
 
 router = APIRouter()
+
+# デバッグ用ロガーの設定
+logger = logging.getLogger(__name__)
 
 # 1. LINE
 @router.get("/login")
@@ -76,6 +80,8 @@ async def line_callback(request: Request, db: Session = Depends(get_db)):
 
     # AccountService
     account_service = AccountService(db)
+    logger.info(f"LINE認証: line_id={line_id}, display_name={display_name}")
+    
     user = account_service.get_user_by_line_id(line_id)
     
     # JST
@@ -83,6 +89,7 @@ async def line_callback(request: Request, db: Session = Depends(get_db)):
     now_jst = datetime.now(jst).strftime("%Y/%m/%d %H:%M:%S")
     
     if not user:
+        logger.info(f"新規ユーザー作成: line_id={line_id}")
         # AccountService
         user = account_service.create_user(
             line_id=line_id,
@@ -91,8 +98,16 @@ async def line_callback(request: Request, db: Session = Depends(get_db)):
             tracking_id=tracking_id,
             last_login=now_jst
         )
+        logger.info(f"ユーザー作成完了: id={user.id}, invitation_id={user.invitation_id}")
     else:
-        # AccountService
+        logger.info(f"既存ユーザー更新: id={user.id}, invitation_id={user.invitation_id}")
+        # invitation_idが未設定の場合は設定する
+        if not user.invitation_id:
+            logger.info(f"invitation_idが未設定のため設定します: user_id={user.id}")
+            user = account_service.ensure_user_has_invitation_id(user.id)
+            logger.info(f"invitation_id設定完了: id={user.id}, invitation_id={user.invitation_id}")
+        
+        # 最終ログイン日時を更新
         user = account_service.update_last_login(line_id)
 
     # JWT
@@ -119,5 +134,5 @@ async def line_callback(request: Request, db: Session = Depends(get_db)):
     #    path="/"  # 
     #)
 
-
+    logger.info(f"認証完了: user_id={user.id}, invitation_id={user.invitation_id}")
     return response
