@@ -8,6 +8,7 @@ class UserProfileResponse(BaseModel):
     id: int
     nick_name: Optional[str] = None
     line_id: str
+    invitation_id: Optional[str] = None
     email: Optional[str] = None
     email_verified: Optional[bool] = None
     mobile_phone: Optional[str] = None
