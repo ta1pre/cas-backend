@@ -77,13 +77,13 @@ class AccountService:
         
         return updated_count
     
-    def _generate_unique_invitation_id(self, length: int = 10) -> str:
+    def _generate_unique_invitation_id(self, length: int = 6) -> str:
         """
         一意のinvitation_idを生成します
         重複がある場合は再生成します
         
         Args:
-            length: 生成するIDの長さ（デフォルト: 10）
+            length: 生成するIDの長さ（デフォルト: 6）
             
         Returns:
             生成された一意のinvitation_id
