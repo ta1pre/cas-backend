@@ -145,7 +145,7 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
                 )
 
                 system_prompt = (
-                    f"会話の語尾は「にゃん」で"
+                    f"会話の語尾は「にゃん」で簡潔に回答して下さい"
                     f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
                     f"---\n"
                     f"{conversation_history}\n"
@@ -170,7 +170,7 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
         # FAQで見つからなかった場合は、履歴を考慮して OpenAI に質問
         else:
             system_prompt = (
-                f"会話の語尾は「ワン！」で"
+                f"会話の語尾は「ワン！」で簡潔に回答して下さい"
                 f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
                 f"---\n"
                 f"{conversation_history}\n"
