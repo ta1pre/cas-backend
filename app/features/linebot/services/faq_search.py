@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 USER_CONVERSATIONS = {}
 
 # FAQデータファイルのパス
-FAQ_DATA_PATH = '/Users/taichiumeki/project/sandbox/app/data/microcms_faq_embeddings.json'
+# 環境に依存しない相対パスを使用
+base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+FAQ_DATA_PATH = os.path.join(base_dir, 'app', 'data', 'microcms_faq_embeddings.json')
 
 def get_embedding(text: str) -> list:
     """
