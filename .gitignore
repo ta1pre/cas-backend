@@ -9,7 +9,7 @@ __pycache__/
 venv/
 set_github_secrets.sh
 
-# AWSu95a2u9023u30d5u30a1u30a4u30eb
+# AWS関連ファイル
 task-definition.json
 task-definition-dual-port.json
 task-definition-updated.json
@@ -21,12 +21,15 @@ task-definition-secure.json
 terraform.tfvars
 aws-credentials.json
 
-# backupu30c7u30a3u30ecu30afu30c8u30ea
+# backupディレクトリ
 backup/
 
-# u305du306eu4ed6u306eu6a5fu5bc6u60c5u5831
+# その他の機密情報
 *credentials*
 *secret*
 *api-key*
 *.pem
 *.key
+
+# FAQ埋め込みデータファイル
+app/data/microcms_faq_embeddings.json
