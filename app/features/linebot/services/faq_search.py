@@ -158,6 +158,7 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
                     f"挨拶には必ず相手のニックネームを含めて下さい。"
                 )
                 logger.debug("FAQから回答を生成します")
+                logger.debug(f"★★★ OpenAIに渡すSystem Prompt (FAQあり): {system_prompt[:100]}...")
             except Exception as e:
                 logger.error(f"FAQ回答準備中にエラー: {str(e)}")
                 logger.error(traceback.format_exc())
@@ -184,6 +185,7 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
                 f"基本的に相手は弊社のキャストです。よって、サービスについての質問しかしてこない前提です。"
             )
             logger.debug("一般的な回答を生成します")
+            logger.debug(f"★★★ OpenAIに渡すSystem Prompt (FAQなし): {system_prompt[:100]}...")
 
         # OpenAIから回答を取得
         try:
