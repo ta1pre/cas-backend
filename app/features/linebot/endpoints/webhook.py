@@ -170,23 +170,64 @@ async def messaging_webhook(request: Request, db: Session = Depends(get_db), x_l
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-    
+
 @router.api_route("/update-faq/", methods=["GET", "POST"])
-async def update_faq(pw: str = Query(None, alias="pw")):  
+async def update_faq(pw: str = Query(None, alias="pw"), use_stream: bool = Query(False, alias="stream")):
     """
     MicroCMSからFAQを取得し、更新するAPI
+    パラメーター:
+        pw: 認証パスワード
+        use_stream: Trueの場合、ストリーミングレスポンスで更新中...を表示、Falseの場合、JSONレスポンスで更新結果を返す
     """
+    logger.info("FAQ更新処理開始")
 
     # 認証パスワード
-    AUTH_PASSWORD = "amayakachite"  
-    if pw != AUTH_PASSWORD:  
+    AUTH_PASSWORD = "amayakachite"
+    if pw != AUTH_PASSWORD:
+        logger.warning("認証パスワード不一致: パスワードが違います")
         raise HTTPException(status_code=401, detail="Unauthorized: パスワードが違います")
 
     # ストリーミングレスポンスで更新中...を表示
-    async def event_generator():
-        yield "data: FAQ更新中...\n\n"  
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, fetch_and_embed_faq)
-        yield "data: FAQ更新完了！！\n\n"  
+    if use_stream:
+        logger.info("ストリーミングレスポンスでFAQ更新中...を表示します")
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
+    
+    # JSONレスポンスで更新結果を返す
+    try:
+        logger.info("JSONレスポンスでFAQ更新結果を返します")
+        result = fetch_and_embed_faq()
+        if result:
+            logger.info("FAQ更新処理成功")
+            return {"status": "success", "message": "FAQ更新完了！！"}
+        else:
+            logger.error("FAQ更新処理失敗")
+            return {"status": "error", "message": "FAQ更新失敗しました。"}
+    except Exception as e:
+        logger.error(f"FAQ更新処理中にエラーが発生しました: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"エラーが発生しました: {str(e)}")
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+# ストリーミングレスポンス用イベントジェネレーター
+async def event_generator():
+    logger.info("イベントジェネレーターを開始します")
+    yield "data: FAQ更新中...\n\n"
+    loop = asyncio.get_event_loop()
+    try:
+        logger.info("fetch_and_embed_faqを実行します")
+        result = await loop.run_in_executor(None, fetch_and_embed_faq)
+        if result:
+            logger.info("FAQ更新処理成功")
+            yield "data: FAQ更新完了！！\n\n"
+        else:
+            logger.error("FAQ更新処理失敗")
+            yield "data: FAQ更新失敗しました。\n\n"
+    except Exception as e:
+        logger.error(f"FAQ更新処理中にエラーが発生しました: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        yield f"data: エラーが発生しました: {str(e)}\n\n"
+    finally:
+        logger.info("イベントジェネレーターを終了します")
+        yield "data: 処理完了\n\n"

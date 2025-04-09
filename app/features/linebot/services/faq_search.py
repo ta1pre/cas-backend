@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 USER_CONVERSATIONS = {}
 
 # FAQデータファイルのパス
-FAQ_DATA_PATH = 'app/data/microcms_faq_embeddings.json'
+FAQ_DATA_PATH = '/Users/taichiumeki/project/sandbox/app/data/microcms_faq_embeddings.json'
 
 def get_embedding(text: str) -> list:
     """
@@ -101,9 +101,18 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
 
         USER_CONVERSATIONS[user_id].append({"user": user_message})
 
-        # `microcms_faq_embeddings.json` からFAQデータを読み込む
-        with open('app/data/microcms_faq_embeddings.json', 'r') as f:
-            faqs = json.load(f)
+        # FAQデータを読み込む
+        try:
+            logger.info(f"FAQデータを読み込みます: {FAQ_DATA_PATH}")
+            with open(FAQ_DATA_PATH, 'r') as f:
+                faqs = json.load(f)
+            logger.info(f"FAQデータの読み込みに成功しました: {len(faqs)}件")
+        except Exception as e:
+            logger.error(f"FAQデータの読み込み中にエラー: {str(e)}")
+            logger.error(traceback.format_exc())
+            message = "システムエラーが発生しました。しばらくしてから再度お試しください。"
+            send_reply_with_retry(reply_token, message)
+            return message
 
         # 性別でFAQをフィルタリング
         matched_faqs = [

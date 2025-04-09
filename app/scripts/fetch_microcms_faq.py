@@ -2,6 +2,13 @@ import json
 import requests
 from openai import OpenAI
 from app.core.config import OPENAI_API_KEY, MICROCMS_API_URL, MICROCMS_API_KEY
+import logging
+import os
+import time
+import traceback
+
+# ロガーの設定
+logger = logging.getLogger(__name__)
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -29,68 +36,113 @@ def fetch_and_embed_faq():
     """
     MicroCMSからFAQデータを取得し、埋め込みを生成して保存
     """
+    start_time = time.time()
+    logger.info(f"FAQ更新処理を開始しました: {start_time}")
+    
     headers = {
         "X-MICROCMS-API-KEY": MICROCMS_API_KEY
     }
 
     embedded_faqs = []
-    limit = 1000  # 1回で取得する最大件数
+    limit = 100  # 1回で取得する最大件数（MicroCMS APIの制限は100）
     offset = 0   # 取得開始位置
 
-    while True:
-        url = f"{MICROCMS_API_URL}?limit={limit}&offset={offset}"
-        print(f"📡 リクエストURL: {url}")
+    try:
+        # カレントディレクトリを出力
+        current_dir = os.getcwd()
+        logger.info(f"カレントディレクトリ: {current_dir}")
+        
+        # APIキーの確認
+        if not MICROCMS_API_KEY:
+            logger.error("MICROCMS_API_KEYが設定されていません")
+            return False
+        
+        if not OPENAI_API_KEY:
+            logger.error("OPENAI_API_KEYが設定されていません")
+            return False
+            
+        while True:
+            url = f"{MICROCMS_API_URL}?limit={limit}&offset={offset}"
+            logger.info(f"MicroCMS APIリクエスト: {url}")
 
-        response = requests.get(url, headers=headers)
-        print(f"📊 ステータスコード: {response.status_code}")
+            try:
+                response = requests.get(url, headers=headers)
+                logger.info(f"MicroCMS APIレスポンス: ステータスコード={response.status_code}")
 
-        if response.status_code != 200:
-            print(f"❌ FAQデータの取得失敗: {response.status_code}, {response.text}")
-            break
+                if response.status_code != 200:
+                    logger.error(f"MicroCMS APIエラー: {response.status_code}, {response.text}")
+                    return False
 
+                data = response.json()
+                faqs = data.get('contents', [])
+                logger.info(f"取得したFAQ件数: {len(faqs)} (offset: {offset})")
+
+                if not faqs:
+                    logger.info("すべてのデータを取得しました")
+                    break
+
+                for faq in faqs:
+                    question = faq.get('title')
+                    answer = faq.get('content')
+                    category = faq.get('category', {}).get('id')
+                    article_id = faq.get('id')
+
+                    if question and answer and category and article_id:
+                        sex = CATEGORY_MAPPING.get(category, 'NULL')
+                        
+                        try:
+                            embedding = get_embedding(question)
+                            embedded_faqs.append({
+                                "question": question,
+                                "answer": answer,
+                                "sex": sex,
+                                "category": category,
+                                "article_id": article_id,
+                                "embedding": embedding
+                            })
+                            logger.info(f"Embedding生成成功: {question[:30]}...")
+                        except Exception as e:
+                            logger.error(f"Embedding生成エラー: {str(e)}, 質問={question[:30]}...")
+                            logger.error(traceback.format_exc())
+                    else:
+                        logger.warning(f"無効なFAQエントリ: {faq}")
+
+                # 次のページへ
+                offset += limit
+
+            except Exception as e:
+                logger.error(f"MicroCMS APIリクエスト中にエラー: {str(e)}")
+                logger.error(traceback.format_exc())
+                return False
+
+        # ファイルを保存
+        # 環境によらず動作するようにプロジェクトルートからの相対パスを構築
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        file_path = os.path.join(base_dir, 'app', 'data', 'microcms_faq_embeddings.json')
+        logger.info(f"FAQデータを保存します: {file_path}, 件数={len(embedded_faqs)}")
+        
         try:
-            data = response.json()
-            faqs = data.get('contents', [])
-            print(f"📊 取得件数: {len(faqs)} (offset: {offset})")
-
-            if not faqs:
-                print("✅ すべてのデータを取得しました。")
-                break
-
-            for faq in faqs:
-                question = faq.get('title')
-                answer = faq.get('content')
-                category = faq.get('category', {}).get('id')  # category.idの取得
-                article_id = faq.get('id')  # 🔹 MicroCMSのFAQ IDを取得（記事IDとして使う）
-
-                if question and answer and category and article_id:
-                    sex = CATEGORY_MAPPING.get(category, 'NULL')  # カテゴリから性別を判定
-                    embedding = get_embedding(question)  # 質問文を埋め込み変換
-
-                    embedded_faqs.append({
-                        "question": question,
-                        "answer": answer,
-                        "sex": sex,
-                        "category": category,
-                        "article_id": article_id,  # 🔹 記事IDを保存
-                        "embedding": embedding
-                    })
-                    print(f"✅ Embedding生成: {question} (カテゴリ: {category}, 性別: {sex}, 記事ID: {article_id})")
-                else:
-                    print(f"⚠️ 無効なFAQエントリ: {faq}")
-
-            # 次のページへ
-            offset += limit
-
+            # ディレクトリが存在するか確認し、存在しない場合は作成する
+            directory = os.path.dirname(file_path)
+            if not os.path.exists(directory):
+                logger.info(f"ディレクトリが存在しないため作成します: {directory}")
+                os.makedirs(directory, exist_ok=True)
+                
+            with open(file_path, 'w') as f:
+                json.dump(embedded_faqs, f, indent=4, ensure_ascii=False)
+            logger.info(f"FAQデータの保存に成功しました")
         except Exception as e:
-            print(f"❌ レスポンスの解析中にエラー: {e}")
-            break
-
-    # FAQデータを直接埋め込みJSONとして保存
-    with open('app/data/microcms_faq_embeddings.json', 'w') as f:
-        json.dump(embedded_faqs, f, indent=4, ensure_ascii=False)
-
-    print("✅ FAQ Embeddingデータが正常に保存されました。")
+            logger.error(f"FAQデータの保存中にエラー: {str(e)}")
+            logger.error(traceback.format_exc())
+            return False
+            
+        logger.info(f"FAQ更新処理が完了しました: 処理時間={time.time() - start_time:.2f}秒, 件数={len(embedded_faqs)}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"FAQ更新処理中に予期せぬエラーが発生しました: {str(e)}")
+        logger.error(traceback.format_exc())
+        return False
 
 if __name__ == "__main__":
     fetch_and_embed_faq()
