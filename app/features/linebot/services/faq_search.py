@@ -145,6 +145,7 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
                 )
 
                 system_prompt = (
+                    f"会話の語尾は「にゃん」で"
                     f"以下はユーザー {user_nickname} との最近の会話履歴です。\n"
                     f"---\n"
                     f"{conversation_history}\n"
@@ -153,6 +154,8 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
                     f"以下のFAQの情報を **簡潔かつ手短に要約** して、分かりやすい回答を作成してください。\n"
                     f"FAQの内容:\n"
                     f"{cleaned_faq_answers}"
+                    f"---\n"
+                    f"挨拶には必ず相手のニックネームを含めて下さい。"
                 )
                 logger.debug("FAQから回答を生成します")
             except Exception as e:
