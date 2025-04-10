@@ -115,27 +115,22 @@ def fetch_and_embed_faq():
                 logger.error(traceback.format_exc())
                 return False
 
-        # ファイルを保存
-        # 環境によらず動作するようにプロジェクトルートからの相対パスを構築
+        # ファイルパスを環境に依存しない形で構築
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         file_path = os.path.join(base_dir, 'app', 'data', 'microcms_faq_embeddings.json')
-        logger.info(f"FAQデータを保存します: {file_path}, 件数={len(embedded_faqs)}")
         
-        try:
-            # ディレクトリが存在するか確認し、存在しない場合は作成する
-            directory = os.path.dirname(file_path)
-            if not os.path.exists(directory):
-                logger.info(f"ディレクトリが存在しないため作成します: {directory}")
-                os.makedirs(directory, exist_ok=True)
-                
-            with open(file_path, 'w') as f:
-                json.dump(embedded_faqs, f, indent=4, ensure_ascii=False)
-            logger.info(f"FAQデータの保存に成功しました")
-        except Exception as e:
-            logger.error(f"FAQデータの保存中にエラー: {str(e)}")
-            logger.error(traceback.format_exc())
-            return False
+        # データディレクトリの存在確認と作成
+        data_dir = os.path.dirname(file_path)
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir, exist_ok=True)
+            logger.info(f"データディレクトリを作成しました: {data_dir}")
+        
+        # ファイルへの書き込み
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(embedded_faqs, f, ensure_ascii=False, indent=4)
             
+        logger.info(f"FAQデータを保存しました: {file_path}")
+        
         logger.info(f"FAQ更新処理が完了しました: 処理時間={time.time() - start_time:.2f}秒, 件数={len(embedded_faqs)}")
         return True
         

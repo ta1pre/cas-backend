@@ -106,9 +106,31 @@ def search_faq(user_message: str, user_info: dict, reply_token: str) -> str:
         # FAQデータを読み込む
         try:
             logger.info(f"FAQデータを読み込みます: {FAQ_DATA_PATH}")
-            with open(FAQ_DATA_PATH, 'r') as f:
+            # ファイルが存在するか確認
+            if not os.path.exists(FAQ_DATA_PATH):
+                logger.error(f"FAQデータファイルが存在しません: {FAQ_DATA_PATH}")
+                # データディレクトリの存在確認と作成
+                data_dir = os.path.dirname(FAQ_DATA_PATH)
+                if not os.path.exists(data_dir):
+                    os.makedirs(data_dir, exist_ok=True)
+                    logger.info(f"データディレクトリを作成しました: {data_dir}")
+                message = "FAQデータが準備されていません。管理者にお問い合わせください。"
+                send_reply_with_retry(reply_token, message)
+                return message
+                
+            with open(FAQ_DATA_PATH, 'r', encoding='utf-8') as f:
                 faqs = json.load(f)
             logger.info(f"FAQデータの読み込みに成功しました: {len(faqs)}件")
+        except FileNotFoundError:
+            logger.error(f"FAQデータファイルが見つかりません: {FAQ_DATA_PATH}")
+            message = "FAQデータが見つかりません。管理者にお問い合わせください。"
+            send_reply_with_retry(reply_token, message)
+            return message
+        except json.JSONDecodeError:
+            logger.error(f"FAQデータの形式が不正です: {FAQ_DATA_PATH}")
+            message = "FAQデータの形式が不正です。管理者にお問い合わせください。"
+            send_reply_with_retry(reply_token, message)
+            return message
         except Exception as e:
             logger.error(f"FAQデータの読み込み中にエラー: {str(e)}")
             logger.error(traceback.format_exc())
