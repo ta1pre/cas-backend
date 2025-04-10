@@ -16,10 +16,10 @@ USER_CONVERSATIONS = {}
 
 # FAQデータファイルのパス
 # 環境に依存しない相対パスを使用
-# プロジェクトルートを正しく取得するために dirname の呼び出し回数を修正
-base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
-FAQ_DATA_PATH = os.path.join(base_dir, 'app', 'data', 'microcms_faq_embeddings.json')
-logger.info(f"ロードするFAQデータファイルパス: {FAQ_DATA_PATH}")
+# AWS環境のファイル構造に合わせて dirname の呼び出し回数を修正 (4回)
+base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+FAQ_DATA_PATH = os.path.join(base_dir, 'data', 'microcms_faq_embeddings.json') # 'app' は不要
+logger.info(f"ロードするFAQデータファイルパス (AWS向け修正): {FAQ_DATA_PATH}")
 
 def get_embedding(text: str) -> list:
     """
