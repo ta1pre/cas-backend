@@ -130,6 +130,11 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 MICROCMS_API_URL= os.getenv("MICROCMS_API_URL")
 MICROCMS_API_KEY= os.getenv("MICROCMS_API_KEY")
 
+# Stripe Keys
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET") # Webhook署名検証用
+
 # 全環境変数をダンプする関数
 def dump_all_env_vars():
     all_env = {}

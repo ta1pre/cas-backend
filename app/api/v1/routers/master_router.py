@@ -64,7 +64,26 @@ master_router.include_router(area_router, prefix="/customer/area", tags=["Custom
 
 # CUSTOMER - お気に入り
 from app.features.customer.favorites.endpoints.favorites_routers import favorites_router
-master_router.include_router(favorites_router, prefix="/customer/favorites", tags=["Customer - Favorites"])
+from app.features.customer.payments.endpoints.payments_routers import customer_payments_router, webhook_router
+
+# Customer向け機能
+master_router.include_router(favorites_router, prefix="/customer/favorites")
+master_router.include_router(customer_payments_router) # prefixはpayments_routers.pyで定義済み
+
+# Webhook (認証不要なルートはこちらに追加する想定)
+master_router.include_router(webhook_router) # prefixはpayments_routers.pyで定義済み
+
+# CUSTOMER - 検索API
+from app.features.customer.search.endpoints.search_routers import search_router
+master_router.include_router(search_router, prefix="/customer/search", tags=["Customer - Search"])
+
+# CUSTOMER - キャストプロフィール
+from app.features.customer.castprof.endpoints.castprof_routers import castprof_router
+master_router.include_router(castprof_router, prefix="/customer/castprof", tags=["Customer - CastProf"])
+
+# CUSTOMER - エリア設定
+from app.features.customer.area.endpoints.area_routers import area_router
+master_router.include_router(area_router, prefix="/customer/area", tags=["Customer - Area"])
 
 # RESERVE - 予約
 from app.features.reserve.endpoints.reserve_routers import reserve_router

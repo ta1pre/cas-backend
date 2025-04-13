@@ -28,6 +28,8 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     setup_status = Column(String(50), nullable=True, default=None)
+    stripe_customer_id = Column(String(255), nullable=True, unique=True)
+
 
     # ✅ `stations` テーブルとの関係を定義
     nearest_station = relationship("Station", backref="users")
