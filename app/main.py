@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 from app.core.config import FRONTEND_URL  # 追加
+from fastapi import Request
 
 # AWS環境かどうかを判定
 is_aws = os.getenv("AWS_EXECUTION_ENV") is not None or os.getenv("AWS_LAMBDA_FUNCTION_NAME") is not None
@@ -72,9 +73,25 @@ def root():
 
 origins = [
     FRONTEND_URL,
+    "*",  # すべてのオリジンを許可（Webhook用）
     "http://localhost:3000"
 ]
 
+# Webhook用のミドルウェア設定（CORSを無効化）
+class WebhookMiddleware:
+    async def __call__(self, request: Request, call_next):
+        if request.url.path == "/api/v1/payments/webhook":
+            # Webhookエンドポイントの場合、特別な処理を行う
+            response = await call_next(request)
+            return response
+        else:
+            # 通常のエンドポイントの場合、標準の処理を行う
+            return await call_next(request)
+
+# カスタムミドルウェアを追加（CORSミドルウェアの前に）
+app.middleware("http")(WebhookMiddleware())
+
+# CORSミドルウェアを追加
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # `*` ではなく、特定のドメインを指定

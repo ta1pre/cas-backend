@@ -8,7 +8,7 @@ import sys
 logger = logging.getLogger("config")
 
 # `.env` を明示的に指定してロード
-dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.env"))
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 if os.path.exists(dotenv_path):
     print(f"✅ `.env` をロード: {dotenv_path}")
     load_dotenv(dotenv_path, override=True)  # ← `override=True` を必ず設定

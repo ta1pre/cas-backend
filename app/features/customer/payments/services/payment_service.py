@@ -2,9 +2,15 @@
 import stripe
 from app.core import config
 from app.db.models.user import User
-from app.features.customer.payments.schemas.payment_schema import CreatePaymentIntentRequest
+from app.features.customer.payments.schemas.payment_schema import (
+    CreatePaymentIntentRequest,
+    CreateCheckoutSessionRequest,
+    CreateCheckoutSessionResponse
+)
 from sqlalchemy.orm import Session
 import logging
+from fastapi import HTTPException
+from typing import Union
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +112,47 @@ async def handle_webhook_event(payload: str, sig_header: str):
 
     # Stripeに受信成功を通知
     return
+
+async def create_checkout_session(db: Session, user: Union[User, int], checkout_data: CreateCheckoutSessionRequest) -> str:
+    """
+    Stripe Checkout Session を作成し、そのURLを返す
+    user: User または user_id (int) を許容
+    """
+    try:
+        # ユーザーがint型ならDBから取得
+        user_obj = user if not isinstance(user, int) else await get_user_by_id(db, user)
+        stripe_customer_id = await get_or_create_stripe_customer(db, user_obj)
+
+        # フロントエンドのリダイレクト先URL (環境変数などから取得するのが望ましい)
+        success_url = "http://localhost:3000/p/customer/points/success?session_id={CHECKOUT_SESSION_ID}"
+        cancel_url = "http://localhost:3000/p/customer/points/cancel"
+
+        checkout_session = stripe.checkout.Session.create(
+            customer=stripe_customer_id,
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price': checkout_data.price_id,
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                'user_id': str(user_obj.id),
+                'price_id': checkout_data.price_id
+            }
+        )
+        logger.info(f"Checkout Session created for user {user_obj.id}: {checkout_session.id}")
+        return checkout_session.url
+
+    except stripe.error.StripeError as e:
+        logger.error(f"Stripe API error during Checkout Session creation: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="決済セッションの作成に失敗しました。")
+    except Exception as e:
+        logger.error(f"Unexpected error during Checkout Session creation: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="予期せぬエラーが発生しました。")
 
 # Stripe Customer を管理する関数
 async def get_or_create_stripe_customer(db: Session, user: User) -> str:
