@@ -152,9 +152,19 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None, 
             session_id = event_data['id']
             logger.info(f"Checkout session completed: {session_id}")
 
-            # ここにCheckoutセッション完了時の処理を追加する
-            # TODO: 実際の処理を実装
-
+            # --- Stripe metadata から user_id, amount（ポイント数）を取得 ---
+            metadata = event_data.get('metadata', {})
+            user_id = metadata.get('user_id')
+            amount = metadata.get('amount')
+            if user_id is None or amount is None:
+                logger.error(f"ポイント付与失敗: user_idまたはamountがmetadataにありません (metadata={metadata})")
+            else:
+                from app.features.points.services.apply_point_rule_service import apply_point_rule
+                result = apply_point_rule(db, user_id, 'purchase', {'amount': amount})
+                if result.get('success'):
+                    logger.info(f"ポイント付与成功: user_id={user_id}, amount={amount}")
+                else:
+                    logger.error(f"ポイント付与エラー: {result.get('message')}")
         else:
             # その他のイベントタイプの処理
             logger.info(f"Unhandled event type: {event_type}")

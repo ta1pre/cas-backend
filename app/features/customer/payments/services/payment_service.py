@@ -33,18 +33,20 @@ async def create_payment_intent(db: Session, user, payment_data: CreatePaymentIn
     try:
         # userがUser型でなければDBから取得
         if not isinstance(user, User):
-            user_id = int(user) if isinstance(user, str) and user.isdigit() else user
+            user_id = int(user) if isinstance(user, str) and str(user).isdigit() else user
             user_obj = db.query(User).filter(User.id == user_id).first()
             if not user_obj:
                 logger.error(f"User not found: {user}")
                 raise Exception(f"User not found: {user}")
             user = user_obj
-        # ここでuserは必ずUser型
+
+        # ここでcustomer_idを必ず取得（無ければ自動生成＆保存）
         stripe_customer_id = await get_or_create_stripe_customer(db, user)
+
         intent = stripe.PaymentIntent.create(
-            customer=stripe_customer_id,
             amount=payment_data.amount,
             currency="jpy",
+            customer=stripe_customer_id,
             payment_method_types=['card', 'link'],  # Link決済を有効化
             metadata={'user_id': str(user.id)} # ユーザーIDなどをメタデータに含める
         )
