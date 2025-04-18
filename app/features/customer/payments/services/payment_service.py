@@ -28,30 +28,31 @@ async def get_user_by_id(db: Session, user_id: int) -> User:
         raise ValueError(f"User with ID {user_id} not found")
     return user
 
-async def create_payment_intent(db: Session, user: User, payment_data: CreatePaymentIntentRequest) -> str:
-    """
-    Stripe PaymentIntent を作成し、client_secret を返す
-    """
+async def create_payment_intent(db: Session, user, payment_data: CreatePaymentIntentRequest) -> str:
+    from app.db.models.user import User
     try:
-        # ユーザーに紐づくStripe Customer IDを取得または作成
-        user_obj = user if not isinstance(user, int) else await get_user_by_id(db, user)
-        stripe_customer_id = await get_or_create_stripe_customer(db, user_obj)
-
-        # user ID と user オブジェクトを処理
-        user_id = user if isinstance(user, int) else user.id
-
+        # userがUser型でなければDBから取得
+        if not isinstance(user, User):
+            user_id = int(user) if isinstance(user, str) and user.isdigit() else user
+            user_obj = db.query(User).filter(User.id == user_id).first()
+            if not user_obj:
+                logger.error(f"User not found: {user}")
+                raise Exception(f"User not found: {user}")
+            user = user_obj
+        # ここでuserは必ずUser型
+        stripe_customer_id = await get_or_create_stripe_customer(db, user)
         intent = stripe.PaymentIntent.create(
+            customer=stripe_customer_id,
             amount=payment_data.amount,
-            currency=payment_data.currency,
-            customer=stripe_customer_id, # 顧客IDを紐付ける
-            # payment_method_types=["card"], # 必要に応じて支払い方法を指定
-            metadata={'user_id': str(user_id)} # ユーザーIDなどをメタデータに含める
+            currency="jpy",
+            payment_method_types=['card', 'link'],  # Link決済を有効化
+            metadata={'user_id': str(user.id)} # ユーザーIDなどをメタデータに含める
         )
-        logger.info(f"PaymentIntent created for user {user_id}: {intent.id}")
+        logger.info(f"PaymentIntent created for user {user.id}: {intent.id}")
         return intent.client_secret
     except stripe.error.StripeError as e:
         logger.error(f"Stripe API error during PaymentIntent creation: {e}")
-        raise # エラーを上位に伝播させるか、適切なエラーハンドリング
+        raise
     except Exception as e:
         logger.error(f"Unexpected error during PaymentIntent creation: {e}")
         raise
@@ -119,12 +120,16 @@ async def create_checkout_session(db: Session, user: Union[User, int], checkout_
     user: User または user_id (int) を許容
     """
     try:
-        # ユーザーがint型ならDBから取得
-        user_obj = user if not isinstance(user, int) else await get_user_by_id(db, user)
+        # ユーザーがUser型でなければDBから取得
+        from app.db.models.user import User
+        if not isinstance(user, User):
+            user_obj = await get_user_by_id(db, user)
+        else:
+            user_obj = user
         stripe_customer_id = await get_or_create_stripe_customer(db, user_obj)
 
-        # フロントエンドのリダイレクト先URL (環境変数などから取得するのが望ましい)
-        success_url = "http://localhost:3000/p/customer/points/success?session_id={CHECKOUT_SESSION_ID}"
+        # フロントエンドのリダイレクト先URL (session_idクエリを除外)
+        success_url = "http://localhost:3000/p/customer/points/success"
         cancel_url = "http://localhost:3000/p/customer/points/cancel"
 
         checkout_session = stripe.checkout.Session.create(
@@ -155,7 +160,17 @@ async def create_checkout_session(db: Session, user: Union[User, int], checkout_
         raise HTTPException(status_code=500, detail="予期せぬエラーが発生しました。")
 
 # Stripe Customer を管理する関数
-async def get_or_create_stripe_customer(db: Session, user: User) -> str:
+async def get_or_create_stripe_customer(db: Session, user):
+    from app.db.models.user import User
+    # userがUser型でなければDBから取得
+    if not isinstance(user, User):
+        # intまたはstr型のユーザーIDをサポート
+        user_id = int(user) if isinstance(user, str) and user.isdigit() else user
+        user_obj = db.query(User).filter(User.id == user_id).first()
+        if not user_obj:
+            logger.error(f"User not found: {user}")
+            raise Exception(f"User not found: {user}")
+        user = user_obj
     if user.stripe_customer_id:
         return user.stripe_customer_id
     else:

@@ -46,7 +46,7 @@ async def create_payment_intent_endpoint(
         )
         return payment_schema.CreatePaymentIntentResponse(client_secret=client_secret)
     except Exception as e:
-        logger.error(f"Error creating PaymentIntent for user {current_user.id}: {e}", exc_info=True)
+        logger.error(f"Error creating PaymentIntent for user {current_user}: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="決済情報の作成に失敗しました。")
 
 
@@ -74,7 +74,7 @@ async def create_checkout_session_endpoint(
         raise http_exc
     except Exception as e:
         # 予期せぬエラー
-        logger.error(f"Error creating Checkout Session for user {current_user.id}: {e}", exc_info=True)
+        logger.error(f"Error creating Checkout Session for user {current_user}: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="決済セッションの作成中に予期せぬエラーが発生しました。")
 
 
@@ -86,7 +86,7 @@ async def create_checkout_session_endpoint(
     response_class=Response, # レスポンスクラスを指定してCORS対応
     dependencies=[] # 依存関係を空にしてミドルウェアをスキップ
 )
-async def stripe_webhook(request: Request, stripe_signature: str = Header(None), db: Session = Depends(get_db)):
+async def stripe_webhook(request: Request, stripe_signature: str = Header(None, alias="stripe-signature"), db: Session = Depends(get_db)):
     logger.info("Webhook received") # INFOレベルで受信ログ
 
     try:

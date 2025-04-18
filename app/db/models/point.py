@@ -50,7 +50,7 @@ class PointRule(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     rule_name = Column(String(255), unique=True, nullable=False)  # ✅ ルール名（ユニーク）
     rule_description = Column(String(255), nullable=True)  # ✅ 説明
-    transaction_type = Column(Enum('reservation_payment', 'reservation_reward', 'event_bonus', 'coupon_bonus'), nullable=False)
+    transaction_type = Column(Enum('reservation_payment', 'reservation_reward', 'event_bonus', 'coupon_bonus', 'buyin'), nullable=False)
     point_type = Column(Enum('regular', 'bonus'), nullable=False)
     point_value = Column(Float, nullable=False)  # ✅ ポイント数
     is_addition = Column(Boolean, default=True)  # ✅ 加算(True) or 減算(False)
