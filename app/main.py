@@ -73,8 +73,8 @@ def root():
 
 origins = [
     FRONTEND_URL,
-    "*",  # すべてのオリジンを許可（Webhook用）
-    "http://localhost:3000"
+    "https://cas.tokyo",
+    "http://localhost:3000"  # ローカル開発用（本番では不要）
 ]
 
 # Webhook用のミドルウェア設定（CORSを無効化）
