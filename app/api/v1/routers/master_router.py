@@ -112,3 +112,7 @@ master_router.include_router(
 # POSTS - ミニブログ機能
 from app.features.posts.endpoints.post_routers import posts_router
 master_router.include_router(posts_router, prefix="/posts", tags=["Posts"])
+
+# Stripe Connect（キャスト口座登録）
+from app.features.stripe.connect.endpoints.connect_routers import connect_router
+master_router.include_router(connect_router, prefix="/stripe/connect", tags=["Stripe Connect"])
