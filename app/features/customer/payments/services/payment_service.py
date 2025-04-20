@@ -9,10 +9,27 @@ from app.features.customer.payments.schemas.payment_schema import (
 )
 from sqlalchemy.orm import Session
 import logging
+import sys
 from fastapi import HTTPException
 from typing import Union
 
+# --- ログ出力設定（ファイル＆コンソール） ---
+root_logger = logging.getLogger()
+if not root_logger.handlers:
+    file_handler = logging.FileHandler('app.log', encoding='utf-8')
+    file_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('[%(asctime)s][%(levelname)s][%(name)s] %(message)s')
+    file_handler.setFormatter(formatter)
+    root_logger.addHandler(file_handler)
+
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setLevel(logging.INFO)
+    stream_handler.setFormatter(formatter)
+    root_logger.addHandler(stream_handler)
+
+root_logger.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
+# --- ここまでログ設定 ---
 
 # Stripe APIキーを設定
 stripe.api_key = config.STRIPE_SECRET_KEY
@@ -48,7 +65,10 @@ async def create_payment_intent(db: Session, user, payment_data: CreatePaymentIn
             currency="jpy",
             customer=stripe_customer_id,
             payment_method_types=['card', 'link'],  # Link決済を有効化
-            metadata={'user_id': str(user.id)} # ユーザーIDなどをメタデータに含める
+            metadata={
+                'user_id': str(user.id),
+                'point_value': str(payment_data.points)  # ここでポイント数も必ずセット
+            }
         )
         logger.info(f"PaymentIntent created for user {user.id}: {intent.id}")
         return intent.client_secret
@@ -72,34 +92,57 @@ async def handle_webhook_event(payload: str, sig_header: str):
         return
 
     try:
+        payload = await request.body() if hasattr(request, 'body') else None
+        logger.info(f"【DEBUG】受信payload: {payload}")
         event = stripe.Webhook.construct_event(
             payload, sig_header, webhook_secret
         )
+        logger.info(f"【DEBUG】Webhook event: {event}")
+        logger.info(f"【DEBUG】event type: {event.get('type') if isinstance(event, dict) else str(event)}")
         logger.info(f"Received Stripe webhook event: {event['type']}")
     except ValueError as e:
         # Invalid payload
         logger.error(f"Invalid webhook payload: {e}")
-        # raise HTTPException(status_code=400, detail="Invalid payload")
+        logger.exception("詳細なエラー情報:")
         return # or raise error
     except stripe.error.SignatureVerificationError as e:
         # Invalid signature
         logger.error(f"Invalid webhook signature: {e}")
-        # raise HTTPException(status_code=400, detail="Invalid signature")
+        logger.exception("詳細なエラー情報:")
         return # or raise error
     except Exception as e:
         logger.error(f"Error constructing webhook event: {e}")
-        # raise HTTPException(status_code=500, detail="Internal server error")
+        logger.exception("詳細なエラー情報:")
         return
 
     # イベントタイプに応じて処理を分岐
-    if event['type'] == 'payment_intent.succeeded':
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        logger.info(f"Checkout session completed: {session['id']}")
+        metadata = session.get('metadata', {})
+        user_id = metadata.get('user_id')
+        amount = metadata.get('amount')
+        if user_id is None or not amount:
+            logger.error(f"ポイント付与失敗: user_idまたはamountがmetadataにありません (metadata={metadata})")
+        else:
+            try:
+                from app.features.points.services.apply_point_rule_service import apply_point_rule
+                # DBセッション取得
+                from app.db.session import SessionLocal
+                db = SessionLocal()
+                result = apply_point_rule(db, int(user_id), 'purchase', {'amount': int(amount)})
+                if result.get('success'):
+                    logger.info(f"ポイント付与成功: user_id={user_id}, amount={amount}")
+                else:
+                    logger.error(f"ポイント付与エラー: {result.get('message')}")
+            except Exception as e:
+                logger.error(f"ポイント付与処理中に例外: {e}")
+            finally:
+                db.close()
+    elif event['type'] == 'payment_intent.succeeded':
         payment_intent = event['data']['object']
         logger.info(f"PaymentIntent succeeded: {payment_intent.id}")
-        # TODO: 支払い成功時の処理（DB更新、通知など）
-        # user_id = payment_intent['metadata'].get('user_id')
-        # amount = payment_intent['amount']
-        # update_order_status(user_id, payment_intent.id, 'paid')
-
+        # ポイント付与処理はcheckout.session.completedでのみ実施
     elif event['type'] == 'payment_intent.payment_failed':
         payment_intent = event['data']['object']
         logger.warning(f"PaymentIntent failed: {payment_intent.id}")
@@ -148,7 +191,9 @@ async def create_checkout_session(db: Session, user: Union[User, int], checkout_
             cancel_url=cancel_url,
             metadata={
                 'user_id': str(user_obj.id),
-                'price_id': checkout_data.price_id
+                'price_id': checkout_data.price_id,
+                # ポイント購入分のamountをmetadataに必ず含める
+                'amount': str(checkout_data.amount) if hasattr(checkout_data, 'amount') else ''
             }
         )
         logger.info(f"Checkout Session created for user {user_obj.id}: {checkout_session.id}")
@@ -178,8 +223,9 @@ async def get_or_create_stripe_customer(db: Session, user):
     else:
         customer = stripe.Customer.create(
             email=user.email,
-            name=user.nick_name, # ユーザー名など
-            metadata={'user_id': str(user.id)}
+            name=user.nick_name, # ユーザー名
+            description=f"user_id: {user.id}", # 管理画面で分かりやすく
+            metadata={'user_id': str(user.id)} # プログラム連携用
         )
         user.stripe_customer_id = customer.id
         db.add(user)

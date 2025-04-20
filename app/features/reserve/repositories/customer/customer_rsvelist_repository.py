@@ -13,7 +13,7 @@ from app.db.models.station import Station
 
 def get_customer_reservations(db: Session, user_id: int, limit: int, offset: int):
     """
-    ✅ ここで引数の順番を (db, user_id, limit, offset) にする
+    ここで引数の順番を (db, user_id, limit, offset) にする
     """
     latest_message_subquery = (
         select(
@@ -34,8 +34,9 @@ def get_customer_reservations(db: Session, user_id: int, limit: int, offset: int
             ResvStatusDetail.status_key.label("status_key"),
             ResvReservation.start_time,
             PointDetailsCourse.course_name,
+            func.coalesce(ResvReservation.course_points, 0).label("course_points"),  # NULLでも0で返す
             PointDetailsCourse.cost_points.label("course_price"),
-            CastCommonProf.reservation_fee.label("reservation_fee"),
+            ResvReservation.reservation_fee.label("reservation_fee"),  # resv_reservationテーブルから取得
             ResvReservation.traffic_fee,
             func.coalesce(func.sum(ResvReservationOption.option_price), 0).label("total_option_price"),
             func.coalesce(func.group_concat(func.distinct(PointDetailsOption.option_name), ','), '').label("option_list"),
@@ -59,7 +60,8 @@ def get_customer_reservations(db: Session, user_id: int, limit: int, offset: int
         .offset(offset)
     )
 
-    results = db.execute(stmt).mappings().all()  # ✅ 「.mappings().all()」でOK
+    results = db.execute(stmt).mappings().all()  # 「.mappings().all()」でOK
+    print("【DEBUG】customer_rsvelist_repository results sample:", results[:1])
     return results
 
 def get_total_reservation_count(db: Session, user_id: int):

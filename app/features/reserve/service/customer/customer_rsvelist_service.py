@@ -6,6 +6,7 @@ from app.features.reserve.schemas.customer.customer_rsvelist_schema import (
 )
 
 def format_reservation_data(reservation):
+    print("【DEBUG】format_reservation_data reservation:", reservation)
     return {
         "reservation_id": reservation.reservation_id,
         "cast_id": reservation.cast_id,
@@ -14,8 +15,9 @@ def format_reservation_data(reservation):
         "status_key": reservation.status_key,
         "start_time": reservation.start_time,
         "course_name": reservation.course_name,
-        "location": reservation.location,  # ✅ ここを追加
+        "location": reservation.location,  # 
         "course_price": reservation.course_price,
+        "course_points": getattr(reservation, "course_points", None),
         "reservation_fee": reservation.reservation_fee,
         "traffic_fee": reservation.traffic_fee,
         "option_list": [opt.strip() for opt in reservation.option_list.split(",") if opt.strip()],

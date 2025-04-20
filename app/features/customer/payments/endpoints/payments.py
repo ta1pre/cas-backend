@@ -10,6 +10,7 @@ from app.features.customer.payments.schemas.payment_schema import (
     CreateCheckoutSessionResponse
 )
 from app.features.customer.payments.services import payment_service
+from app.db.models.stripe_event import StripeEvent
 import logging
 from app.core.config import STRIPE_WEBHOOK_SECRET
 import json
@@ -87,16 +88,16 @@ async def create_checkout_session_endpoint(
     dependencies=[] # 依存関係を空にしてミドルウェアをスキップ
 )
 async def stripe_webhook(request: Request, stripe_signature: str = Header(None, alias="stripe-signature"), db: Session = Depends(get_db)):
-    logger.info("Webhook received") # INFOレベルで受信ログ
+    logger.info("[Webhook] Webhook received") # INFOレベルで受信ログ
 
     try:
         # リクエストボディを読み取る
         payload = await request.body()
-        logger.debug(f"Received payload (first 100 bytes): {payload[:100]}...")
+        logger.info(f"[Webhook] Received payload (first 100 bytes): {payload[:100]}...")
 
         # Stripe-Signatureヘッダーの存在チェック
         if stripe_signature is None:
-            logger.warning("Missing Stripe-Signature header")
+            logger.warning("[Webhook] Missing Stripe-Signature header")
             return Response(
                 content=json.dumps({"error": "Missing Stripe-Signature header"}),
                 status_code=400,
@@ -105,7 +106,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None, 
 
         # Webhookシークレットキーが設定されていない場合
         if not WEBHOOK_SECRET:
-            logger.error("Stripe webhook secret is not configured.")
+            logger.error("[Webhook] Stripe webhook secret is not configured.")
             return Response(
                 content=json.dumps({"error": "Webhook secret not configured"}),
                 status_code=500,
@@ -116,61 +117,71 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None, 
         event = stripe.Webhook.construct_event(
             payload, stripe_signature, WEBHOOK_SECRET
         )
-        logger.info(f"Webhook event verified: {event['id']}, type: {event['type']}")
+        logger.info(f"[Webhook] Webhook event verified: {event['id']}, type: {event['type']}")
 
+        event_type = event["type"]
         # イベントタイプに応じた処理
-        event_type = event['type']
-        event_data = event['data']['object']
-
-        if event_type == 'payment_intent.succeeded':
-            # 支払い成功時の処理
-            payment_intent_id = event_data['id']
-            amount = event_data['amount']
-            currency = event_data['currency']
-            customer_id = event_data.get('customer')
-            metadata = event_data.get('metadata', {})
-
-            logger.info(f"Payment succeeded: {payment_intent_id} for {amount} {currency}")
-
-            # ここにデータベース更新などの処理を追加する
-            # 例: 注文ステータスを更新、メール送信など
-            # TODO: 実際の処理を実装
-
+        if event_type == "payment_intent.succeeded":
+            obj = event["data"]["object"]
+            user_id = obj.get("metadata", {}).get("user_id")
+            point_value = obj.get("metadata", {}).get("point_value")
+            if not user_id or not point_value:
+                logger.error(f"[Webhook] 必須情報なし: user_id={user_id}, point_value={point_value}")
+                return Response(
+                    content=json.dumps({"error": "user_id or point_value missing"}),
+                    status_code=400,
+                    media_type="application/json"
+                )
+            logger.info(f"[Webhook] payment_intent.succeeded: user_id={user_id}, point_value={point_value}")
+            event_id = event.get("id")
+            if not event_id:
+                logger.error("[Webhook] Stripe eventにIDがありません")
+                return Response(
+                    content=json.dumps({"error": "Stripe eventにIDがありません"}),
+                    status_code=400,
+                    media_type="application/json"
+                )
+            # 既に処理済みかチェック
+            exists = db.query(StripeEvent).filter(StripeEvent.event_id == event_id).first()
+            if exists:
+                logger.warning(f"[Webhook] StripeイベントID {event_id} は既に処理済み（二重実行防止）")
+                return Response(
+                    content=json.dumps({"error": "このイベントは既に処理済みです"}),
+                    status_code=200,  # Stripeには200を返すことで再送を防ぐ
+                    media_type="application/json"
+                )
+            # ここでStripeEventを先に記録（ロールバック時は消える）
+            new_event = StripeEvent(event_id=event_id)
+            db.add(new_event)
+            db.flush()  # ID付与のため
+            from app.features.points.services.apply_point_rule_service import apply_point_rule
+            try:
+                apply_point_rule(
+                    db=db,
+                    user_id=int(user_id),
+                    rule_name="purchase",
+                    variables={"amount": int(point_value)},
+                    transaction_type="buyin",
+                )
+                # StripeEventにuser_id, transaction_idを記録（commit前なのでID取得可）
+                new_event.user_id = int(user_id)
+                # transaction_idはapply_point_ruleの返り値から取得可能ならセット
+            except Exception as e:
+                logger.error(f"[Webhook] ポイント付与処理でエラー: {e}")
+                return Response(
+                    content=json.dumps({"error": "apply_point_rule error"}),
+                    status_code=500,
+                    media_type="application/json"
+                )
         elif event_type == 'payment_intent.payment_failed':
-            # 支払い失敗時の処理
-            payment_intent_id = event_data['id']
-            error_message = event_data.get('last_payment_error', {}).get('message', 'Unknown error')
-
-            logger.warning(f"Payment failed: {payment_intent_id} - {error_message}")
-
-            # ここに支払い失敗時の処理を追加する
-            # 例: 注文ステータスを更新、ユーザー通知など
-            # TODO: 実際の処理を実装
-
-        elif event_type == 'checkout.session.completed':
-            # Checkoutセッション完了時の処理
-            session_id = event_data['id']
-            logger.info(f"Checkout session completed: {session_id}")
-
-            # --- Stripe metadata から user_id, amount（ポイント数）を取得 ---
-            metadata = event_data.get('metadata', {})
-            user_id = metadata.get('user_id')
-            amount = metadata.get('amount')
-            if user_id is None or amount is None:
-                logger.error(f"ポイント付与失敗: user_idまたはamountがmetadataにありません (metadata={metadata})")
-            else:
-                from app.features.points.services.apply_point_rule_service import apply_point_rule
-                result = apply_point_rule(db, user_id, 'purchase', {'amount': amount})
-                if result.get('success'):
-                    logger.info(f"ポイント付与成功: user_id={user_id}, amount={amount}")
-                else:
-                    logger.error(f"ポイント付与エラー: {result.get('message')}")
+            payment_intent_id = event["data"]["object"]["id"]
+            logger.warning(f"[Webhook] Payment failed: {payment_intent_id}")
         else:
-            # その他のイベントタイプの処理
-            logger.info(f"Unhandled event type: {event_type}")
+            logger.info(f"[Webhook] Unhandled event type: {event_type}")
 
+        db.commit()
         # 成功レスポンスを返す
-        logger.info(f"Successfully processed event: {event['id']}")
+        logger.info(f"[Webhook] Successfully processed event: {event['id']}")
         return Response(
             content=json.dumps({"status": "success", "event_id": event['id']}),
             status_code=200,
@@ -179,7 +190,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None, 
 
     except ValueError as e:
         # 不正なペイロード
-        logger.error(f"Invalid payload: {e}")
+        logger.error(f"[Webhook] Invalid payload: {e}")
         return Response(
             content=json.dumps({"error": f"Invalid payload: {str(e)}"}),
             status_code=400,
@@ -188,7 +199,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None, 
 
     except stripe.error.SignatureVerificationError as e:
         # 不正な署名
-        logger.error(f"Invalid signature: {e}")
+        logger.error(f"[Webhook] Invalid signature: {e}")
         return Response(
             content=json.dumps({"error": f"Invalid signature: {str(e)}"}),
             status_code=400,
@@ -197,7 +208,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None, 
 
     except Exception as e:
         # その他の予期せぬエラー
-        logger.exception(f"Unexpected error processing webhook: {e}")
+        logger.exception(f"[Webhook] Unexpected error processing webhook: {e}")
         return Response(
             content=json.dumps({"error": "Internal server error"}),
             status_code=500,

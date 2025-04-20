@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import datetime
 from typing import List, Optional
+from decimal import Decimal
 
 class CustomerRsveListItemResponse(BaseModel):
     reservation_id: int
@@ -20,11 +21,22 @@ class CustomerRsveListItemResponse(BaseModel):
     total_price: Optional[int] = None
     last_message_time: Optional[datetime] = None
     last_message_preview: Optional[str] = None
-    color_code: Optional[str] = None  # ✅ 新しく追加する部分
+    color_code: Optional[str] = None  # 
+    course_points: Optional[int] = None  # ← 必須→Optionalに修正
+
+    @validator("course_points", pre=True, always=True)
+    def decimal_to_int(cls, v):
+        print("【DEBUG】バリデータ input:", v, type(v))
+        if v is None:
+            return 0
+        try:
+            return int(v)
+        except Exception as e:
+            print("【ERROR】course_points変換失敗:", v, type(v), e)
+            return 0
 
 class CustomerRsveListResponse(BaseModel):
-    page: int  # ✅ 追加: 取得ページ番号
-    limit: int  # ✅ 追加: 1ページあたりの取得件数
+    page: int  # : 
+    limit: int  # : 1
     total_count: Optional[int] = None 
     reservations: List[CustomerRsveListItemResponse]
-

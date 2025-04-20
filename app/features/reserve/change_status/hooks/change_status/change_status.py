@@ -13,6 +13,12 @@ def change_status(db: Session, reservation_id: int, user_id: int, new_status: st
         insert_status_history(db, reservation_id, user_id, prev_status, new_status, latitude, longitude)  
         update_reservation_status(db, reservation_id, new_status, latitude, longitude)  
 
+        # === ポイント付与処理（完了時のみ） ===
+        if new_status == 'completed':
+            from app.features.points.services.cast_reward_service import grant_cast_reward_points
+            grant_cast_reward_points(db, reservation_id)
+        # === ポイント付与処理ここまで ===
+
         # === 通知処理を追加 ===
         if new_status == 'confirmed':
             try:

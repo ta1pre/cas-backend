@@ -4,10 +4,10 @@ from datetime import datetime, timezone, timedelta
 import json
 import logging
 
-def apply_point_rule(db: Session, user_id: int, rule_name: str, variables: dict = None):
+def apply_point_rule(db: Session, user_id: int, rule_name: str, variables: dict = None, transaction_type: str = None):
     """ ルールを適用してポイントを更新する """
     # <<< ログ追加 >>>
-    logging.info(f"🚀 apply_point_rule 開始: user_id={user_id}, rule_name='{rule_name}', variables={variables}")
+    logging.info(f"🚀 apply_point_rule 開始: user_id={user_id}, rule_name='{rule_name}', variables={variables}, transaction_type={transaction_type}")
 
     # ルール取得
     rule = db.query(PointRule).filter(PointRule.rule_name == rule_name).first()
@@ -96,19 +96,21 @@ def apply_point_rule(db: Session, user_id: int, rule_name: str, variables: dict 
     # <<< ログ追加 >>>
     logging.info(f"  📝 取引履歴作成開始")
 
-    # ===>>> 仕様変更: reservation_payment の場合は transaction_type を 'deposit' にする <<<===
-    current_transaction_type = rule.transaction_type
+    # transaction_typeの決定
+    current_transaction_type = transaction_type or rule.transaction_type or "purchase"
+    # purchaseルールのときは必ずbuyinに
+    if rule_name == "purchase":
+        current_transaction_type = "buyin"
     if rule_name == "reservation_payment":
         current_transaction_type = "deposit"
         logging.info(f"    ⚠️ transaction_type を 'deposit' に設定")
-    # ===>>> 仕様変更ここまで <<<===
     
     transaction = PointTransaction(
         user_id=user_id,
         rule_id=rule.id,
-        transaction_type=current_transaction_type, # 修正: 条件に応じて変更したタイプを使用
-        point_change=point_value,  # 加算/減算ポイント
-        point_source=rule.point_type, # ※ここはルールの設定値のまま
+        transaction_type=current_transaction_type,
+        point_change=point_value,
+        point_source=rule.point_type,
         balance_after=balance.total_point_balance
     )
     

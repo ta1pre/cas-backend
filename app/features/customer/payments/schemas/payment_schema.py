@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 
 class CreatePaymentIntentRequest(BaseModel):
     amount: int
+    points: int # 購入ポイント数（P）
     currency: str = "jpy" # デフォルトは円
     # 必要に応じて他の情報（商品IDなど）を追加
 
