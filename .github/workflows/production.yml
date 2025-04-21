@@ -76,8 +76,7 @@ jobs:
           {"name": "AWS_SECRET_ACCESS_KEY", "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"},
           {"name": "SECRET_KEY", "value": "${{ secrets.SECRET_KEY }}"},
           {"name": "AWS_S3_BUCKET_NAME", "value": "${{ secrets.AWS_S3_BUCKET_NAME }}"},
-          {"name": "AWS_S3_REGION", "value": "${{ secrets.AWS_S3_REGION }}"},
-          {"name": "TEST_KEY", "value": "${{ secrets.TEST_KEY }}"}
+          {"name": "AWS_S3_REGION", "value": "${{ secrets.AWS_S3_REGION }}"}
         ]' task-definition.json > updated-task-definition.json
         mv updated-task-definition.json task-definition.json
         
