@@ -17,7 +17,7 @@ router = APIRouter()
 @router.post("/update")
 def update_profile(request: ProfileUpdateRequest, startPage: Optional[str] = Cookie(None, alias="StartPage"), db: Session = Depends(get_db)):
     setup_repo = SetupStatusRepository(db)
-    print("Received Request:", request.dict())
+    print("Received Request:", request.model_dump())
 
     # ユーザーが存在するか確認
     user = db.query(User).filter(User.id == request.user_id).first()
