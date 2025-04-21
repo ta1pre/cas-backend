@@ -70,7 +70,14 @@ jobs:
           {"name": "MICROCMS_API_KEY", "value": "${{ secrets.MICROCMS_API_KEY }}"},
           {"name": "STRIPE_SECRET_KEY", "value": "${{ secrets.STRIPE_SECRET_KEY }}"},
           {"name": "STRIPE_PUBLISHABLE_KEY", "value": "${{ secrets.STRIPE_PUBLISHABLE_KEY }}"},
-          {"name": "STRIPE_WEBHOOK_SECRET", "value": "${{ secrets.STRIPE_WEBHOOK_SECRET }}"}
+          {"name": "STRIPE_WEBHOOK_SECRET", "value": "${{ secrets.STRIPE_WEBHOOK_SECRET }}"},
+          {"name": "DATABASE_URL", "value": "${{ secrets.DATABASE_URL }}"},
+          {"name": "AWS_ACCESS_KEY_ID", "value": "${{ secrets.AWS_ACCESS_KEY_ID }}"},
+          {"name": "AWS_SECRET_ACCESS_KEY", "value": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"},
+          {"name": "SECRET_KEY", "value": "${{ secrets.SECRET_KEY }}"},
+          {"name": "AWS_S3_BUCKET_NAME", "value": "${{ secrets.AWS_S3_BUCKET_NAME }}"},
+          {"name": "AWS_S3_REGION", "value": "${{ secrets.AWS_S3_REGION }}"},
+          {"name": "TEST_KEY", "value": "${{ secrets.TEST_KEY }}"}
         ]' task-definition.json > updated-task-definition.json
         mv updated-task-definition.json task-definition.json
         
