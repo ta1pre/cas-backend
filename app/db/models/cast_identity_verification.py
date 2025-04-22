@@ -12,6 +12,15 @@ class CastIdentityVerification(Base):
     service_type = Column(Enum('A', 'B', 'AB'), nullable=False, default='A')  # u30b5u30fcu30d3u30b9u7a2eu5225
     id_photo_media_id = Column(Integer, nullable=True)  # u8eabu5206u8a3cu306eu30e1u30c7u30a3u30a2ID
     juminhyo_media_id = Column(Integer, nullable=True)  # u4f4fu6c11u7968u306eu30e1u30c7u30a3u30a2ID
+    
+    # 口座情報フィールド
+    bank_name = Column(String(100), nullable=True)  # 銀行名（例：みずほ銀行）
+    branch_name = Column(String(100), nullable=True)  # 支店名（例：渋谷支店）
+    branch_code = Column(String(10), nullable=True)  # 支店コード（3桁、例：123）
+    account_type = Column(String(20), nullable=True)  # 普通・当座など（例：普通）
+    account_number = Column(String(20), nullable=True)  # 口座番号（例：1234567）
+    account_holder = Column(String(100), nullable=True)  # 口座名義人（例：ヤマダ タロウ）
+    
     submitted_at = Column(DateTime, nullable=True)
     reviewed_at = Column(DateTime, nullable=True)
     reviewer_id = Column(Integer, nullable=True)  # u5be9u67fbu8005ID

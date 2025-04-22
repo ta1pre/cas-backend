@@ -5,18 +5,50 @@ from app.db.models.media_files import MediaFile
 from typing import List, Dict, Any, Optional
 
 # u672cu4ebau78bau8a8du7533u8acbu3092u4f5cu6210u3059u308bu30b5u30fcu30d3u30b9
-def create_verification_request(cast_id: int, service_type: str, id_photo_media_id: int, juminhyo_media_id: Optional[int], db: Session) -> Dict[str, Any]:
+def create_verification_request(cast_id: int, service_type: str, id_photo_media_id: int, juminhyo_media_id: Optional[int], 
+                               bank_name: Optional[str] = None, branch_name: Optional[str] = None, 
+                               branch_code: Optional[str] = None, account_type: Optional[str] = None, 
+                               account_number: Optional[str] = None, account_holder: Optional[str] = None, 
+                               db: Session = None) -> Dict[str, Any]:
     """
     u672cu4ebau78bau8a8du7533u8acbu3092u4f5cu6210u3057u3001u7d50u679cu3092u8fd4u3059
     """
     repo = IdentityVerificationRepository(db)
-    verification = repo.create_verification_request(cast_id, service_type, id_photo_media_id, juminhyo_media_id)
+    verification = repo.create_verification_request(
+        cast_id, service_type, id_photo_media_id, juminhyo_media_id,
+        bank_name, branch_name, branch_code, account_type, account_number, account_holder
+    )
     
     return {
         "cast_id": verification.cast_id,
         "status": verification.status,
         "submitted_at": verification.submitted_at,
         "message": "u672cu4ebau78bau8a8du7533u8acbu3092u53d7u3051u4ed8u3051u307eu3057u305fu3002u5be9u67fbu7d50u679cu3092u304au5f85u3061u304fu3060u3055u3044u3002"
+    }
+
+# u53e3u5ea7u60c5u5831u306eu307fu3092u66f4u65b0u3059u308bu30b5u30fcu30d3u30b9
+def update_bank_account(cast_id: int, bank_name: str, branch_name: str, branch_code: str, 
+                      account_type: str, account_number: str, account_holder: str, 
+                      db: Session) -> Dict[str, Any]:
+    """
+    u30adu30e3u30b9u30c8u306eu53e3u5ea7u60c5u5831u306eu307fu3092u66f4u65b0u3059u308b
+    """
+    repo = IdentityVerificationRepository(db)
+    verification = repo.update_bank_account(
+        cast_id, bank_name, branch_name, branch_code, 
+        account_type, account_number, account_holder
+    )
+    
+    return {
+        "cast_id": verification.cast_id,
+        "status": verification.status,
+        "bank_name": verification.bank_name,
+        "branch_name": verification.branch_name,
+        "branch_code": verification.branch_code,
+        "account_type": verification.account_type,
+        "account_number": verification.account_number,
+        "account_holder": verification.account_holder,
+        "message": "u53e3u5ea7u60c5u5831u304cu6b63u5e38u306bu66f4u65b0u3055u308cu307eu3057u305fu3002"
     }
 
 # u672cu4ebau78bau8a8du30b9u30c6u30fcu30bfu30b9u3092u53d6u5f97u3059u308bu30b5u30fcu30d3u30b9
@@ -49,6 +81,12 @@ def get_verification_status(cast_id: int, db: Session) -> Dict[str, Any]:
         "submitted_at": verification.submitted_at,
         "reviewed_at": verification.reviewed_at,
         "rejection_reason": verification.rejection_reason,
+        "bank_name": verification.bank_name,
+        "branch_name": verification.branch_name,
+        "branch_code": verification.branch_code,
+        "account_type": verification.account_type,
+        "account_number": verification.account_number,
+        "account_holder": verification.account_holder,
         "message": message
     }
 
@@ -72,6 +110,12 @@ def review_verification(cast_id: int, status: str, reviewer_id: int, rejection_r
         "submitted_at": verification.submitted_at,
         "reviewed_at": verification.reviewed_at,
         "rejection_reason": verification.rejection_reason,
+        "bank_name": verification.bank_name,
+        "branch_name": verification.branch_name,
+        "branch_code": verification.branch_code,
+        "account_type": verification.account_type,
+        "account_number": verification.account_number,
+        "account_holder": verification.account_holder,
         "message": message
     }
 
