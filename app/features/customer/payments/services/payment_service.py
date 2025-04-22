@@ -53,31 +53,41 @@ async def create_payment_intent(db: Session, user, payment_data: CreatePaymentIn
             user_id = int(user) if isinstance(user, str) and str(user).isdigit() else user
             user_obj = db.query(User).filter(User.id == user_id).first()
             if not user_obj:
-                logger.error(f"User not found: {user}")
-                raise Exception(f"User not found: {user}")
+                logger.error(f"User not found: {user}", exc_info=True)
+                raise HTTPException(status_code=404, detail="ユーザーが見つかりませんでした。")
             user = user_obj
 
         # ここでcustomer_idを必ず取得（無ければ自動生成＆保存）
-        stripe_customer_id = await get_or_create_stripe_customer(db, user)
+        try:
+            stripe_customer_id = await get_or_create_stripe_customer(db, user)
+        except Exception as e:
+            logger.error(f"StripeカスタマーID取得エラー: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="決済用顧客情報の取得に失敗しました。")
 
-        intent = stripe.PaymentIntent.create(
-            amount=payment_data.amount,
-            currency="jpy",
-            customer=stripe_customer_id,
-            payment_method_types=['card', 'link'],  # Link決済を有効化
-            metadata={
-                'user_id': str(user.id),
-                'point_value': str(payment_data.points)  # ここでポイント数も必ずセット
-            }
-        )
-        logger.info(f"PaymentIntent created for user {user.id}: {intent.id}")
-        return intent.client_secret
-    except stripe.error.StripeError as e:
-        logger.error(f"Stripe API error during PaymentIntent creation: {e}")
-        raise
+        try:
+            intent = stripe.PaymentIntent.create(
+                amount=payment_data.amount,
+                currency="jpy",
+                customer=stripe_customer_id,
+                payment_method_types=['card', 'link'],  # Link決済を有効化
+                metadata={
+                    'user_id': str(user.id),
+                    'point_value': str(payment_data.points)  # ここでポイント数も必ずセット
+                }
+            )
+            logger.info(f"PaymentIntent created for user {user.id}: {intent.id}")
+            return intent.client_secret
+        except stripe.error.StripeError as e:
+            logger.error(f"Stripe API error during PaymentIntent creation: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="決済処理に失敗しました。Stripeに問題が発生しています。")
+        except Exception as e:
+            logger.error(f"Unexpected error during PaymentIntent creation: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="予期せぬエラーが発生しました。決済処理に失敗しました。")
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        logger.error(f"Unexpected error during PaymentIntent creation: {e}")
-        raise
+        logger.error(f"create_payment_intent全体での予期せぬエラー: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="予期せぬエラーが発生しました。決済処理に失敗しました。")
 
 async def handle_webhook_event(payload: str, sig_header: str):
     """
