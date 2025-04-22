@@ -22,7 +22,7 @@ def apply_point_rule_api(
 ):
     """
     ✅ ルールを適用するAPI
-    - rule_name に一致するルールをDBから取得し、適用
+    - 「rule_name」 に一致するルールをDBから取得し、適用
     - 可変パラメータ（変数ありの場合）は `data.variables` に渡す
     """
     result = apply_point_rule(db, data.user_id, data.rule_name, data.variables)
