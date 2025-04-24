@@ -6,6 +6,7 @@ from app.features.reserve.repositories.customer.offer_chat_repository import sav
 from datetime import datetime
 import dateutil.parser
 from datetime import timezone, timedelta
+from app.features.notifications.handlers.reservation_created import send_reservation_created
 
 def create_reservation(db: Session, data: OfferReservationCreate) -> OfferReservationResponse:
     """
@@ -35,5 +36,11 @@ def create_reservation(db: Session, data: OfferReservationCreate) -> OfferReserv
     # メッセージがあればチャットに保存
     if data.message.strip():
         save_chat(db, reservation.id, data.userId, "user", data.message)
+
+    # 予約作成時にLINE通知を送信
+    try:
+        send_reservation_created(db, reservation.id, data.userId)
+    except Exception as e:
+        print(f"LINE通知送信エラー: {e}")
 
     return OfferReservationResponse(reservation_id=reservation.id, status="requested")
