@@ -46,6 +46,14 @@ master_router.include_router(identity_router, prefix="/cast/identity-verificatio
 from app.features.admin.test_login.endpoints.test_login_routers import test_login_router
 master_router.include_router(test_login_router, prefix="/admin/test-login", tags=["Admin"])
 
+# Tenant（管理アカウント管理）
+from app.features.admin.tenant.endpoints.tenant_routers import tenant_router
+master_router.include_router(
+    tenant_router,
+    prefix="/admin/tenant",
+    tags=["Tenant"]
+)
+
 # POINT - ポイント
 from app.features.points.endpoints.points_routers import points_routers
 master_router.include_router(points_routers, prefix="/points", tags=["Points"])
@@ -113,3 +121,10 @@ master_router.include_router(
 from app.features.posts.endpoints.post_routers import posts_router
 master_router.include_router(posts_router, prefix="/posts", tags=["Posts"])
 
+# テナント用APIルーターを /tenants でincludeする
+from app.features.tenant.endpoints.tenant_routers import tenant_router
+master_router.include_router(
+    tenant_router,
+    prefix="/tenants",
+    tags=["Tenants"]
+)

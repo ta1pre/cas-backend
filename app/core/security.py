@@ -4,9 +4,12 @@ from fastapi import HTTPException, Depends, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
 from app.core.config import SECRET_KEY, REFRESH_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
+from passlib.context import CryptContext
 
 # ✅ Bearerトークンのスキーム
 security = HTTPBearer()
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_access_token(user_id: str, user_type: Optional[str] = None, affi_type: Optional[int] = None):
     """JWTアクセストークンを生成（短期間有効）"""
@@ -48,6 +51,12 @@ def verify_refresh_token(token: str):
         return payload
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_current_user(
     request: Request,
