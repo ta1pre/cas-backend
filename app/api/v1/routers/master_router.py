@@ -109,6 +109,10 @@ master_router.include_router(
     tags=["Cast Profile"]
 )
 
+# Cast Available（キャスト利用可能API）
+from app.features.cast.available.endpoints.available_routers import available_router
+master_router.include_router(available_router, prefix="/cast", tags=["Cast - Available"])
+
 # User Profile（ユーザープロフィール情報）
 from app.features.customer.user_profile.endpoints.user_profile_routers import user_profile_router
 master_router.include_router(
