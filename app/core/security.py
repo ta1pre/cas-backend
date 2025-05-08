@@ -58,14 +58,24 @@ def get_password_hash(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.db.models.user import User
+
 def get_current_user(
     request: Request,
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
 ):
-    """✅ 認証済みユーザーのIDを取得"""
+    """✅ 認証済みユーザーのUserモデルインスタンスを返す"""
     if request.method == "OPTIONS":
         return None
 
     token = credentials.credentials
     token_data = verify_access_token(token)
-    return token_data["user_id"]
+    user_id = token_data["user_id"]
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
+

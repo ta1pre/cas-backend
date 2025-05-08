@@ -132,3 +132,7 @@ master_router.include_router(
     prefix="/tenants",
     tags=["Tenants"]
 )
+
+# REFERRAL - 紹介機能
+from app.features.referral.endpoints.referral_routers import referral_router
+master_router.include_router(referral_router, prefix="/referral", tags=["Referral"])
