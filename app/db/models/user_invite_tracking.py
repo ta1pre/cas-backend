@@ -9,7 +9,7 @@ class UserInviteTracking(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     inviter_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    invited_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    invited_user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
 
     display_number = Column(Integer, nullable=False)  # 紹介ユーザー①〜の表示用番号
     total_earned_point = Column(Integer, default=0)   # 累計ポイント
