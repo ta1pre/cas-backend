@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from app.db.models.user import User
 from app.db.session import get_db
 from app.core.security import get_current_user
 from app.features.cast.identity_verification.schemas.identity_schema import (
@@ -115,17 +116,18 @@ def update_bank_account_endpoint(
         raise
 
 # 本人確認ステータス確認エンドポイント（GET/POSTの両方をサポート）
-@identity_router.get("/status", response_model=IdentityVerificationResponse)
-@identity_router.post("/status", response_model=IdentityVerificationResponse)
+@identity_router.get("/status")
+@identity_router.post("/status")
 def check_verification_status(
     db: Session = Depends(get_db),
-    user_id: int = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
-    本人確認のステータスを確認する
-    GET/POSTの両方をサポート
+    本人確認ステータス取得（レスポンスモデル一時無効）
     """
-    return get_verification_status(user_id, db)
+    result = get_verification_status(current_user.id, db)
+    print(f"[ROUTER DEBUG] Returning result: {result}")  # レスポンス確認用
+    return result
 
 # 本人確認書類一覧取得エンドポイント（GET/POSTの両方をサポート）
 @identity_router.get("/documents", response_model=IdentityDocumentsResponse)

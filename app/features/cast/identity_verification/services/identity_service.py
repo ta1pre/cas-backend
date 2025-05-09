@@ -4,14 +4,14 @@ from app.db.models.cast_identity_verification import CastIdentityVerification
 from app.db.models.media_files import MediaFile
 from typing import List, Dict, Any, Optional
 
-# u672cu4ebau78bau8a8du7533u8acbu3092u4f5cu6210u3059u308bu30b5u30fcu30d3u30b9
+# 本人確認申請を作成するサービス
 def create_verification_request(cast_id: int, service_type: str, id_photo_media_id: int, juminhyo_media_id: Optional[int], 
                                bank_name: Optional[str] = None, branch_name: Optional[str] = None, 
                                branch_code: Optional[str] = None, account_type: Optional[str] = None, 
                                account_number: Optional[str] = None, account_holder: Optional[str] = None, 
                                db: Session = None) -> Dict[str, Any]:
     """
-    u672cu4ebau78bau8a8du7533u8acbu3092u4f5cu6210u3057u3001u7d50u679cu3092u8fd4u3059
+    本人確認申請を作成し、結果を返す
     """
     repo = IdentityVerificationRepository(db)
     verification = repo.create_verification_request(
@@ -23,15 +23,15 @@ def create_verification_request(cast_id: int, service_type: str, id_photo_media_
         "cast_id": verification.cast_id,
         "status": verification.status,
         "submitted_at": verification.submitted_at,
-        "message": "u672cu4ebau78bau8a8du7533u8acbu3092u53d7u3051u4ed8u3051u307eu3057u305fu3002u5be9u67fbu7d50u679cu3092u304au5f85u3061u304fu3060u3055u3044u3002"
+        "message": "本人確認申請を作成しました。後日結果を確認してください。"
     }
 
-# u53e3u5ea7u60c5u5831u306eu307fu3092u66f4u65b0u3059u308bu30b5u30fcu30d3u30b9
+# 銀行口座情報を更新するサービス
 def update_bank_account(cast_id: int, bank_name: str, branch_name: str, branch_code: str, 
                       account_type: str, account_number: str, account_holder: str, 
                       db: Session) -> Dict[str, Any]:
     """
-    u30adu30e3u30b9u30c8u306eu53e3u5ea7u60c5u5831u306eu307fu3092u66f4u65b0u3059u308b
+    本人確認申請中の銀行口座情報を更新する
     """
     repo = IdentityVerificationRepository(db)
     verification = repo.update_bank_account(
@@ -48,32 +48,38 @@ def update_bank_account(cast_id: int, bank_name: str, branch_name: str, branch_c
         "account_type": verification.account_type,
         "account_number": verification.account_number,
         "account_holder": verification.account_holder,
-        "message": "u53e3u5ea7u60c5u5831u304cu6b63u5e38u306bu66f4u65b0u3055u308cu307eu3057u305fu3002"
+        "message": "銀行口座情報を更新しました。"
     }
 
-# u672cu4ebau78bau8a8du30b9u30c6u30fcu30bfu30b9u3092u53d6u5f97u3059u308bu30b5u30fcu30d3u30b9
+# 本人確認ステータスを取得するサービス
 def get_verification_status(cast_id: int, db: Session) -> Dict[str, Any]:
     """
-    u30adu30e3u30b9u30c8u306eu672cu4ebau78bau8a8du30b9u30c6u30fcu30bfu30b9u3092u53d6u5f97
+    キャストの本人確認ステータスを取得
     """
+    print(f"[DEBUG] Received cast_id: {cast_id}, type: {type(cast_id)}")  # デバッグログ
+    
+    # cast_idがUserオブジェクトの場合に備えて処理
+    actual_cast_id = cast_id.id if hasattr(cast_id, 'id') else cast_id
+    print(f"[DEBUG] Using cast_id: {actual_cast_id}")  # デバッグログ
+    
     repo = IdentityVerificationRepository(db)
-    verification = repo.get_verification_status(cast_id)
+    verification = repo.get_verification_status(actual_cast_id)
     
     if not verification:
         return {
-            "cast_id": cast_id,
+            "cast_id": actual_cast_id,
             "status": "unsubmitted",
-            "message": "u672cu4ebau78bau8a8du7533u8acbu304cu307eu3060u884cu308fu308cu3066u3044u307eu305bu3093u3002"
+            "message": "本人確認申請がまだ行われていません。"
         }
     
-    # u30b9u30c6u30fcu30bfu30b9u306bu5fdcu3058u305fu30e1u30c3u30bbu30fcu30b8u3092u8a2du5b9a
+    # ステータスメッセージを設定
     message = ""
     if verification.status == "pending":
-        message = "u672cu4ebau78bau8a8du7533u8acbu3092u53d7u3051u4ed8u3051u307eu3057u305fu3002u5be9u67fbu7d50u679cu3092u304au5f85u3061u304fu3060u3055u3044u3002"
+        message = "本人確認申請を作成しました。後日結果を確認してください。"
     elif verification.status == "approved":
-        message = "u672cu4ebau78bau8a8du304cu5b8cu4e86u3057u307eu3057u305fu3002"
+        message = "本人確認が承認されました。"
     elif verification.status == "rejected":
-        message = f"u672cu4ebau78bau8a8du304cu5374u4e0bu3055u308cu307eu3057u305fu3002u7406u7531: {verification.rejection_reason or 'u8a73u7d30u306au7406u7531u306fu8a18u8f09u3055u308cu3066u3044u307eu305bu3093'}"
+        message = f"本人確認が却下されました。理由: {verification.rejection_reason or '不明な理由で却下されました'}"
     
     return {
         "cast_id": verification.cast_id,
@@ -90,19 +96,19 @@ def get_verification_status(cast_id: int, db: Session) -> Dict[str, Any]:
         "message": message
     }
 
-# u7ba1u7406u8005u304cu672cu4ebau78bau8a8du3092u5be9u67fbu3059u308bu30b5u30fcu30d3u30b9
+# 管理者が本人確認を審査するサービス
 def review_verification(cast_id: int, status: str, reviewer_id: int, rejection_reason: Optional[str], db: Session) -> Dict[str, Any]:
     """
-    u7ba1u7406u8005u304cu672cu4ebau78bau8a8du3092u5be9u67fbu3057u3001u7d50u679cu3092u66f4u65b0u3059u308b
+    管理者が本人確認を審査し、結果を更新する
     """
     repo = IdentityVerificationRepository(db)
     verification = repo.update_verification_status(cast_id, status, reviewer_id, rejection_reason)
     
-    message = "u5be9u67fbu304cu5b8cu4e86u3057u307eu3057u305fu3002"
+    message = "審査結果を更新しました。"
     if status == "approved":
-        message = "u672cu4ebau78bau8a8du3092u627fu8a8du3057u307eu3057u305fu3002"
+        message = "本人確認を承認しました。"
     elif status == "rejected":
-        message = f"u672cu4ebau78bau8a8du3092u5374u4e0bu3057u307eu3057u305fu3002u7406u7531: {verification.rejection_reason or 'u8a73u7d30u306au7406u7531u306fu8a18u8f09u3055u308cu3066u3044u307eu305bu3093'}"
+        message = f"本人確認を却下しました。理由: {verification.rejection_reason or '不明な理由で却下されました'}"
     
     return {
         "cast_id": verification.cast_id,
@@ -119,17 +125,17 @@ def review_verification(cast_id: int, status: str, reviewer_id: int, rejection_r
         "message": message
     }
 
-# u672cu4ebau78bau8a8du66f8u985eu3092u53d6u5f97u3059u308bu30b5u30fcu30d3u30b9
+# 本人確認書類を取得するサービス
 def get_verification_documents(cast_id: int, db: Session) -> List[Dict[str, Any]]:
     """
-    u30adu30e3u30b9u30c8u306eu672cu4ebau78bau8a8du66f8u985eu3092u53d6u5f97
+    キャストの本人確認書類を取得
     """
     repo = IdentityVerificationRepository(db)
     documents = repo.get_verification_documents(cast_id)
     
     result = []
     for doc in documents:
-        doc_type = "u5199u771fu4ed8u304du8eabu5206u8a3cu660eu66f8" if doc.order_index == 0 else "u4f4fu6c11u7968"
+        doc_type = "身分証明書" if doc.order_index == 0 else "住民票"
         result.append({
             "document_type": doc_type,
             "file_url": doc.file_url,
