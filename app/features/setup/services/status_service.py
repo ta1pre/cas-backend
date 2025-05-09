@@ -6,6 +6,7 @@ from app.features.media.services.media_delete import delete_s3_file
 from app.features.media.repositories.media_repository import delete_media_records
 from app.db.models.media_files import MediaFile
 from app.db.models.user import User
+from app.features.referral.hooks.setup_completed_hook import on_setup_completed
 
 
 def delete_cast_profile(user_id: int, db: Session):
@@ -73,10 +74,10 @@ def update_user_setup_status(user_id: int, db: Session):
         
     # ユーザータイプに応じた必須項目チェック
     if user.user_type == "cast":
-        # キャストの場合は、cast_common_profが存在し、必須項目が揃っているか確認
+        # キャストの場合は、cast_common_profが設定されているか確認
         cast_profile = db.query(CastCommonProf).filter(CastCommonProf.cast_id == user_id).first()
-        if not cast_profile or not cast_profile.name or not cast_profile.age:
-            print(f"[WARNING] ⚠️ ユーザー {user_id} のキャストプロフィールが不完全です。setup_statusを更新しません")
+        if not cast_profile:
+            print(f"[WARNING] ⚠️ ユーザー {user_id} のキャストプロフィールが設定されていません。setup_statusを更新しません")
             return
     elif user.user_type == "customer":
         # カスタマーの場合は、nick_nameが設定されているか確認
@@ -88,3 +89,6 @@ def update_user_setup_status(user_id: int, db: Session):
     user.setup_status = "completed"
     db.commit()
     print(f"[INFO] ✅ ユーザー {user_id} の setup_status を 'completed' に更新")
+    
+    # 招待コード登録フックを呼び出し
+    on_setup_completed(user_id, db)
