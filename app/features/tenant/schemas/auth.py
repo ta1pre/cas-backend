@@ -6,4 +6,5 @@ class TenantLoginRequest(BaseModel):
 
 class TenantLoginResponse(BaseModel):
     access_token: str
+    refresh_token: str  # リフレッシュトークンを追加
     token_type: str = "bearer"

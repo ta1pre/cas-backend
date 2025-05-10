@@ -38,4 +38,7 @@ class CastCommonProf(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=True)
     
+    tenant = Column(Integer, ForeignKey("users.id"), nullable=False, comment="所属店舗ID（users.id）")
+    tenant_user = relationship("User", backref="cast_members", foreign_keys=[tenant])
+
     option_map = relationship("PointOptionMap", back_populates="cast")
