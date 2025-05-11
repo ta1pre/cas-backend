@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 import uuid
 from app.db.models import user as user_model
-from app.db.models import cast_common_prof
+from app.db.models.cast_common_prof import CastCommonProf
 from ..schemas.cast import CastOut
 from typing import List
 
@@ -18,7 +18,7 @@ def register_cast(db: Session, nick_name: str, tenant_id: int) -> CastOut:
     db.add(new_user)
     db.commit()
 
-    new_cast = cast_common_prof.CastCommonProf(
+    new_cast = CastCommonProf(
         cast_id=new_user.id,
         tenant=tenant_id,
         name=nick_name
@@ -33,11 +33,27 @@ def register_cast(db: Session, nick_name: str, tenant_id: int) -> CastOut:
     )
 
 def fetch_casts_for_tenant(db: Session, tenant_id: int) -> List[CastOut]:
-    casts = db.query(cast_common_prof.CastCommonProf).filter(
-        cast_common_prof.CastCommonProf.tenant == tenant_id
+    casts = db.query(CastCommonProf).filter(
+        CastCommonProf.tenant == tenant_id
     ).all()
     return [CastOut(
         id=cast.cast_id,
         name=cast.name,
         tenant=cast.tenant
     ) for cast in casts]
+
+def update_cast_profile(db: Session, cast_id: int, nick_name: str, tenant_id: int) -> CastOut:
+    cast = db.query(CastCommonProf).filter(
+        CastCommonProf.cast_id == cast_id,
+        CastCommonProf.tenant == tenant_id
+    ).first()
+    if not cast:
+        raise ValueError("キャストが見つかりません")
+    cast.name = nick_name
+    db.commit()
+    db.refresh(cast)
+    return CastOut(
+        id=cast.cast_id,
+        name=cast.name,
+        tenant=cast.tenant
+    )
