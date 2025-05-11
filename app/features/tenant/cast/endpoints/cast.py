@@ -20,14 +20,14 @@ def get_casts(db: Session = Depends(get_db), current_user=Depends(get_current_us
 @router.post("/create")
 def save_cast(
     cast_id: Optional[int] = Body(None),
-    nick_name: str = Body(..., embed=True),
+    cast: CastCreate = Body(...),
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
     try:
         if cast_id:
-            return update_cast_profile(db, cast_id, nick_name, current_user.id)
-        return register_cast(db, nick_name, current_user.id)
+            return update_cast_profile(db, cast_id, cast, current_user.id)
+        return register_cast(db, cast, current_user.id)
     except ValueError as e:
         raise HTTPException(404, str(e))
     except Exception as e:
