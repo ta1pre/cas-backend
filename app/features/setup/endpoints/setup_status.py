@@ -75,6 +75,9 @@ def update_profile(request: ProfileUpdateRequest, startPage: Optional[str] = Coo
             cast_profile.cast_type = 'A' if startPage == "cast:cas" else 'B'
         elif request.cast_type:
             cast_profile.cast_type = 'A' if request.cast_type == 'cas' else 'B'
+        # tenant が未設定の場合は自身の user_id を設定 (暫定)
+        if not cast_profile.tenant:
+            cast_profile.tenant = request.user_id
     else:
         # 新規作成 (rank_id を 1 に設定)
         try:
@@ -82,6 +85,7 @@ def update_profile(request: ProfileUpdateRequest, startPage: Optional[str] = Coo
                 cast_id=request.user_id,
                 cast_type='A' if startPage == 'cast:cas' or (not request.cast_type or request.cast_type == 'cas') else 'B',
                 rank_id=1,
+                tenant=request.user_id,
                 name=request.profile_data.get("cast_name"),
                 age=request.profile_data.get("age"),
                 height=request.profile_data.get("height")
