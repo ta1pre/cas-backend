@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import asc
 from app.db.models.cast_servicetype import CastServiceType, CastServiceTypeList  
+from app.db.models.cast_common_prof import CastCommonProf
+from fastapi import HTTPException
 import logging
 
 logger = logging.getLogger(__name__)
@@ -44,6 +46,12 @@ class ServiceTypeRepository:
         ✅ キャストのサービスタイプをまとめて登録
         """
         logger.info(f"【service type register】キャストID: {cast_id} | 登録するサービスタイプID: {servicetype_ids}")
+
+        # キャストプロフィールの存在を確認
+        cast_profile = self.db.query(CastCommonProf).filter(CastCommonProf.cast_id == cast_id).first()
+        if not cast_profile:
+            logger.error(f"【service type register】エラー: キャストID {cast_id} のプロフィールが存在しません")
+            raise HTTPException(status_code=400, detail=f"キャストID {cast_id} のプロフィールが存在しません。先にキャスト登録を完了してください")
 
         new_services = [CastServiceType(cast_id=cast_id, servicetype_id=servicetype_id) for servicetype_id in servicetype_ids]
         logger.info(f"【service type register】登録データ: {new_services}")
