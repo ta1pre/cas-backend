@@ -9,6 +9,40 @@ from app.db.models.cast_identity_verification import CastIdentityVerification
 class CastRepository:
     """データベースからキャスト情報を取得するリポジトリ"""
 
+    def update_identity_verification_status(
+        self,
+        cast_id: int,
+        new_status: str,
+        reviewer_id: int,
+        rejection_reason: str | None = None,
+    ) -> dict:
+        """キャストの本人確認ステータスを更新 / 作成
+
+        Returns updated record as dict.
+        """
+        record = (
+            self.db.query(CastIdentityVerification)
+            .filter(CastIdentityVerification.cast_id == cast_id)
+            .one_or_none()
+        )
+        if record is None:
+            record = CastIdentityVerification(cast_id=cast_id)
+            self.db.add(record)
+
+        record.status = new_status
+        record.reviewer_id = reviewer_id
+        record.reviewed_at = func.now()
+        if new_status == "rejected":
+            record.rejection_reason = rejection_reason or ""
+        else:
+            record.rejection_reason = None
+        self.db.commit()
+        self.db.refresh(record)
+        return {
+            "cast_id": record.cast_id,
+            "status": record.status,
+        }
+
     def __init__(self, db: Session):
         self.db = db
 

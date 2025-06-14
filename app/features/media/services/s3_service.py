@@ -1,5 +1,6 @@
 import boto3
 import os
+from urllib.parse import quote  # ⭐️ Add for safe URL encoding
 from dotenv import load_dotenv
 
 # ✅ 環境変数の読み込み
@@ -24,7 +25,9 @@ def generate_presigned_url(file_name: str, file_type: str, target_type: str, tar
     """
     S3 にアップロードするための署名付きURLを発行
     """
-    key = f"{target_id}/{target_type}/{order_index}/{file_name}"  # ✅ ディレクトリ構造を変更
+    # URL-encode the file name exactly once to avoid double encoding issues
+    encoded_file_name = quote(file_name, safe="")
+    key = f"{target_id}/{target_type}/{order_index}/{encoded_file_name}"  # ✅ ディレクトリ構造を変更
 
     return s3_client.generate_presigned_url(
         ClientMethod="put_object",

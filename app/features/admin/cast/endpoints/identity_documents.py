@@ -4,6 +4,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+import os
+from urllib.parse import urlparse
+import boto3
+
 from app.db.session import get_db
 from app.db.models.media_files import MediaFile
 from app.features.admin.cast.schemas.identity_document import IdentityDocOut
@@ -39,13 +43,37 @@ async def list_identity_documents(
             detail="No documents found",
         )
 
-    # file_url → url へマッピング
+        # S3 presigned URL を生成して返却
+    s3_client = boto3.client(
+        "s3",
+        region_name=os.getenv("AWS_REGION", "ap-northeast-1"),
+    )
+    bucket_name = os.getenv("S3_BUCKET_NAME", "cast-media")
+
+    def _make_url(original_url: str):
+        # 既に ?Expires= が付与されていればキーを抽出
+        if original_url.startswith("https://"):
+            parsed = urlparse(original_url)
+            key = parsed.path.lstrip("/")
+        else:
+            key = original_url.lstrip("/")
+        try:
+            return s3_client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": bucket_name, "Key": key},
+                ExpiresIn=60 * 60,  # 1時間
+            )
+        except Exception as e:
+            print("[identity_documents] presign error", e)
+            # フォールバックとして元URLを返す
+            return original_url
+
     return [
         IdentityDocOut(
             id=doc.id,
-            url=doc.file_url,
+            url=_make_url(doc.file_url),
             created_at=doc.created_at,
-            status=None,  # 余地
+            status=None,
         )
         for doc in records
     ]
