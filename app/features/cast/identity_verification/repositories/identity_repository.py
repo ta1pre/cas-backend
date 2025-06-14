@@ -28,6 +28,10 @@ class IdentityVerificationRepository:
         """
         本人確認申請を取得
         """
+        # cast_id が User オブジェクトの場合は id を取り出して数値化
+        if hasattr(cast_id, "id"):
+            cast_id = cast_id.id
+        
         print(f"メッセージ: create_verification_request呼び出し - cast_id={cast_id}, service_type={service_type}, id_photo_media_id={id_photo_media_id}, juminhyo_media_id={juminhyo_media_id}")
         print(f"口座情報: bank_name={bank_name}, branch_name={branch_name}, branch_code={branch_code}, account_type={account_type}, account_number={account_number}, account_holder={account_holder}")
         
@@ -134,6 +138,10 @@ class IdentityVerificationRepository:
         """
         口座情報を更新します
         """
+        # cast_id が User オブジェクトの場合は id を取り出して数値化
+        if hasattr(cast_id, "id"):
+            cast_id = cast_id.id
+        
         # 既存の本人確認申請を取得
         verification = self.get_verification_status(cast_id)
         

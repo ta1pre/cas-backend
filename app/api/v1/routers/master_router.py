@@ -46,6 +46,10 @@ master_router.include_router(identity_router, prefix="/cast/identity-verificatio
 from app.features.admin.test_login.endpoints.test_login_routers import test_login_router
 master_router.include_router(test_login_router, prefix="/admin/test-login", tags=["Admin"])
 
+# === Admin - Cast 管理ルーター ===
+from app.features.admin.cast.endpoints.cast_routers import admin_cast_router
+master_router.include_router(admin_cast_router, prefix="/admin/cast", tags=["Admin - Cast"])
+
 # Tenant（管理アカウント管理）
 from app.features.admin.tenant.endpoints.tenant_routers import tenant_router
 master_router.include_router(
