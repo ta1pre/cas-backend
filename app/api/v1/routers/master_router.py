@@ -58,6 +58,10 @@ master_router.include_router(
     tags=["Tenant"]
 )
 
+# WITHDRAWAL - 出金申請
+from app.features.withdrawal.endpoints.withdrawal_router import withdrawal_router
+master_router.include_router(withdrawal_router, prefix="/withdrawal", tags=["Withdrawal"])
+
 # POINT - ポイント
 from app.features.points.endpoints.points_routers import points_routers
 master_router.include_router(points_routers, prefix="/points", tags=["Points"])

@@ -25,8 +25,8 @@ class PointTransaction(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # ✅ ユーザーID
     rule_id = Column(Integer, ForeignKey("pnt_details_rules.id", ondelete="SET NULL"), nullable=True)  # ✅ ルールID（外部キー）
     related_id = Column(Integer, nullable=True)  # ✅ 関連ID（予約IDなど）
-    related_table = Column(Enum("reservation", "event", "coupon", "purchase", "manual_adjustment", name="related_table_enum"), nullable=True)  # ✅ 関連テーブル種別
-    transaction_type = Column(Enum("deposit", "refund", "release", "event_bonus", "manual_adjustment", "purchase", "reservation_payment", "buyin", name="transaction_type_enum"), nullable=False)  # ✅ 取引タイプ
+    related_table = Column(Enum("reservation", "event", "coupon", "purchase", "manual_adjustment", "withdrawal", name="related_table_enum"), nullable=True)  # ✅ 関連テーブル種別
+    transaction_type = Column(Enum("deposit", "refund", "release", "event_bonus", "manual_adjustment", "purchase", "reservation_payment", "buyin", "withdrawal_request", name="transaction_type_enum"), nullable=False)  # ✅ 取引タイプ
     point_change = Column(Integer, nullable=False)  # ✅ 変更ポイント数
     point_source = Column(Enum("regular", "bonus", name="point_source_enum"), nullable=False, default="regular")  # ✅ ポイント種別
     balance_after = Column(Integer, nullable=False)  # ✅ 取引後の残高
