@@ -43,6 +43,8 @@ class CastWithdrawalRequest(Base):
     id = Column(Integer, primary_key=True, autoincrement=True, comment="主キー：出金申請ID")
     cast_id = Column(Integer, ForeignKey("users.id"), nullable=False, comment="キャストID（users.id）")
     amount = Column(Integer, nullable=False, comment="出金申請額（ポイント＝円）")
+    regular_amount = Column(Integer, nullable=True, default=0, comment="通常ポイント出金申請額")
+    bonus_amount = Column(Integer, nullable=True, default=0, comment="ボーナスポイント出金申請額")
     status = Column(
         Enum(
             "pending",
