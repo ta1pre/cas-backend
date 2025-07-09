@@ -4,6 +4,8 @@ from typing import List, Optional
 from app.core.security import get_current_user
 from app.db.session import get_db
 from app.features.posts.schemas.post_schema import PostCreate, PostResponse, PostUpdate, PostDelete, PostLike, PostDetail
+from app.db.models.user import User
+from app.db.models.user import User
 from app.features.posts.services.post_service import (
     create_post_service,
     get_post_service,
@@ -20,7 +22,7 @@ router = APIRouter()
 def create_post(
     post_data: PostCreate,
     db: Session = Depends(get_db),
-    current_user: int = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
     新しい投稿を作成する
@@ -28,14 +30,14 @@ def create_post(
     Args:
         post_data: 投稿データ
         db: データベースセッション
-        current_user: 認証済みユーザーID
+        current_user: 認証済みユーザー
     
     Returns:
         作成された投稿情報
     """
     try:
         # 現在のユーザーIDをキャストIDとして使用
-        cast_id = current_user
+        cast_id = current_user.id
         
         # 投稿を作成
         db_post = create_post_service(db=db, cast_id=cast_id, post_data=post_data)
@@ -52,7 +54,7 @@ def get_cast_posts(
     skip: int = Body(0),
     limit: int = Body(20),
     db: Session = Depends(get_db),
-    current_user: Optional[int] = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_current_user)
 ):
     """
     キャストの投稿一覧を取得する
@@ -62,13 +64,15 @@ def get_cast_posts(
         skip: スキップする件数
         limit: 取得件数上限
         db: データベースセッション
-        current_user: 認証済みユーザーID
+        current_user: 認証済みユーザー（認証されていない場合はNone）
     
     Returns:
         投稿のリスト
     """
     try:
-        posts = get_cast_posts_service(db=db, cast_id=cast_id, skip=skip, limit=limit)
+        # current_user が None の場合は None を渡す
+        current_user_id = current_user.id if current_user else None
+        posts = get_cast_posts_service(db=db, cast_id=cast_id, current_user_id=current_user_id, skip=skip, limit=limit)
         return posts
     except Exception as e:
         print(f"[ERROR] 投稿一覧取得エラー: {str(e)}")

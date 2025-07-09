@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List, Optional
 from app.db.models.posts import Post
+from app.db.models.user import User
+from fastapi import HTTPException
 
 
 def create_post(db: Session, cast_id: int, body: str, photo_url: Optional[str] = None, status: str = "public") -> Post:
@@ -18,6 +20,9 @@ def create_post(db: Session, cast_id: int, body: str, photo_url: Optional[str] =
     Returns:
         作成された投稿オブジェクト
     """
+    user = db.query(User).filter(User.id == cast_id).first()
+    if not user:
+        raise HTTPException(status_code=400, detail=f"Cast with id {cast_id} not found")
     db_post = Post(
         cast_id=cast_id,
         body=body,
@@ -44,9 +49,9 @@ def get_post_by_id(db: Session, post_id: int) -> Optional[Post]:
     return db.query(Post).filter(Post.id == post_id, Post.deleted_at.is_(None)).first()
 
 
-def get_posts_by_cast_id(db: Session, cast_id: int, skip: int = 0, limit: int = 100) -> List[Post]:
+def get_public_posts_by_cast_id(db: Session, cast_id: int, skip: int = 0, limit: int = 100) -> List[Post]:
     """
-    キャストIDで投稿一覧を取得する
+    キャストIDで公開投稿一覧を取得する
     
     Args:
         db: データベースセッション
@@ -55,10 +60,30 @@ def get_posts_by_cast_id(db: Session, cast_id: int, skip: int = 0, limit: int = 
         limit: 取得件数上限
     
     Returns:
-        投稿オブジェクトのリスト
+        公開投稿オブジェクトのリスト
     """
     return db.query(Post)\
         .filter(Post.cast_id == cast_id, Post.deleted_at.is_(None), Post.status == "public")\
+        .order_by(desc(Post.created_at))\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+
+def get_all_posts_by_cast_id(db: Session, cast_id: int, skip: int = 0, limit: int = 100) -> List[Post]:
+    """
+    キャストIDで全ての投稿一覧を取得する（ステータス問わず）
+    
+    Args:
+        db: データベースセッション
+        cast_id: キャストID
+        skip: スキップする件数
+        limit: 取得件数上限
+    
+    Returns:
+        全ての投稿オブジェクトのリスト
+    """
+    return db.query(Post)\
+        .filter(Post.cast_id == cast_id, Post.deleted_at.is_(None))\
         .order_by(desc(Post.created_at))\
         .offset(skip)\
         .limit(limit)\

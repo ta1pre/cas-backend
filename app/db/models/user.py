@@ -35,4 +35,7 @@ class User(Base):
     nearest_station = relationship("Station", backref="users")
 
     def __repr__(self):
-        return f"<User(id={self.id}, line_id={self.line_id}, email={self.email}, station={self.station})>"
+        # __repr__ で遅延ロードを誘発しないよう、一次キーなど最小限の情報にとどめる
+        # id が expire していてもセッションを介さず取得できるよう __dict__ から直接参照
+        user_id = self.__dict__.get("id", None)
+        return f"<User id={user_id}>"
