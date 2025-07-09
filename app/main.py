@@ -74,8 +74,19 @@ def root():
 origins = [
     FRONTEND_URL,
     "https://cas.tokyo",
-    "http://localhost:3000"  # ローカル開発用（本番では不要）
+    "http://localhost:3000",  # ローカル開発用
+    "http://localhost:3001",  # Next.jsがポート変更した場合
 ]
+
+# AWS環境の場合は本番用のoriginsのみ使用
+if is_aws:
+    origins = [
+        "https://cas.tokyo",
+        "https://www.cas.tokyo",  # www付きも許可
+    ]
+    logger.info(f"AWS環境でCORS設定: {origins}")
+else:
+    logger.info(f"ローカル環境でCORS設定: {origins}")
 
 # Webhook用のミドルウェア設定（CORSを無効化）
 class WebhookMiddleware:
