@@ -106,3 +106,32 @@ def get_point_rule_by_event_type_and_target(db: Session, event_type: str, target
         PointRule.event_type == event_type,
         PointRule.target_user_type == target_user_type
     ).first()
+
+# 管理画面用のメソッドを追加
+def get_all_point_rules(db: Session) -> List[PointRule]:
+    """
+    全てのポイントルールを取得する（管理画面用）
+    """
+    return db.query(PointRule).order_by(PointRule.created_at.desc()).all()
+
+def get_point_rule_by_id(db: Session, rule_id: int) -> Optional[PointRule]:
+    """
+    IDでポイントルールを取得する（管理画面用）
+    """
+    return db.query(PointRule).filter(PointRule.id == rule_id).first()
+
+def update_point_rule(db: Session, rule_id: int, update_data: dict) -> Optional[PointRule]:
+    """
+    ポイントルールを更新する（管理画面用）
+    """
+    rule = db.query(PointRule).filter(PointRule.id == rule_id).first()
+    if not rule:
+        return None
+    
+    for field, value in update_data.items():
+        if hasattr(rule, field):
+            setattr(rule, field, value)
+    
+    db.commit()
+    db.refresh(rule)
+    return rule

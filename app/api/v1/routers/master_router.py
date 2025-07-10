@@ -63,8 +63,8 @@ from app.features.withdrawal.endpoints.withdrawal_router import withdrawal_route
 master_router.include_router(withdrawal_router, prefix="/withdrawal", tags=["Withdrawal"])
 
 # POINT - ポイント
-from app.features.points.endpoints.points_routers import points_routers
-master_router.include_router(points_routers, prefix="/points", tags=["Points"])
+from app.features.points.endpoints.points_routers import media_router as points_router
+master_router.include_router(points_router, prefix="/points", tags=["Points"])
 
 # CUSTOMER - 検索API
 from app.features.customer.search.endpoints.search_routers import search_router

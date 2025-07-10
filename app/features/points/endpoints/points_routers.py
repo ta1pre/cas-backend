@@ -11,6 +11,10 @@ media_router = APIRouter(
 )
 
 # ✅ ポイント処理
-from app.features.points.endpoints.points import router as points_routers
-media_router.include_router(points_routers, prefix="", tags=["Points"])
+from app.features.points.endpoints.points import router as points_router
+media_router.include_router(points_router, prefix="", tags=["Points"])
+
+# ✅ 管理画面用ポイント処理
+from app.features.points.endpoints.admin_points import router as admin_points_router
+media_router.include_router(admin_points_router, prefix="/admin", tags=["Admin Points"])
 
