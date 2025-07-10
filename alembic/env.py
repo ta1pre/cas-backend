@@ -1,6 +1,17 @@
 import sys
 import os
 from logging.config import fileConfig
+
+# ------------------------------------------------------------
+# 環境変数 `VERBOSE_ENV_LOGS` が "1" の時のみデバッグ出力する
+# ------------------------------------------------------------
+VERBOSE_ENV_LOGS = os.getenv("VERBOSE_ENV_LOGS", "0") == "1"
+
+if not VERBOSE_ENV_LOGS:
+    def _noop(*args, **kwargs):
+        pass
+    print = _noop  # type: ignore
+
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 from dotenv import load_dotenv

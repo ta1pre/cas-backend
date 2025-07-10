@@ -14,6 +14,7 @@ class PointBalance(Base):
     user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)  # ✅ PRIMARY KEY（ユーザーID）
     regular_point_balance = Column(Integer, nullable=False, default=0)  # ✅ 通常ポイント
     bonus_point_balance = Column(Integer, nullable=False, default=0)  # ✅ ボーナスポイント
+    pending_point_balance = Column(Integer, nullable=False, default=0) # ✅ 仮ポイント
     total_point_balance = Column(Integer, nullable=False, default=0)  # ✅ 合計ポイント
     last_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())  # ✅ 最終更新時刻
 
@@ -26,7 +27,7 @@ class PointTransaction(Base):
     rule_id = Column(Integer, ForeignKey("pnt_details_rules.id", ondelete="SET NULL"), nullable=True)  # ✅ ルールID（外部キー）
     related_id = Column(Integer, nullable=True)  # ✅ 関連ID（予約IDなど）
     related_table = Column(Enum("reservation", "event", "coupon", "purchase", "manual_adjustment", "withdrawal", name="related_table_enum"), nullable=True)  # ✅ 関連テーブル種別
-    transaction_type = Column(Enum("deposit", "refund", "release", "event_bonus", "manual_adjustment", "purchase", "reservation_payment", "buyin", "withdrawal_request", name="transaction_type_enum"), nullable=False)  # ✅ 取引タイプ
+    transaction_type = Column(Enum("deposit", "refund", "release", "event_bonus", "manual_adjustment", "purchase", "reservation_payment", "buyin", "withdrawal_request", "referral_bonus_pending", "referral_bonus_completed", name="transaction_type_enum"), nullable=False)  # ✅ 取引タイプ
     point_change = Column(Integer, nullable=False)  # ✅ 変更ポイント数
     point_source = Column(Enum("regular", "bonus", name="point_source_enum"), nullable=False, default="regular")  # ✅ ポイント種別
     balance_after = Column(Integer, nullable=False)  # ✅ 取引後の残高
@@ -50,8 +51,11 @@ class PointRule(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     rule_name = Column(String(255), unique=True, nullable=False)  # ✅ ルール名（ユニーク）
     rule_description = Column(String(255), nullable=True)  # ✅ 説明
-    transaction_type = Column(Enum('reservation_payment', 'reservation_reward', 'event_bonus', 'coupon_bonus', 'buyin'), nullable=False)
-    point_type = Column(Enum('regular', 'bonus'), nullable=False)
+    event_type = Column(String(255), nullable=False) # ✅ イベントタイプ
+    target_user_type = Column(Enum('referrer', 'referred', 'self', 'other', name="target_user_type_enum"), nullable=False) # ✅ ターゲットユーザータイプ
+    condition_data = Column(JSON, nullable=True) # ✅ 追加条件データ
+    transaction_type = Column(Enum('reservation_payment', 'reservation_reward', 'event_bonus', 'coupon_bonus', 'buyin', 'referral_bonus_pending', 'referral_bonus_completed', name="transaction_type_enum"), nullable=False)
+    point_type = Column(Enum('regular', 'bonus', 'pending', name="point_rule_point_type_enum"), nullable=False)
     point_value = Column(Float, nullable=False)  # ✅ ポイント数
     is_addition = Column(Boolean, default=True)  # ✅ 加算(True) or 減算(False)
     additional_data = Column(JSON, nullable=True)  # ✅ 追加データ

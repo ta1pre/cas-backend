@@ -1,15 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.features.points.schemas.points_schema import PointBalanceRequest, PointBalanceResponse, PointHistoryRequest, PointHistoryResponse, ApplyPointRuleRequest, ApplyPointRuleResponse
-from app.features.points.services.points_service import fetch_point_balance, fetch_point_balance, fetch_point_history
+from app.features.points.schemas.points_schema import PointBalanceResponse, PointHistoryRequest, PointHistoryResponse, ApplyPointRuleRequest, ApplyPointRuleResponse, ReferredUserResponse # ReferredUserResponseを追加
+from typing import List, Optional
+from app.features.points.services.points_service import fetch_point_balance, fetch_point_history, get_referred_users_list # get_referred_users_listを追加
 from app.features.points.services.apply_point_rule_service import apply_point_rule
+from app.core.security import get_current_user
+from app.db.models.user import User # Userモデルをインポート
 
 router = APIRouter()
 
 @router.post("/balance", response_model=PointBalanceResponse)
-def get_point_balance(data: PointBalanceRequest, db: Session = Depends(get_db)):
-    return fetch_point_balance(db, data.user_id)
+def get_point_balance(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return fetch_point_balance(db, current_user.id)
 
 @router.post("/history", response_model=PointHistoryResponse)
 def get_point_history(data: PointHistoryRequest, db: Session = Depends(get_db)):
@@ -29,6 +32,17 @@ def apply_point_rule_api(
     if not result:
         raise HTTPException(status_code=400, detail="ルール適用に失敗しました")
     return result
+
+@router.post("/referred_users", response_model=List[ReferredUserResponse])
+def get_referred_users(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    認証済みユーザーが紹介したユーザー（被紹介者）の一覧を取得する
+    """
+    referred_users = get_referred_users_list(db, current_user.id)
+    return referred_users
 
 #ポイント購入
 from app.features.points.services.purchase_service import process_point_purchase

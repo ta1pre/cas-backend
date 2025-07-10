@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from .status_history_repository import insert_status_history
 from .reservation_repository import update_reservation_status, get_current_status
 from app.features.notifications.dispatcher import send 
+from app.features.points.services.points_service import process_point_event # process_point_eventをインポート
 
 def change_status(db: Session, reservation_id: int, user_id: int, new_status: str, latitude: float = None, longitude: float = None):
     """
@@ -17,6 +18,13 @@ def change_status(db: Session, reservation_id: int, user_id: int, new_status: st
         if new_status == 'completed':
             from app.features.points.services.cast_reward_service import grant_cast_reward_points
             grant_cast_reward_points(db, reservation_id)
+
+            # 紹介ポイント確定イベントを処理
+            process_point_event(
+                db,
+                'referred_user_first_attendance',
+                {'attended_user_id': user_id, 'reservation_id': reservation_id}
+            )
         # === ポイント付与処理ここまで ===
 
         # === 通知処理を追加 ===

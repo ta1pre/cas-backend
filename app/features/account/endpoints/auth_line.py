@@ -17,6 +17,7 @@ import requests
 from datetime import datetime
 import pytz
 import logging
+from app.features.points.services.points_service import process_point_event # points_serviceをインポート
 
 router = APIRouter()
 
@@ -99,6 +100,15 @@ async def line_callback(request: Request, db: Session = Depends(get_db)):
             last_login=now_jst
         )
         logger.info(f"ユーザー作成完了: id={user.id}, invitation_id={user.invitation_id}")
+
+        # 新規ユーザーがtracking_id経由で登録された場合、ポイントイベントを処理
+        if tracking_id:
+            process_point_event(
+                db,
+                'user_registered_by_referral',
+                {'referred_user_id': user.id, 'tracking_id': tracking_id}
+            )
+
     else:
         logger.info(f"既存ユーザー更新: id={user.id}, invitation_id={user.invitation_id}")
         # invitation_idが未設定の場合は設定する

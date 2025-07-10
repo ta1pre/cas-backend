@@ -5,13 +5,11 @@ from datetime import datetime
 
 #points.py用 個別ポイント表示
 
-class PointBalanceRequest(BaseModel):
-    user_id: int
-
 class PointBalanceResponse(BaseModel):
     user_id: int
     regular_points: int
     bonus_points: int
+    pending_points: int
     total_points: int
 
 ############# 履歴ポイント表示用 ############# 
@@ -50,3 +48,12 @@ class ApplyPointRuleResponse(BaseModel):
     success: bool
     message: str
     transaction_id: Optional[int] = None  # ✅ 成功時にトランザクションIDを返す
+
+class ReferredUserResponse(BaseModel):
+    id: int
+    nick_name: Optional[str]
+    line_id: str
+    created_at: datetime
+
+    class Config:
+        orm_mode = True

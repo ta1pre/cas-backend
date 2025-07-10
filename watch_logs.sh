@@ -19,7 +19,7 @@ docker logs -f fastapi-app 2>&1 | while IFS= read -r line; do
         echo "$line" >> fastapi.log
         
         # 300行を超えたら古い行を削除
-        if [ $(wc -l < fastapi.log 2>/dev/null || echo 0) -gt 1000 ]; then
+        if [ $(wc -l < fastapi.log 2>/dev/null || echo 0) -gt 300 ]; then
             tail -n 300 fastapi.log > fastapi.log.tmp
             mv fastapi.log.tmp fastapi.log
         fi

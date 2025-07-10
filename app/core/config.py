@@ -1,6 +1,19 @@
 import os
 from dotenv import load_dotenv
 import logging
+
+# -----------------------------------------------------------------------------------
+# 環境変数 `VERBOSE_ENV_LOGS` が "1" のときだけ各種 print を出力する。
+# Alembic など CLI ツール実行時の冗長ログを抑制するため、デフォルトは非表示。
+# -----------------------------------------------------------------------------------
+VERBOSE_ENV_LOGS = os.getenv("VERBOSE_ENV_LOGS", "0") == "1"
+
+if not VERBOSE_ENV_LOGS:
+    # `print` をダミー関数に置き換え、標準出力への冗長な出力を抑制
+    def _noop(*args, **kwargs):
+        pass
+    print = _noop  # type: ignore
+
 import json
 import sys
 
