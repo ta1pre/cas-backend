@@ -74,3 +74,36 @@ INFO:     172.18.0.1:55144 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1
 INFO:     172.18.0.1:56640 - "GET /api/v1/account/line/login?tr=DEFAULT_ID HTTP/1.1" 200 OK
 INFO:     172.18.0.1:56706 - "GET /api/v1/account/line/login?tr=DEFAULT_ID HTTP/1.1" 200 OK
 INFO:     172.18.0.1:59094 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
+INFO:     172.18.0.1:56978 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
+INFO:     172.18.0.1:64422 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app/features/account/endpoints/auth_line.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11]
+WARNING:  WatchFiles detected changes in 'app/features/account/endpoints/auth_line.py'. Reloading...
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [12099]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [12116]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Models initialized

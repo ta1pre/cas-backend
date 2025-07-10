@@ -26,8 +26,12 @@ logger = logging.getLogger(__name__)
 
 # 1. LINE
 @router.get("/login")
-async def line_login(tracking_id: str = None):
-    state = f"tracking_id={tracking_id}" if tracking_id else ""
+async def line_login(tr: str = None, tracking_id: str = None):
+    # trパラメータを優先し、なければtracking_idを使用
+    actual_tracking_id = tr or tracking_id
+    logger.info(f"📥 LINE認証リクエスト受信 - tr={tr}, tracking_id={tracking_id}, actual={actual_tracking_id}")
+    
+    state = f"tracking_id={actual_tracking_id}" if actual_tracking_id else ""
     login_url = (
         f"https://access.line.me/oauth2/v2.1/authorize"
         f"?response_type=code"
@@ -36,6 +40,10 @@ async def line_login(tracking_id: str = None):
         f"&state={quote(state)}"
         f"&scope=profile%20openid"
     )
+    
+    logger.info(f"🔗 生成されたLINE認証URL: {login_url}")
+    logger.info(f"🔗 stateパラメータ: '{state}'")
+    
     return {"auth_url": login_url}
 
 
