@@ -1,35 +1,3 @@
-INFO:     172.18.0.1:60374 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60384 - "POST /api/v1/points/history HTTP/1.1" 422 Unprocessable Entity
-INFO:     172.18.0.1:60390 - "POST /api/v1/points/purchase HTTP/1.1" 422 Unprocessable Entity
-INFO:     172.18.0.1:60392 - "POST /api/v1/points/apply HTTP/1.1" 422 Unprocessable Entity
-INFO:root:🚀 apply_point_rule 開始: user_id=406, rule_name='simple_test_rule', variables={}, transaction_type=None
-INFO:root:  ✅ ルール取得成功: rule_id=1, point_value=1.0, is_addition=True
-INFO:root:  ✅ ユーザー 406 のポイント残高取得: regular=61000, bonus=80000, total=141000
-INFO:root:  ⚙️ ポイント計算開始: 計算に使用する値 = 1.0
-INFO:root:  ➕ ポイント加算処理開始
-INFO:root:  📝 取引履歴作成開始
-INFO:root:  💾 データベースへの保存 (commit) 開始
-INFO:root:    💾 更新残高情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaaf0408b90>, 'user_id': 406, 'pending_point_balance': 0, 'last_updated': datetime.datetime(2025, 7, 10, 5, 12, 54, 188684, tzinfo=datetime.timezone.utc), 'regular_point_balance': 61000, 'bonus_point_balance': 80001.0, 'total_point_balance': 141001.0}
-INFO:root:    💾 新規取引履歴情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaaf04086b0>, 'user_id': 406, 'rule_id': 1, 'transaction_type': 'event_bonus', 'point_change': 1.0, 'point_source': 'bonus', 'balance_after': 141001.0}
-INFO:root:  ✅ データベースへの保存成功 (commit 完了)
-INFO:root:🔚 apply_point_rule 正常終了
-INFO:     172.18.0.1:60394 - "POST /api/v1/points/apply HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "GET /docs HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "POST /api/v1/points/history HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "POST /api/v1/referral/get_code HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "POST /api/v1/points/purchase HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
-INFO:app.features.points.endpoints.admin_points:🔍 [admin] ポイントルール一覧取得開始
-INFO:app.features.points.endpoints.admin_points:✅ [admin] ポイントルール一覧取得成功: 8件
-INFO:     172.18.0.1:58648 - "GET /api/v1/points/admin/rules HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
-INFO:root:🚀 apply_point_rule 開始: user_id=406, rule_name='simple_test_rule', variables={}, transaction_type=None
-INFO:root:  ✅ ルール取得成功: rule_id=1, point_value=1.0, is_addition=True
-INFO:root:  ✅ ユーザー 406 のポイント残高取得: regular=62000, bonus=80001, total=142001
-INFO:root:  ⚙️ ポイント計算開始: 計算に使用する値 = 1.0
 INFO:root:  ➕ ポイント加算処理開始
 INFO:root:  📝 取引履歴作成開始
 INFO:root:  💾 データベースへの保存 (commit) 開始
@@ -298,3 +266,35 @@ INFO:     172.18.0.1:59152 - "POST /api/v1/points/purchase HTTP/1.1" 200 OK
 INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
 INFO:     172.18.0.1:59152 - "POST /api/v1/points/history HTTP/1.1" 200 OK
 INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
+INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTg5ODA3NywiaWF0IjoxNzUyMTIyMDc3fQ.I9WxCY_Sv1p9-t3bleVcBPtFZ3_dWofBYp_7nHlCf4Y
+ERROR:app.features.account.endpoints.auth_jwt:⛔ リフレッシュトークンの検証エラー: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query')
+[SQL: SELECT users.id AS users_id, users.nick_name AS users_nick_name, users.prefectures AS users_prefectures, users.station AS users_station, users.line_id AS users_line_id, users.invitation_id AS users_invitation_id, users.tracking_id AS users_tracking_id, users.email AS users_email, users.email_verified AS users_email_verified, users.mobile_phone AS users_mobile_phone, users.phone_verification_code AS users_phone_verification_code, users.phone_verified AS users_phone_verified, users.picture_url AS users_picture_url, users.password_hash AS users_password_hash, users.sex AS users_sex, users.birth AS users_birth, users.user_type AS users_user_type, users.affi_type AS users_affi_type, users.last_login AS users_last_login, users.created_at AS users_created_at, users.updated_at AS users_updated_at, users.setup_status AS users_setup_status, users.stripe_customer_id AS users_stripe_customer_id 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'id_1': 406, 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:     172.18.0.1:61618 - "POST /api/v1/account/auth/refresh HTTP/1.1" 401 Unauthorized
+INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
+INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTg5ODA3NywiaWF0IjoxNzUyMTIyMDc3fQ.I9WxCY_Sv1p9-t3bleVcBPtFZ3_dWofBYp_7nHlCf4Y
+INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
+INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjQ3MjE3OCwiaWF0IjoxNzUyNDY0OTc4fQ.wdza_IJdLM06yQE38AUSVU820qoqX1hhI_84ZeLl4CE
+INFO:     172.18.0.1:57932 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57932 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57940 - "OPTIONS /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
+🚀 【extend_refresh_token】 リクエストを今から受信
+🚀 【extend_refresh_token】 リクエスト受信 - refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTg5ODA3NywiaWF0IjoxNzUyMTIyMDc3fQ.I9WxCY_Sv1p9-t3bleVcBPtFZ3_dWofBYp_7nHlCf4Y
+🕒 【extend_refresh_token】 現在時刻: 1752464979 / refresh_token 有効期限: 1759898077 / 残り 7433098 秒
+🔄 【extend_refresh_token】 `refresh_token` の期限が近いため更新: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDI0MDk3OSwiaWF0IjoxNzUyNDY0OTc5fQ.b_lymp44ch0Z2Zm8yyXOjO76lX8-Bjpl2_i7xsCd9wY
+INFO:     172.18.0.1:57944 - "POST /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57940 - "OPTIONS /api/v1/account/auth/refresh HTTP/1.1" 200 OK
+INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
+INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDI0MDk3OSwiaWF0IjoxNzUyNDY0OTc5fQ.b_lymp44ch0Z2Zm8yyXOjO76lX8-Bjpl2_i7xsCd9wY
+INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
+INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjQ3MjE3OSwiaWF0IjoxNzUyNDY0OTc5fQ.bDdpoYAk9UGp50vOpr-WFUApCRlFb6Tstjywt3VgDNo
+INFO:     172.18.0.1:57944 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57940 - "OPTIONS /api/v1/points/admin/rules HTTP/1.1" 200 OK
+INFO:app.features.points.endpoints.admin_points:🔍 [admin] ポイントルール一覧取得開始
+INFO:app.features.points.endpoints.admin_points:✅ [admin] ポイントルール一覧取得成功: 8件
+INFO:     172.18.0.1:57944 - "GET /api/v1/points/admin/rules HTTP/1.1" 200 OK
