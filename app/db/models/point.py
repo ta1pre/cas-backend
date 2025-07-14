@@ -58,5 +58,6 @@ class PointRule(Base):
     point_type = Column(Enum('regular', 'bonus', 'pending', name="point_rule_point_type_enum"), nullable=False)
     point_value = Column(Float, nullable=False)  # ✅ ポイント数
     is_addition = Column(Boolean, default=True)  # ✅ 加算(True) or 減算(False)
+    is_active = Column(Boolean, default=True)  # ✅ ルールの有効/無効
     additional_data = Column(JSON, nullable=True)  # ✅ 追加データ
     created_at = Column(DateTime(timezone=True), server_default=func.now())

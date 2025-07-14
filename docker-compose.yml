@@ -9,6 +9,7 @@ services:
       - "8000:8000"  # ローカルポート:コンテナポート
     volumes:
       - ./app:/app/app  # ローカルコードをマウント（開発用）
+      - ./.env:/app/.env  # 環境変数ファイルをマウント
     environment:
       - ENVIRONMENT=development
       - PYTHONPATH=/app

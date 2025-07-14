@@ -25,6 +25,16 @@ dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.en
 if os.path.exists(dotenv_path):
     print(f"✅ `.env` をロード: {dotenv_path}")
     load_dotenv(dotenv_path, override=True)  # ← `override=True` を必ず設定
+    
+    # 特定の重要な環境変数を強制的に再ロード
+    with open(dotenv_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                if key in ['FRONTEND_URL', 'REDIRECT_URI']:
+                    os.environ[key] = value
+                    print(f"🔄 強制的に再設定: {key}={value}")
 else:
     print("💡 `.env` が見つかりません。環境変数から直接読み込みます。")
 

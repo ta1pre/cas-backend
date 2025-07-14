@@ -38,7 +38,7 @@ class PointRuleResponse(BaseModel):
     additional_data: Optional[Dict[str, Any]] = None
     created_at: datetime
     
-    # 仮想フィールド（実際のテーブルにis_activeがない場合）
+    # is_activeフィールド（データベースから取得）
     is_active: bool = True
     
     class Config:

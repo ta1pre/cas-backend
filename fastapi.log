@@ -1,227 +1,300 @@
-INFO:     Will watch for changes in these directories: ['/app']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [1] using WatchFiles
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [11]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-Models initialized
-INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
-INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTgxNjQ5NiwiaWF0IjoxNzUyMDQwNDk2fQ.weRAX0w4MVH9iZE7SIzjtq_BcM7iDjtYcsX2_pwA_Sw
-INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
-INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjA2NzQwOCwiaWF0IjoxNzUyMDYwMjA4fQ.7VTE-ly9MAVpz2IyKbQ9_7zuDpX1n7vehLpmlFN72eU
-INFO:     172.18.0.1:62508 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:     172.18.0.1:62508 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:57798 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56216 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:61588 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:57766 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:57754 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60380 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60558 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:62294 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:59632 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:61266 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64312 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
-INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTgxNjQ5NiwiaWF0IjoxNzUyMDQwNDk2fQ.weRAX0w4MVH9iZE7SIzjtq_BcM7iDjtYcsX2_pwA_Sw
-ERROR:app.features.account.endpoints.auth_jwt:⛔ リフレッシュトークンの検証エラー: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query')
-[SQL: SELECT users.id AS users_id, users.nick_name AS users_nick_name, users.prefectures AS users_prefectures, users.station AS users_station, users.line_id AS users_line_id, users.invitation_id AS users_invitation_id, users.tracking_id AS users_tracking_id, users.email AS users_email, users.email_verified AS users_email_verified, users.mobile_phone AS users_mobile_phone, users.phone_verification_code AS users_phone_verification_code, users.phone_verified AS users_phone_verified, users.picture_url AS users_picture_url, users.password_hash AS users_password_hash, users.sex AS users_sex, users.birth AS users_birth, users.user_type AS users_user_type, users.affi_type AS users_affi_type, users.last_login AS users_last_login, users.created_at AS users_created_at, users.updated_at AS users_updated_at, users.setup_status AS users_setup_status, users.stripe_customer_id AS users_stripe_customer_id 
-FROM users 
-WHERE users.id = %(id_1)s 
- LIMIT %(param_1)s]
-[parameters: {'id_1': 406, 'param_1': 1}]
-(Background on this error at: https://sqlalche.me/e/20/e3q8)
-INFO:     172.18.0.1:56918 - "POST /api/v1/account/auth/refresh HTTP/1.1" 401 Unauthorized
-INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
-INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTgxNjQ5NiwiaWF0IjoxNzUyMDQwNDk2fQ.weRAX0w4MVH9iZE7SIzjtq_BcM7iDjtYcsX2_pwA_Sw
-INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
-INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjExMDU2NCwiaWF0IjoxNzUyMTAzMzY0fQ.yOIRM3EUL1l8DZJyfwvWHxyIG0N5arlaK-0rIgU0l0g
-INFO:     172.18.0.1:64878 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64878 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64890 - "OPTIONS /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
-🚀 【extend_refresh_token】 リクエストを今から受信
-🚀 【extend_refresh_token】 リクエスト受信 - refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTgxNjQ5NiwiaWF0IjoxNzUyMDQwNDk2fQ.weRAX0w4MVH9iZE7SIzjtq_BcM7iDjtYcsX2_pwA_Sw
-🕒 【extend_refresh_token】 現在時刻: 1752103366 / refresh_token 有効期限: 1759816496 / 残り 7713130 秒
-🔄 【extend_refresh_token】 `refresh_token` の期限が近いため更新: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTg3OTM2NiwiaWF0IjoxNzUyMTAzMzY2fQ.uyTqH0d48EfcFRFLAngLk5cj9yDQyAj_SJAqERBVcJo
-INFO:     172.18.0.1:64898 - "POST /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64904 - "OPTIONS /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
-INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc1OTg3OTM2NiwiaWF0IjoxNzUyMTAzMzY2fQ.uyTqH0d48EfcFRFLAngLk5cj9yDQyAj_SJAqERBVcJo
-INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
-INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjExMDU2NiwiaWF0IjoxNzUyMTAzMzY2fQ.MNGXw4rHf186NZ_fyYScZQoDVKuBLK24flzVH43X0-4
-INFO:     172.18.0.1:64898 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64904 - "OPTIONS /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64912 - "OPTIONS /api/v1/referral/get_code HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64924 - "OPTIONS /api/v1/referral/invitees HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64938 - "OPTIONS /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64898 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 401 Unauthorized
-INFO:     172.18.0.1:64946 - "POST /api/v1/referral/get_code HTTP/1.1" 401 Unauthorized
-INFO:     172.18.0.1:64960 - "GET /api/v1/referral/invitees HTTP/1.1" 401 Unauthorized
-INFO:     172.18.0.1:64962 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 401 Unauthorized
-INFO:     172.18.0.1:64878 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64878 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:55900 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:55144 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56640 - "GET /api/v1/account/line/login?tr=DEFAULT_ID HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56706 - "GET /api/v1/account/line/login?tr=DEFAULT_ID HTTP/1.1" 200 OK
-INFO:     172.18.0.1:59094 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56978 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64422 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
-WARNING:  WatchFiles detected changes in 'app/features/account/endpoints/auth_line.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [11]
-WARNING:  WatchFiles detected changes in 'app/features/account/endpoints/auth_line.py'. Reloading...
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [12099]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [12116]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-Models initialized
-INFO:app.features.account.endpoints.auth_line:📥 LINE認証リクエスト受信 - tr=aB3x9Z, tracking_id=None, actual=aB3x9Z
-INFO:app.features.account.endpoints.auth_line:🔗 生成されたLINE認証URL: https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=2005683762&redirect_uri=https%3A//api.cas.tokyo/api/v1/account/line/callback&state=tracking_id%3DaB3x9Z&scope=profile%20openid
-INFO:app.features.account.endpoints.auth_line:🔗 stateパラメータ: 'tracking_id=aB3x9Z'
-INFO:     172.18.0.1:64552 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
-WARNING:  WatchFiles detected changes in 'app/features/points/endpoints/admin_points.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [12116]
-WARNING:  WatchFiles detected changes in 'app/features/points/schemas/admin_points_schema.py'. Reloading...
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [12448]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-WARNING:  WatchFiles detected changes in 'app/features/points/repositories/points_repository.py'. Reloading...
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [12464]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/features/points/endpoints/admin_points.py'. Reloading...
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [12481]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/features/points/endpoints/admin_points.py'. Reloading...
-WARNING:  WatchFiles detected changes in 'app/features/points/endpoints/admin_points.py'. Reloading...
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['https://cas.tokyo', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [12494]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/features/points/endpoints/points_routers.py'. Reloading...
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-Process SpawnProcess-10:
+INFO:     172.18.0.1:60374 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60384 - "POST /api/v1/points/history HTTP/1.1" 422 Unprocessable Entity
+INFO:     172.18.0.1:60390 - "POST /api/v1/points/purchase HTTP/1.1" 422 Unprocessable Entity
+INFO:     172.18.0.1:60392 - "POST /api/v1/points/apply HTTP/1.1" 422 Unprocessable Entity
+INFO:root:🚀 apply_point_rule 開始: user_id=406, rule_name='simple_test_rule', variables={}, transaction_type=None
+INFO:root:  ✅ ルール取得成功: rule_id=1, point_value=1.0, is_addition=True
+INFO:root:  ✅ ユーザー 406 のポイント残高取得: regular=61000, bonus=80000, total=141000
+INFO:root:  ⚙️ ポイント計算開始: 計算に使用する値 = 1.0
+INFO:root:  ➕ ポイント加算処理開始
+INFO:root:  📝 取引履歴作成開始
+INFO:root:  💾 データベースへの保存 (commit) 開始
+INFO:root:    💾 更新残高情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaaf0408b90>, 'user_id': 406, 'pending_point_balance': 0, 'last_updated': datetime.datetime(2025, 7, 10, 5, 12, 54, 188684, tzinfo=datetime.timezone.utc), 'regular_point_balance': 61000, 'bonus_point_balance': 80001.0, 'total_point_balance': 141001.0}
+INFO:root:    💾 新規取引履歴情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaaf04086b0>, 'user_id': 406, 'rule_id': 1, 'transaction_type': 'event_bonus', 'point_change': 1.0, 'point_source': 'bonus', 'balance_after': 141001.0}
+INFO:root:  ✅ データベースへの保存成功 (commit 完了)
+INFO:root:🔚 apply_point_rule 正常終了
+INFO:     172.18.0.1:60394 - "POST /api/v1/points/apply HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "GET /docs HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/history HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/referral/get_code HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/purchase HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:app.features.points.endpoints.admin_points:🔍 [admin] ポイントルール一覧取得開始
+INFO:app.features.points.endpoints.admin_points:✅ [admin] ポイントルール一覧取得成功: 8件
+INFO:     172.18.0.1:58648 - "GET /api/v1/points/admin/rules HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:root:🚀 apply_point_rule 開始: user_id=406, rule_name='simple_test_rule', variables={}, transaction_type=None
+INFO:root:  ✅ ルール取得成功: rule_id=1, point_value=1.0, is_addition=True
+INFO:root:  ✅ ユーザー 406 のポイント残高取得: regular=62000, bonus=80001, total=142001
+INFO:root:  ⚙️ ポイント計算開始: 計算に使用する値 = 1.0
+INFO:root:  ➕ ポイント加算処理開始
+INFO:root:  📝 取引履歴作成開始
+INFO:root:  💾 データベースへの保存 (commit) 開始
+INFO:root:    💾 更新残高情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaaf0409430>, 'user_id': 406, 'pending_point_balance': 0, 'last_updated': datetime.datetime(2025, 7, 10, 5, 15, 27, 486789, tzinfo=datetime.timezone.utc), 'regular_point_balance': 62000, 'bonus_point_balance': 80002.0, 'total_point_balance': 142002.0}
+INFO:root:    💾 新規取引履歴情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaadf376ab0>, 'user_id': 406, 'rule_id': 1, 'transaction_type': 'event_bonus', 'point_change': 1.0, 'point_source': 'bonus', 'balance_after': 142002.0}
+INFO:root:  ✅ データベースへの保存成功 (commit 完了)
+INFO:root:🔚 apply_point_rule 正常終了
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/apply HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58648 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:62728 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 200 OK
+INFO:     172.18.0.1:62728 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 404 Not Found
+INFO:     172.18.0.1:59774 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59774 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59774 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59774 - "POST /api/v1/points/balance HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+  |     yield
+  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 190, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |   File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    |     return await self.app(scope, receive, send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 123, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    |     raise exc
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 189, in __call__
+    |     with collapse_excgroups():
+    |   File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(typ, value, traceback)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    |     raise exc
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 191, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/app/app/main.py", line 100, in __call__
+    |     return await call_next(request)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 165, in call_next
+    |     raise app_exc
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 151, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 756, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 776, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 297, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 77, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    |     raise exc
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 72, in app
+    |     response = await func(request)
+    |                ^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 278, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    |     return await run_in_threadpool(dependant.call, **values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    |     return await anyio.to_thread.run_sync(func, *args)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/anyio/to_thread.py", line 56, in run_sync
+    |     return await get_async_backend().run_sync_in_worker_thread(
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    |     return await future
+    |            ^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    |     result = context.run(func, *args)
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/app/app/features/points/endpoints/points.py", line 15, in get_point_balance
+    |     return fetch_point_balance(db, current_user.id)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/app/app/features/points/services/points_service.py", line 24, in fetch_point_balance
+    |     return PointBalanceResponse(
+    |            ^^^^^^^^^^^^^^^^^^^^^
+    |   File "/usr/local/lib/python3.11/site-packages/pydantic/main.py", line 253, in __init__
+    |     validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    | pydantic_core._pydantic_core.ValidationError: 1 validation error for PointBalanceResponse
+    | pending_points
+    |   Field required [type=missing, input_value={'user_id': 407, 'regular...': 0, 'total_points': 0}, input_type=dict]
+    |     For further information visit https://errors.pydantic.dev/2.11/v/missing
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
-    target(sockets=sockets)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 65, in run
-    return asyncio.run(self.serve(sockets=sockets))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 69, in serve
-    await self._serve(sockets)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 76, in _serve
-    config.load()
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 434, in load
-    self.loaded_app = import_from_string(self.app)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
-    raise exc from None
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
-    module = importlib.import_module(module_str)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 189, in __call__
+    with collapse_excgroups():
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 191, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main.py", line 100, in __call__
+    return await call_next(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/app/app/main.py", line 2, in <module>
-    from app.api.v1.routers.master_router import master_router  # 直接指定
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/api/v1/routers/master_router.py", line 66, in <module>
-    from app.features.points.endpoints.points_routers import points_routers
-  File "/app/app/features/points/endpoints/points_routers.py", line 18, in <module>
-    from app.features.points.endpoints.admin_points import router as admin_points_router
-ModuleNotFoundError: No module named 'app.features.points.endpoints.admin_points'
-Models initialized
-INFO:     Stopping reloader process [1]
+  File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/features/points/endpoints/points.py", line 15, in get_point_balance
+    return fetch_point_balance(db, current_user.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/features/points/services/points_service.py", line 24, in fetch_point_balance
+    return PointBalanceResponse(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for PointBalanceResponse
+pending_points
+  Field required [type=missing, input_value={'user_id': 407, 'regular...': 0, 'total_points': 0}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+INFO:root:🚀 apply_point_rule 開始: user_id=406, rule_name='referral_bonus_referrer_pending', variables={}, transaction_type=None
+INFO:root:  ✅ ルール取得成功: rule_id=5, point_value=5000.0, is_addition=True
+INFO:root:  ✅ ユーザー 406 のポイント残高取得: regular=62000, bonus=80002, total=142002
+INFO:root:  ⚙️ ポイント計算開始: 計算に使用する値 = 5000.0
+INFO:root:  ➕ ポイント加算処理開始
+INFO:root:  📝 取引履歴作成開始
+INFO:root:  💾 データベースへの保存 (commit) 開始
+INFO:root:    💾 更新残高情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaadf376990>, 'user_id': 406, 'pending_point_balance': 0, 'last_updated': datetime.datetime(2025, 7, 10, 5, 15, 53, 746011, tzinfo=datetime.timezone.utc), 'regular_point_balance': 62000, 'bonus_point_balance': 85002.0, 'total_point_balance': 147002.0}
+INFO:root:    💾 新規取引履歴情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaadf1dd8b0>, 'user_id': 406, 'rule_id': 5, 'transaction_type': 'referral_bonus_pending', 'point_change': 5000.0, 'point_source': 'pending', 'balance_after': 147002.0}
+INFO:root:  ✅ データベースへの保存成功 (commit 完了)
+INFO:root:🔚 apply_point_rule 正常終了
+INFO:     172.18.0.1:59790 - "POST /api/v1/points/apply HTTP/1.1" 200 OK
+INFO:root:🚀 apply_point_rule 開始: user_id=407, rule_name='referral_bonus_referred_pending', variables={}, transaction_type=None
+INFO:root:  ✅ ルール取得成功: rule_id=6, point_value=2000.0, is_addition=True
+INFO:root:  ⚠️ ユーザー 407 のポイント残高レコードを新規作成
+INFO:root:  ⚙️ ポイント計算開始: 計算に使用する値 = 2000.0
+INFO:root:  ➕ ポイント加算処理開始
+INFO:root:  📝 取引履歴作成開始
+INFO:root:  💾 データベースへの保存 (commit) 開始
+INFO:root:    💾 新規残高情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaadf1dde50>, 'user_id': 407, 'regular_point_balance': 0, 'bonus_point_balance': 2000.0, 'total_point_balance': 2000.0, 'last_updated': datetime.datetime(2025, 7, 10, 5, 15, 53, 949589, tzinfo=datetime.timezone.utc)}
+INFO:root:    💾 新規取引履歴情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaadf375d30>, 'user_id': 407, 'rule_id': 6, 'transaction_type': 'referral_bonus_pending', 'point_change': 2000.0, 'point_source': 'pending', 'balance_after': 2000.0}
+INFO:root:  ✅ データベースへの保存成功 (commit 完了)
+INFO:root:🔚 apply_point_rule 正常終了
+INFO:     172.18.0.1:59790 - "POST /api/v1/points/apply HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59790 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59790 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/admin/test-login/login_nopw HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/apply HTTP/1.1" 422 Unprocessable Entity
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:root:🚀 apply_point_rule 開始: user_id=406, rule_name='reservation_payment', variables={'reservation_id': 999, 'amount': 5000}, transaction_type=None
+INFO:root:  ✅ ルール取得成功: rule_id=3, point_value=0.0, is_addition=True
+INFO:root:  ✅ ユーザー 406 のポイント残高取得: regular=62000, bonus=85002, total=147002
+INFO:root:  ➡️ 変数からポイント値を取得: 5000
+INFO:root:  ⚙️ ポイント計算開始: 計算に使用する値 = 5000
+INFO:root:  ➕ ポイント加算処理開始
+INFO:root:  📝 取引履歴作成開始
+INFO:root:    ⚠️ transaction_type を 'deposit' に設定
+INFO:root:    📝 取引履歴に予約ID 999 を関連付け
+INFO:root:  💾 データベースへの保存 (commit) 開始
+INFO:root:    💾 更新残高情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaaf04087d0>, 'user_id': 406, 'pending_point_balance': 0, 'last_updated': datetime.datetime(2025, 7, 10, 5, 25, 27, 204210, tzinfo=datetime.timezone.utc), 'regular_point_balance': 67000, 'bonus_point_balance': 85002, 'total_point_balance': 152002}
+INFO:root:    💾 新規取引履歴情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaadf1df110>, 'user_id': 406, 'rule_id': 3, 'transaction_type': 'deposit', 'point_change': 5000, 'point_source': 'regular', 'balance_after': 152002, 'related_id': 999, 'related_table': 'reservation'}
+INFO:root:  ✅ データベースへの保存成功 (commit 完了)
+INFO:root:🔚 apply_point_rule 正常終了
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/apply HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/history HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:root:🚀 apply_point_rule 開始: user_id=406, rule_name='referral_bonus_referrer_confirmed', variables={'reservation_id': 999, 'referred_user_id': 407}, transaction_type=None
+INFO:root:  ✅ ルール取得成功: rule_id=7, point_value=5000.0, is_addition=True
+INFO:root:  ✅ ユーザー 406 のポイント残高取得: regular=67000, bonus=85002, total=152002
+INFO:root:  ⚙️ ポイント計算開始: 計算に使用する値 = 5000.0
+INFO:root:  ➕ ポイント加算処理開始
+INFO:root:  📝 取引履歴作成開始
+INFO:root:    📝 取引履歴に予約ID 999 を関連付け
+INFO:root:  💾 データベースへの保存 (commit) 開始
+INFO:root:    💾 更新残高情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaadf14da30>, 'user_id': 406, 'pending_point_balance': 0, 'last_updated': datetime.datetime(2025, 7, 10, 5, 25, 29, 731068, tzinfo=datetime.timezone.utc), 'regular_point_balance': 67000, 'bonus_point_balance': 90002.0, 'total_point_balance': 157002.0}
+INFO:root:    💾 新規取引履歴情報: {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x2aaadf2d1010>, 'user_id': 406, 'rule_id': 7, 'transaction_type': 'referral_bonus_completed', 'point_change': 5000.0, 'point_source': 'bonus', 'balance_after': 157002.0, 'related_id': 999, 'related_table': 'reservation'}
+INFO:root:  ✅ データベースへの保存成功 (commit 完了)
+INFO:root:🔚 apply_point_rule 正常終了
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/apply HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/history HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/purchase HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/history HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59152 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
