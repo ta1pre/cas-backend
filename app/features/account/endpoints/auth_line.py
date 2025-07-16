@@ -39,6 +39,7 @@ async def line_login(tr: str = None, tracking_id: str = None):
         f"&redirect_uri={quote(REDIRECT_URI)}"
         f"&state={quote(state)}"
         f"&scope=profile%20openid"
+        f"&bot_prompt=normal"
     )
     
     logger.info(f"🔗 生成されたLINE認証URL: {login_url}")

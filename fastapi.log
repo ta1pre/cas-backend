@@ -1,106 +1,3 @@
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 453, in operate
-    return op(self.comparator, *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 584, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/properties.py", line 479, in operate
-    return op(self.__clause_element__(), *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/annotation.py", line 371, in __eq__
-    return self.__element.__class__.__eq__(self, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 584, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 1523, in operate
-    return op(self.comparator, *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 584, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/type_api.py", line 212, in operate
-    return op_fn(self.expr, op, *other, **addtl_kw)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/default_comparator.py", line 121, in _boolean_compare
-    obj = coercions.expect(
-          ^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 395, in expect
-    resolved = impl._literal_coercion(
-               ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 805, in _literal_coercion
-    self._raise_for_expected(element, err=err)
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 784, in _raise_for_expected
-    return super()._raise_for_expected(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
-    raise exc.ArgumentError(msg, code=code) from err
-sqlalchemy.exc.ArgumentError: SQL expression element or literal value expected, got <User id=406>.
-INFO:     172.18.0.1:55722 - "POST /api/v1/points/history HTTP/1.1" 200 OK
-INFO:     172.18.0.1:55718 - "POST /api/v1/points/referred_users HTTP/1.1" 200 OK
-INFO:     172.18.0.1:55026 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:55026 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56888 - "OPTIONS /api/v1/referral/get_code HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56892 - "OPTIONS /api/v1/referral/invitees HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:56924 - "POST /api/v1/referral/get_code HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56890 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56936 - "GET /api/v1/referral/invitees HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:56924 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56952 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:56960 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56962 - "POST /api/v1/points/balance HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56966 - "POST /api/v1/user/profile HTTP/1.1" 500 Internal Server Error
-ERROR:    Exception in ASGI application
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 803, in _literal_coercion
-    return expr._bind_param(operator, element, type_=bindparam_type)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 4624, in _bind_param
-    return BindParameter(
-           ^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 2043, in __init__
-    self.type = _compared_to_type.coerce_compared_value(
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/type_api.py", line 1059, in coerce_compared_value
-    _coerced_type = _resolve_value_to_type(value)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/sqltypes.py", line 3889, in _resolve_value_to_type
-    raise exc.ArgumentError(
-sqlalchemy.exc.ArgumentError: Object <User id=406> is not legal as a SQL literal value
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
-    await super().__call__(scope, receive, send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 123, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
-    raise exc
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
-    await self.app(scope, receive, _send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 93, in __call__
-    await self.simple_response(scope, receive, send, request_headers=headers)
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 148, in simple_response
-    await self.app(scope, receive, send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 189, in __call__
-    with collapse_excgroups():
-  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
     self.gen.throw(typ, value, traceback)
   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
     raise exc
@@ -298,3 +195,106 @@ INFO:     172.18.0.1:60920 - "GET /api/v1/cast/identity-verification/status HTTP
 [DEBUG] Using cast_id: 406
 [ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
 INFO:     172.18.0.1:60924 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
+INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
+INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDMyMzM5MCwiaWF0IjoxNzUyNTQ3MzkwfQ.CS_n3V5uIRmVIp5yTp1HL9U_QO5TQXxlC56u2atppUI
+ERROR:app.features.account.endpoints.auth_jwt:⛔ リフレッシュトークンの検証エラー: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query')
+[SQL: SELECT users.id AS users_id, users.nick_name AS users_nick_name, users.prefectures AS users_prefectures, users.station AS users_station, users.line_id AS users_line_id, users.invitation_id AS users_invitation_id, users.tracking_id AS users_tracking_id, users.email AS users_email, users.email_verified AS users_email_verified, users.mobile_phone AS users_mobile_phone, users.phone_verification_code AS users_phone_verification_code, users.phone_verified AS users_phone_verified, users.picture_url AS users_picture_url, users.password_hash AS users_password_hash, users.sex AS users_sex, users.birth AS users_birth, users.user_type AS users_user_type, users.affi_type AS users_affi_type, users.last_login AS users_last_login, users.created_at AS users_created_at, users.updated_at AS users_updated_at, users.setup_status AS users_setup_status, users.stripe_customer_id AS users_stripe_customer_id 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'id_1': 406, 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:     172.18.0.1:61236 - "POST /api/v1/account/auth/refresh HTTP/1.1" 401 Unauthorized
+INFO:app.features.account.endpoints.auth_line:📥 LINE認証リクエスト受信 - tr=aB3x9Z, tracking_id=None, actual=aB3x9Z
+INFO:app.features.account.endpoints.auth_line:🔗 生成されたLINE認証URL: https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=2005683762&redirect_uri=http%3A//localhost%3A8000/api/v1/account/line/callback&state=tracking_id%3DaB3x9Z&scope=profile%20openid
+INFO:app.features.account.endpoints.auth_line:🔗 stateパラメータ: 'tracking_id=aB3x9Z'
+INFO:     172.18.0.1:61246 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
+INFO:app.features.account.endpoints.auth_line:LINE認証: line_id=Uc79b42da1a9e4f88dbd3f27d67aafa4a, display_name=Taichi Umeki
+INFO:app.features.account.endpoints.auth_line:既存ユーザー更新: id=406, invitation_id=hPMuUn
+INFO:app.features.account.endpoints.auth_line:認証完了: user_id=406, invitation_id=hPMuUn
+INFO:     172.18.0.1:61246 - "GET /api/v1/account/line/callback?code=9hu4IrAS804RGm7We1ga&state=tracking_id%3DaB3x9Z HTTP/1.1" 307 Temporary Redirect
+INFO:     172.18.0.1:59078 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59078 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59088 - "OPTIONS /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
+🚀 【extend_refresh_token】 リクエストを今から受信
+🚀 【extend_refresh_token】 リクエスト受信 - refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDgxNSwiaWF0IjoxNzUyNTg4ODE1fQ.GeFRG-pXUBZeeMS0Lx2bKt1kbU2JrzLR07Goy6xm1y8
+🕒 【extend_refresh_token】 現在時刻: 1752588820 / refresh_token 有効期限: 1760364815 / 残り 7775995 秒
+🔄 【extend_refresh_token】 `refresh_token` の期限が近いため更新: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDgyMCwiaWF0IjoxNzUyNTg4ODIwfQ.9IX12jWjKjEqXzhMYMGxT7hEXx7iC6U5cc7W988SLuk
+INFO:     172.18.0.1:59104 - "POST /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59088 - "OPTIONS /api/v1/account/auth/refresh HTTP/1.1" 200 OK
+INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
+INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDgyMCwiaWF0IjoxNzUyNTg4ODIwfQ.9IX12jWjKjEqXzhMYMGxT7hEXx7iC6U5cc7W988SLuk
+INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
+INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjU5NjAyMSwiaWF0IjoxNzUyNTg4ODIxfQ.9JCO4yfH5q0trgy6ztNRsnGlzoif6PLm4RHBc9tig8M
+INFO:     172.18.0.1:59104 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
+INFO:     172.18.0.1:63578 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
+🚀 【extend_refresh_token】 リクエストを今から受信
+🚀 【extend_refresh_token】 リクエスト受信 - refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDgyMCwiaWF0IjoxNzUyNTg4ODIwfQ.9IX12jWjKjEqXzhMYMGxT7hEXx7iC6U5cc7W988SLuk
+🕒 【extend_refresh_token】 現在時刻: 1752588840 / refresh_token 有効期限: 1760364820 / 残り 7775980 秒
+🔄 【extend_refresh_token】 `refresh_token` の期限が近いため更新: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDg0MCwiaWF0IjoxNzUyNTg4ODQwfQ.T-vX29ZU9kh5m1-XNch54fo9rX-rwvaMsYzk6dIubBw
+INFO:     172.18.0.1:63582 - "POST /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
+INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
+INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDg0MCwiaWF0IjoxNzUyNTg4ODQwfQ.T-vX29ZU9kh5m1-XNch54fo9rX-rwvaMsYzk6dIubBw
+INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
+INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjU5NjA0MCwiaWF0IjoxNzUyNTg4ODQwfQ.ObrNHGNsoyFMyvVH2LM5q_IB4OI9eokCqdb_QomE_pY
+INFO:     172.18.0.1:63582 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
+INFO:     172.18.0.1:63578 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
+INFO:     172.18.0.1:63578 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
+INFO:     172.18.0.1:63590 - "OPTIONS /api/v1/cast/prof/get HTTP/1.1" 200 OK
+INFO:     172.18.0.1:63606 - "OPTIONS /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
+INFO:     172.18.0.1:63584 - "OPTIONS /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
+INFO:     172.18.0.1:63614 - "OPTIONS /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
+INFO:app.features.cast.prof.service.prof_service:support_area値: None
+INFO:app.features.cast.prof.service.prof_service:都道府県名取得開始: prefecture_ids=None
+INFO:app.features.cast.prof.service.prof_service:都道府県IDが空のため、空リストを返します
+INFO:app.features.cast.prof.service.prof_service:取得したsupport_area_names: []
+INFO:app.features.cast.prof.service.prof_service:プロフィール取得: dispatch_prefecture=None
+INFO:app.features.cast.prof.service.prof_service:--- 返却する profile_dict の内容 ---
+INFO:app.features.cast.prof.service.prof_service:cast_id: 406 (Type: <class 'int'>)
+INFO:app.features.cast.prof.service.prof_service:rank_id: 1 (Type: <class 'int'>)
+INFO:app.features.cast.prof.service.prof_service:cast_type: B (Type: <class 'str'>)
+INFO:app.features.cast.prof.service.prof_service:name: aaaa (Type: <class 'str'>)
+INFO:app.features.cast.prof.service.prof_service:age: 20 (Type: <class 'int'>)
+INFO:app.features.cast.prof.service.prof_service:height: 142 (Type: <class 'int'>)
+INFO:app.features.cast.prof.service.prof_service:bust: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:cup: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:waist: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:hip: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:birthplace: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:blood_type: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:hobby: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:reservation_fee: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:reservation_fee_deli: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:self_introduction: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:job: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:dispatch_prefecture: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:support_area: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:popularity: 0 (Type: <class 'int'>)
+INFO:app.features.cast.prof.service.prof_service:rating: 0.0 (Type: <class 'float'>)
+INFO:app.features.cast.prof.service.prof_service:is_active: 0 (Type: <class 'int'>)
+INFO:app.features.cast.prof.service.prof_service:available_at: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:created_at: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:updated_at: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:support_area_names: [] (Type: <class 'list'>)
+INFO:app.features.cast.prof.service.prof_service:station_name: None (Type: <class 'NoneType'>)
+INFO:app.features.cast.prof.service.prof_service:------------------------------------
+INFO:app.features.cast.prof.service.prof_service:available_atがNoneだったので現在時刻に設定しました
+INFO:app.features.cast.prof.service.prof_service:created_atがNoneだったので現在時刻に設定しました
+[DEBUG] Received cast_id: 406, type: <class 'int'>
+[DEBUG] Using cast_id: 406
+[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
+INFO:     172.18.0.1:63582 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
+INFO:     172.18.0.1:63624 - "POST /api/v1/cast/prof/get HTTP/1.1" 200 OK
+[DEBUG] Received cast_id: 406, type: <class 'int'>
+[DEBUG] Using cast_id: 406
+[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
+INFO:     172.18.0.1:63630 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
+[DEBUG] Received cast_id: 406, type: <class 'int'>
+[DEBUG] Using cast_id: 406
+[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
+INFO:     172.18.0.1:63624 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app/features/account/endpoints/auth_line.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11]
