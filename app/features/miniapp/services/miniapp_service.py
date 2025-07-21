@@ -35,8 +35,10 @@ class MiniAppService:
         # localhost の場合はモックデータを返す（簡単な判定）
         if id_token.startswith('mock_') or len(id_token) < 20:
             print("開発モード: LIFF IDトークン検証をスキップしてモックデータを使用")
+            import uuid
+            # 開発環境では毎回新しいユーザーを作成（テスト用）
             return LiffUserInfo(
-                line_id=f"dev_user_{id_token[:8]}",  # IDトークンの一部を使用してユニーク性を保つ
+                line_id=f"dev_user_{uuid.uuid4().hex[:12]}",  # ユニークなIDを生成
                 display_name="開発用ユーザー",
                 picture_url=None
             )
