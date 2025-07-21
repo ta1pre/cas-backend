@@ -144,3 +144,7 @@ master_router.include_router(
 # REFERRAL - 紹介機能
 from app.features.referral.endpoints.referral_routers import referral_router
 master_router.include_router(referral_router, prefix="/referral", tags=["Referral"])
+
+# MINIAPP - LINEミニアプリ
+from app.features.miniapp.endpoints.miniapp_routers import miniapp_router
+master_router.include_router(miniapp_router, prefix="/miniapp", tags=["MiniApp"])

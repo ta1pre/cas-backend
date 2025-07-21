@@ -1,300 +1,75 @@
-    self.gen.throw(typ, value, traceback)
-  File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 93, in collapse_excgroups
-    raise exc
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 191, in __call__
-    response = await self.dispatch_func(request, call_next)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/main.py", line 100, in __call__
-    return await call_next(request)
-           ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 165, in call_next
-    raise app_exc
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 151, in coro
-    await self.app(scope, receive_or_disconnect, send_no_error)
-  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 756, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 776, in app
-    await route.handle(scope, receive, send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 297, in handle
-    await self.app(scope, receive, send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 77, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 72, in app
-    response = await func(request)
-               ^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 278, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
-    return await run_in_threadpool(dependant.call, **values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
-    return await anyio.to_thread.run_sync(func, *args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/anyio/to_thread.py", line 56, in run_sync
-    return await get_async_backend().run_sync_in_worker_thread(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
-    return await future
-           ^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 967, in run
-    result = context.run(func, *args)
-             ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/features/customer/user_profile/endpoints/user_profile.py", line 22, in fetch_user_profile
-    return get_user_profile(current_user_id, db)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/features/customer/user_profile/service/user_profile_service.py", line 11, in get_user_profile
-    user = db.query(User).filter(User.id == user_id).first()
-                                 ^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 584, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 453, in operate
-    return op(self.comparator, *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 584, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/properties.py", line 479, in operate
-    return op(self.__clause_element__(), *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/annotation.py", line 371, in __eq__
-    return self.__element.__class__.__eq__(self, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 584, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 1523, in operate
-    return op(self.comparator, *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 584, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/type_api.py", line 212, in operate
-    return op_fn(self.expr, op, *other, **addtl_kw)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/default_comparator.py", line 121, in _boolean_compare
-    obj = coercions.expect(
-          ^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 395, in expect
-    resolved = impl._literal_coercion(
-               ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 805, in _literal_coercion
-    self._raise_for_expected(element, err=err)
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 784, in _raise_for_expected
-    return super()._raise_for_expected(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
-    raise exc.ArgumentError(msg, code=code) from err
-sqlalchemy.exc.ArgumentError: SQL expression element or literal value expected, got <User id=406>.
-INFO:     172.18.0.1:56980 - "POST /api/v1/points/referred_users HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56988 - "POST /api/v1/points/history HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:56992 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63788 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63782 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63802 - "POST /api/v1/points/history HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63896 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63896 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:64340 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:64344 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63896 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:64360 - "POST /api/v1/referral/get_code HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64356 - "GET /api/v1/referral/invitees HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64348 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:64356 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64380 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:app.features.cast.prof.service.prof_service:support_area値: None
-INFO:app.features.cast.prof.service.prof_service:都道府県名取得開始: prefecture_ids=None
-INFO:app.features.cast.prof.service.prof_service:都道府県IDが空のため、空リストを返します
-INFO:app.features.cast.prof.service.prof_service:取得したsupport_area_names: []
-INFO:app.features.cast.prof.service.prof_service:プロフィール取得: dispatch_prefecture=None
-INFO:app.features.cast.prof.service.prof_service:--- 返却する profile_dict の内容 ---
-INFO:app.features.cast.prof.service.prof_service:cast_id: 406 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:rank_id: 1 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:cast_type: B (Type: <class 'str'>)
-INFO:app.features.cast.prof.service.prof_service:name: aaaa (Type: <class 'str'>)
-INFO:app.features.cast.prof.service.prof_service:age: 20 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:height: 142 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:bust: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:cup: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:waist: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:hip: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:birthplace: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:blood_type: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:hobby: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:reservation_fee: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:reservation_fee_deli: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:self_introduction: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:job: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:dispatch_prefecture: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:support_area: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:popularity: 0 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:rating: 0.0 (Type: <class 'float'>)
-INFO:app.features.cast.prof.service.prof_service:is_active: 0 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:available_at: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:created_at: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:updated_at: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:support_area_names: [] (Type: <class 'list'>)
-INFO:app.features.cast.prof.service.prof_service:station_name: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:------------------------------------
-INFO:app.features.cast.prof.service.prof_service:available_atがNoneだったので現在時刻に設定しました
-INFO:app.features.cast.prof.service.prof_service:created_atがNoneだったので現在時刻に設定しました
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:64392 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:64390 - "POST /api/v1/cast/prof/get HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:64418 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:64390 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60904 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60904 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:60920 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:60924 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:60920 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:60924 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
-INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDMyMzM5MCwiaWF0IjoxNzUyNTQ3MzkwfQ.CS_n3V5uIRmVIp5yTp1HL9U_QO5TQXxlC56u2atppUI
-ERROR:app.features.account.endpoints.auth_jwt:⛔ リフレッシュトークンの検証エラー: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query')
-[SQL: SELECT users.id AS users_id, users.nick_name AS users_nick_name, users.prefectures AS users_prefectures, users.station AS users_station, users.line_id AS users_line_id, users.invitation_id AS users_invitation_id, users.tracking_id AS users_tracking_id, users.email AS users_email, users.email_verified AS users_email_verified, users.mobile_phone AS users_mobile_phone, users.phone_verification_code AS users_phone_verification_code, users.phone_verified AS users_phone_verified, users.picture_url AS users_picture_url, users.password_hash AS users_password_hash, users.sex AS users_sex, users.birth AS users_birth, users.user_type AS users_user_type, users.affi_type AS users_affi_type, users.last_login AS users_last_login, users.created_at AS users_created_at, users.updated_at AS users_updated_at, users.setup_status AS users_setup_status, users.stripe_customer_id AS users_stripe_customer_id 
-FROM users 
-WHERE users.id = %(id_1)s 
- LIMIT %(param_1)s]
-[parameters: {'id_1': 406, 'param_1': 1}]
-(Background on this error at: https://sqlalche.me/e/20/e3q8)
-INFO:     172.18.0.1:61236 - "POST /api/v1/account/auth/refresh HTTP/1.1" 401 Unauthorized
-INFO:app.features.account.endpoints.auth_line:📥 LINE認証リクエスト受信 - tr=aB3x9Z, tracking_id=None, actual=aB3x9Z
-INFO:app.features.account.endpoints.auth_line:🔗 生成されたLINE認証URL: https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=2005683762&redirect_uri=http%3A//localhost%3A8000/api/v1/account/line/callback&state=tracking_id%3DaB3x9Z&scope=profile%20openid
-INFO:app.features.account.endpoints.auth_line:🔗 stateパラメータ: 'tracking_id=aB3x9Z'
-INFO:     172.18.0.1:61246 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
-INFO:app.features.account.endpoints.auth_line:LINE認証: line_id=Uc79b42da1a9e4f88dbd3f27d67aafa4a, display_name=Taichi Umeki
-INFO:app.features.account.endpoints.auth_line:既存ユーザー更新: id=406, invitation_id=hPMuUn
-INFO:app.features.account.endpoints.auth_line:認証完了: user_id=406, invitation_id=hPMuUn
-INFO:     172.18.0.1:61246 - "GET /api/v1/account/line/callback?code=9hu4IrAS804RGm7We1ga&state=tracking_id%3DaB3x9Z HTTP/1.1" 307 Temporary Redirect
-INFO:     172.18.0.1:59078 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:59078 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:59088 - "OPTIONS /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
-🚀 【extend_refresh_token】 リクエストを今から受信
-🚀 【extend_refresh_token】 リクエスト受信 - refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDgxNSwiaWF0IjoxNzUyNTg4ODE1fQ.GeFRG-pXUBZeeMS0Lx2bKt1kbU2JrzLR07Goy6xm1y8
-🕒 【extend_refresh_token】 現在時刻: 1752588820 / refresh_token 有効期限: 1760364815 / 残り 7775995 秒
-🔄 【extend_refresh_token】 `refresh_token` の期限が近いため更新: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDgyMCwiaWF0IjoxNzUyNTg4ODIwfQ.9IX12jWjKjEqXzhMYMGxT7hEXx7iC6U5cc7W988SLuk
-INFO:     172.18.0.1:59104 - "POST /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
-INFO:     172.18.0.1:59088 - "OPTIONS /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
-INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDgyMCwiaWF0IjoxNzUyNTg4ODIwfQ.9IX12jWjKjEqXzhMYMGxT7hEXx7iC6U5cc7W988SLuk
-INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
-INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjU5NjAyMSwiaWF0IjoxNzUyNTg4ODIxfQ.9JCO4yfH5q0trgy6ztNRsnGlzoif6PLm4RHBc9tig8M
-INFO:     172.18.0.1:59104 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63578 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-🚀 【extend_refresh_token】 リクエストを今から受信
-🚀 【extend_refresh_token】 リクエスト受信 - refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDgyMCwiaWF0IjoxNzUyNTg4ODIwfQ.9IX12jWjKjEqXzhMYMGxT7hEXx7iC6U5cc7W988SLuk
-🕒 【extend_refresh_token】 現在時刻: 1752588840 / refresh_token 有効期限: 1760364820 / 残り 7775980 秒
-🔄 【extend_refresh_token】 `refresh_token` の期限が近いため更新: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDg0MCwiaWF0IjoxNzUyNTg4ODQwfQ.T-vX29ZU9kh5m1-XNch54fo9rX-rwvaMsYzk6dIubBw
-INFO:     172.18.0.1:63582 - "POST /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
-INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
-INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsImV4cCI6MTc2MDM2NDg0MCwiaWF0IjoxNzUyNTg4ODQwfQ.T-vX29ZU9kh5m1-XNch54fo9rX-rwvaMsYzk6dIubBw
-INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: cast, `affi_type`: None
-INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDYiLCJ1c2VyX2lkIjo0MDYsInVzZXJfdHlwZSI6ImNhc3QiLCJhZmZpX3R5cGUiOm51bGwsImV4cCI6MTc1MjU5NjA0MCwiaWF0IjoxNzUyNTg4ODQwfQ.ObrNHGNsoyFMyvVH2LM5q_IB4OI9eokCqdb_QomE_pY
-INFO:     172.18.0.1:63582 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63578 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63578 - "GET /api/v1/setup/status/setup_status/406 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63590 - "OPTIONS /api/v1/cast/prof/get HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63606 - "OPTIONS /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63584 - "OPTIONS /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63614 - "OPTIONS /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:app.features.cast.prof.service.prof_service:support_area値: None
-INFO:app.features.cast.prof.service.prof_service:都道府県名取得開始: prefecture_ids=None
-INFO:app.features.cast.prof.service.prof_service:都道府県IDが空のため、空リストを返します
-INFO:app.features.cast.prof.service.prof_service:取得したsupport_area_names: []
-INFO:app.features.cast.prof.service.prof_service:プロフィール取得: dispatch_prefecture=None
-INFO:app.features.cast.prof.service.prof_service:--- 返却する profile_dict の内容 ---
-INFO:app.features.cast.prof.service.prof_service:cast_id: 406 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:rank_id: 1 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:cast_type: B (Type: <class 'str'>)
-INFO:app.features.cast.prof.service.prof_service:name: aaaa (Type: <class 'str'>)
-INFO:app.features.cast.prof.service.prof_service:age: 20 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:height: 142 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:bust: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:cup: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:waist: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:hip: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:birthplace: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:blood_type: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:hobby: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:reservation_fee: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:reservation_fee_deli: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:self_introduction: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:job: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:dispatch_prefecture: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:support_area: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:popularity: 0 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:rating: 0.0 (Type: <class 'float'>)
-INFO:app.features.cast.prof.service.prof_service:is_active: 0 (Type: <class 'int'>)
-INFO:app.features.cast.prof.service.prof_service:available_at: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:created_at: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:updated_at: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:support_area_names: [] (Type: <class 'list'>)
-INFO:app.features.cast.prof.service.prof_service:station_name: None (Type: <class 'NoneType'>)
-INFO:app.features.cast.prof.service.prof_service:------------------------------------
-INFO:app.features.cast.prof.service.prof_service:available_atがNoneだったので現在時刻に設定しました
-INFO:app.features.cast.prof.service.prof_service:created_atがNoneだったので現在時刻に設定しました
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:63582 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:63624 - "POST /api/v1/cast/prof/get HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:63630 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 406, type: <class 'int'>
-[DEBUG] Using cast_id: 406
-[ROUTER DEBUG] Returning result: {'cast_id': 406, 'status': 'pending', 'submitted_at': datetime.datetime(2025, 6, 14, 14, 30, 7), 'reviewed_at': None, 'rejection_reason': None, 'bank_name': None, 'branch_name': None, 'branch_code': None, 'account_type': None, 'account_number': None, 'account_holder': None, 'message': '本人確認申請を作成しました。後日結果を確認してください。'}
-INFO:     172.18.0.1:63624 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-WARNING:  WatchFiles detected changes in 'app/features/account/endpoints/auth_line.py'. Reloading...
+INFO:     Will watch for changes in these directories: ['/app']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [1] using WatchFiles
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [11]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Models initialized
+WARNING:  WatchFiles detected changes in 'app/api/v1/routers/master_router.py'. Reloading...
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
 INFO:     Finished server process [11]
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+Process SpawnProcess-2:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/app/main.py", line 2, in <module>
+    from app.api.v1.routers.master_router import master_router  # 直接指定
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/api/v1/routers/master_router.py", line 149, in <module>
+    from app.features.miniapp.endpoints.miniapp_routers import miniapp_router
+  File "/app/app/features/miniapp/endpoints/miniapp_routers.py", line 7, in <module>
+    from app.features.miniapp.services.miniapp_service import MiniAppService
+  File "/app/app/features/miniapp/services/miniapp_service.py", line 16, in <module>
+    from app.core.config import get_settings
+ImportError: cannot import name 'get_settings' from 'app.core.config' (/app/app/core/config.py)
+Models initialized
