@@ -11,7 +11,7 @@ from app.features.miniapp.schemas.miniapp_schema import (
     UserUpdateRequest,
     ErrorResponse
 )
-from app.db.connection import get_db
+from app.db.session import get_db
 
 # ルーターの作成
 miniapp_router = APIRouter()

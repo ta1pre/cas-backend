@@ -13,15 +13,13 @@ from app.features.miniapp.schemas.miniapp_schema import (
     ErrorResponse
 )
 from app.db.models.user import User
-from app.core.config import get_settings
-
-settings = get_settings()
+# settings = get_settings()  # 一時的にコメントアウト
 
 class MiniAppService:
     def __init__(self, db: Session):
         self.db = db
         self.account_service = AccountService(db)
-        self.liff_id = settings.LINE_LOGIN_CHANNEL_ID  # LIFF IDは環境変数から取得
+        self.liff_id = os.getenv('LINE_LOGIN_CHANNEL_ID')  # LIFF IDは環境変数から取得
     
     async def verify_liff_id_token(self, id_token: str) -> Optional[LiffUserInfo]:
         """
