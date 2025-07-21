@@ -14,7 +14,16 @@ INFO:     Started server process [11]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 Models initialized
-WARNING:  WatchFiles detected changes in 'app/api/v1/routers/master_router.py'. Reloading...
+🔧 開発モード検出: IDトークン='mock_token_for_devel...' - LIFF検証をスキップ
+🆔 開発用LINE ID生成: dev_user_ecf4416813b2
+INFO:     172.18.0.1:64912 - "POST /api/v1/miniapp/register HTTP/1.1" 200 OK
+🔧 開発モード検出: IDトークン='mock_token_for_devel...' - LIFF検証をスキップ
+🆔 開発用LINE ID生成: dev_user_4de677f673ff
+INFO:     172.18.0.1:64702 - "POST /api/v1/miniapp/register HTTP/1.1" 200 OK
+🔧 開発モード検出: IDトークン='mock_token_for_devel...' - LIFF検証をスキップ
+🆔 開発用LINE ID生成: dev_user_c47cb2464d62
+INFO:     172.18.0.1:57966 - "POST /api/v1/miniapp/register HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app/features/miniapp/services/miniapp_service.py'. Reloading...
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
@@ -25,184 +34,3 @@ INFO:     Finished server process [11]
 /usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'orm_mode' has been renamed to 'from_attributes'
   warnings.warn(message, UserWarning)
-Process SpawnProcess-2:
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
-    target(sockets=sockets)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 65, in run
-    return asyncio.run(self.serve(sockets=sockets))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 69, in serve
-    await self._serve(sockets)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 76, in _serve
-    config.load()
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 434, in load
-    self.loaded_app = import_from_string(self.app)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
-    module = importlib.import_module(module_str)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/app/app/main.py", line 2, in <module>
-    from app.api.v1.routers.master_router import master_router  # 直接指定
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/api/v1/routers/master_router.py", line 149, in <module>
-    from app.features.miniapp.endpoints.miniapp_routers import miniapp_router
-  File "/app/app/features/miniapp/endpoints/miniapp_routers.py", line 7, in <module>
-    from app.features.miniapp.services.miniapp_service import MiniAppService
-  File "/app/app/features/miniapp/services/miniapp_service.py", line 16, in <module>
-    from app.core.config import get_settings
-ImportError: cannot import name 'get_settings' from 'app.core.config' (/app/app/core/config.py)
-Models initialized
-WARNING:  WatchFiles detected changes in 'app/api/v1/routers/master_router.py'. Reloading...
-WARNING:  WatchFiles detected changes in 'app/api/v1/routers/master_router.py'. Reloading...
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [58652]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-Process SpawnProcess-4:
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
-    target(sockets=sockets)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 65, in run
-    return asyncio.run(self.serve(sockets=sockets))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 69, in serve
-    await self._serve(sockets)
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 76, in _serve
-    config.load()
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 434, in load
-    self.loaded_app = import_from_string(self.app)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
-    raise exc from None
-  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
-    module = importlib.import_module(module_str)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/app/app/main.py", line 2, in <module>
-    from app.api.v1.routers.master_router import master_router  # 直接指定
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/api/v1/routers/master_router.py", line 149, in <module>
-    from app.features.miniapp.endpoints.miniapp_routers import miniapp_router
-  File "/app/app/features/miniapp/endpoints/miniapp_routers.py", line 14, in <module>
-    from app.db.connection import get_db
-ModuleNotFoundError: No module named 'app.db.connection'
-Models initialized
-WARNING:  WatchFiles detected changes in 'app/api/v1/routers/master_router.py'. Reloading...
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [58735]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-Models initialized
-INFO:app.features.account.endpoints.auth_line:📥 LINE認証リクエスト受信 - tr=aB3x9Z, tracking_id=None, actual=aB3x9Z
-INFO:app.features.account.endpoints.auth_line:🔗 生成されたLINE認証URL: https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=2005683762&redirect_uri=http%3A//localhost%3A8000/api/v1/account/line/callback&state=tracking_id%3DaB3x9Z&scope=profile%20openid&bot_prompt=normal
-INFO:app.features.account.endpoints.auth_line:🔗 stateパラメータ: 'tracking_id=aB3x9Z'
-INFO:     172.18.0.1:60808 - "GET /api/v1/account/line/login?tr=aB3x9Z HTTP/1.1" 200 OK
-INFO:app.features.account.endpoints.auth_line:LINE認証: line_id=Uc79b42da1a9e4f88dbd3f27d67aafa4a, display_name=Taichi Umeki
-INFO:app.features.account.endpoints.auth_line:既存ユーザー更新: id=410, invitation_id=JbnXKw
-INFO:app.features.account.endpoints.auth_line:認証完了: user_id=410, invitation_id=JbnXKw
-INFO:     172.18.0.1:56402 - "GET /api/v1/account/line/callback?code=DdDRaB6h1cm24wkrckgO&state=tracking_id%3DaB3x9Z&friendship_status_changed=false HTTP/1.1" 307 Temporary Redirect
-INFO:     172.18.0.1:56414 - "GET /api/v1/setup/status/setup_status/410 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56418 - "OPTIONS /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
-🚀 【extend_refresh_token】 リクエストを今から受信
-🚀 【extend_refresh_token】 リクエスト受信 - refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTAiLCJ1c2VyX2lkIjo0MTAsImV4cCI6MTc2MDg0MzI0OSwiaWF0IjoxNzUzMDY3MjQ5fQ.m3SSzZhK_4RJ0uv4DCDN0uJGX1SOhUIRKn6nz8Hp2Ug
-🕒 【extend_refresh_token】 現在時刻: 1753067252 / refresh_token 有効期限: 1760843249 / 残り 7775997 秒
-🔄 【extend_refresh_token】 `refresh_token` の期限が近いため更新: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTAiLCJ1c2VyX2lkIjo0MTAsImV4cCI6MTc2MDg0MzI1MiwiaWF0IjoxNzUzMDY3MjUyfQ.l7u_vkGhCy_7D2TIEkS7ABqhbuddi5hezBDq3QJx024
-INFO:     172.18.0.1:56434 - "POST /api/v1/account/auth/extend_refresh_token HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56418 - "OPTIONS /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:app.features.account.endpoints.auth_jwt:🚀 [refresh] トークン更新リクエスト受信
-INFO:app.features.account.endpoints.auth_jwt:🔍 受信した refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTAiLCJ1c2VyX2lkIjo0MTAsImV4cCI6MTc2MDg0MzI1MiwiaWF0IjoxNzUzMDY3MjUyfQ.l7u_vkGhCy_7D2TIEkS7ABqhbuddi5hezBDq3QJx024
-INFO:app.features.account.endpoints.auth_jwt:🔹 DBから取得した `user_type`: None, `affi_type`: None
-INFO:app.features.account.endpoints.auth_jwt:✅ 新しい認証トークンを発行: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTAiLCJ1c2VyX2lkIjo0MTAsInVzZXJfdHlwZSI6bnVsbCwiYWZmaV90eXBlIjpudWxsLCJleHAiOjE3NTMwNzQ0NTMsImlhdCI6MTc1MzA2NzI1M30.ehBFOQl807KzvMjhko8Vrq9lmUjiC4gwru3KhR5stfU
-INFO:     172.18.0.1:56434 - "POST /api/v1/account/auth/refresh HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56418 - "OPTIONS /api/v1/setup/status/setup_status/410 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:56418 - "GET /api/v1/setup/status/setup_status/410 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:55968 - "GET /api/v1/miniapp/health HTTP/1.1" 404 Not Found
-WARNING:  WatchFiles detected changes in 'app/api/v1/routers/master_router.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [58735]
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'orm_mode' has been renamed to 'from_attributes'
-  warnings.warn(message, UserWarning)
-INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
-INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
-INFO:app.main:Application startup complete. Running in local environment.
-INFO:     Started server process [58832]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-Models initialized
-INFO:     172.18.0.1:56162 - "GET /api/v1/miniapp/health HTTP/1.1" 200 OK
-LIFF ID token verification failed: 400
-INFO:     172.18.0.1:61308 - "POST /api/v1/miniapp/register HTTP/1.1" 400 Bad Request
-INFO:     172.18.0.1:56560 - "POST /api/v1/miniapp/verify-token HTTP/1.1" 422 Unprocessable Entity
-INFO:     172.18.0.1:65310 - "GET /api/v1/miniapp/health HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60546 - "POST /api/v1/miniapp/register-dev HTTP/1.1" 404 Not Found
-INFO:     172.18.0.1:65172 - "OPTIONS /api/v1/miniapp/register-dev?user_type=cast HTTP/1.1" 200 OK
-INFO:     172.18.0.1:65172 - "POST /api/v1/miniapp/register-dev?user_type=cast HTTP/1.1" 404 Not Found
-INFO:     172.18.0.1:57974 - "POST /api/v1/miniapp/register-dev?user_type=cast HTTP/1.1" 404 Not Found

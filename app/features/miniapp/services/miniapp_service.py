@@ -19,7 +19,7 @@ class MiniAppService:
     def __init__(self, db: Session):
         self.db = db
         self.account_service = AccountService(db)
-        self.liff_id = os.getenv('LINE_LOGIN_CHANNEL_ID')  # LIFF IDは環境変数から取得
+        self.liff_id = '2007769669'  # LIFF用チャンネルID（ハードコード）
     
     async def verify_liff_id_token(self, id_token: str) -> Optional[LiffUserInfo]:
         """
@@ -32,13 +32,21 @@ class MiniAppService:
             LiffUserInfo: 検証成功時のユーザー情報
             None: 検証失敗時
         """
-        # localhost の場合はモックデータを返す（簡単な判定）
-        if id_token.startswith('mock_') or len(id_token) < 20:
-            print("開発モード: LIFF IDトークン検証をスキップしてモックデータを使用")
+        # 開発モード判定（複数条件でより確実に）
+        is_dev_mode = (
+            id_token.startswith('mock_') or 
+            len(id_token) < 50 or  # 通常のLIFF IDトークンは長い
+            id_token == 'mock_token_for_development' or
+            'development' in id_token.lower()
+        )
+        
+        if is_dev_mode:
+            print(f"🔧 開発モード検出: IDトークン='{id_token[:20]}...' - LIFF検証をスキップ")
             import uuid
-            # 開発環境では毎回新しいユーザーを作成（テスト用）
+            dev_line_id = f"dev_user_{uuid.uuid4().hex[:12]}"
+            print(f"🆔 開発用LINE ID生成: {dev_line_id}")
             return LiffUserInfo(
-                line_id=f"dev_user_{uuid.uuid4().hex[:12]}",  # ユニークなIDを生成
+                line_id=dev_line_id,
                 display_name="開発用ユーザー",
                 picture_url=None
             )
