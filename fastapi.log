@@ -198,3 +198,11 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 Models initialized
 INFO:     172.18.0.1:56162 - "GET /api/v1/miniapp/health HTTP/1.1" 200 OK
+LIFF ID token verification failed: 400
+INFO:     172.18.0.1:61308 - "POST /api/v1/miniapp/register HTTP/1.1" 400 Bad Request
+INFO:     172.18.0.1:56560 - "POST /api/v1/miniapp/verify-token HTTP/1.1" 422 Unprocessable Entity
+INFO:     172.18.0.1:65310 - "GET /api/v1/miniapp/health HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60546 - "POST /api/v1/miniapp/register-dev HTTP/1.1" 404 Not Found
+INFO:     172.18.0.1:65172 - "OPTIONS /api/v1/miniapp/register-dev?user_type=cast HTTP/1.1" 200 OK
+INFO:     172.18.0.1:65172 - "POST /api/v1/miniapp/register-dev?user_type=cast HTTP/1.1" 404 Not Found
+INFO:     172.18.0.1:57974 - "POST /api/v1/miniapp/register-dev?user_type=cast HTTP/1.1" 404 Not Found
