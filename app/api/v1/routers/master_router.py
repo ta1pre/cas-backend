@@ -150,5 +150,5 @@ from app.features.miniapp.endpoints.miniapp_routers import miniapp_router
 master_router.include_router(miniapp_router, prefix="/miniapp", tags=["MiniApp"])
 
 # RICH MENU - LINE Rich Menu管理
-from app.features.linebot.rich_menu.endpoints.rich_menu_routers import rich_menu_router
-master_router.include_router(rich_menu_router, prefix="/rich-menu", tags=["Rich Menu"])
+# from app.features.linebot.rich_menu.endpoints.rich_menu_routers import rich_menu_router
+# master_router.include_router(rich_menu_router, prefix="/rich-menu", tags=["Rich Menu"])

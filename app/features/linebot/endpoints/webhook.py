@@ -148,11 +148,21 @@ async def messaging_webhook(request: Request, db: Session = Depends(get_db), x_l
                 user_info = fetch_user_info_by_line_id(db, line_id)
                 logger.debug(f"ユーザー情報: {user_info}")
                 
-                # Rich Menu更新処理を追加
+                # Rich Menu更新処理を追加（簡易版）
                 try:
-                    menu_manager = MenuManager()
-                    menu_result = menu_manager.update_user_menu(line_id, user_info)
-                    logger.debug(f"Rich Menu更新結果: {menu_result}")
+                    import requests
+                    access_token = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
+                    
+                    if access_token and user_info:
+                        user_type = user_info.get("type") 
+                        logger.info(f"Rich Menu更新開始: user_type={user_type}")
+                        
+                        # 簡易テスト：Rich Menu削除
+                        headers = {"Authorization": f"Bearer {access_token}"}
+                        delete_url = f"https://api.line.me/v2/bot/user/{line_id}/richmenu"
+                        delete_response = requests.delete(delete_url, headers=headers)
+                        logger.info(f"Rich Menu削除結果: {delete_response.status_code}")
+                        
                 except Exception as menu_error:
                     logger.error(f"Rich Menu更新エラー: {str(menu_error)}")
                     
