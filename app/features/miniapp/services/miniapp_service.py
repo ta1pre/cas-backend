@@ -70,9 +70,9 @@ class MiniAppService:
             
             token_info = response.json()
             
-            # トークンの有効性を確認
-            if token_info.get("client_id") != self.liff_id:
-                print("Invalid client_id in token")
+            # トークンの有効性を確認（audフィールドをチェック）
+            if token_info.get("aud") != self.liff_id:
+                print(f"Invalid aud in token: expected {self.liff_id}, got {token_info.get('aud')}")
                 return None
             
             # ユーザー情報を構築
