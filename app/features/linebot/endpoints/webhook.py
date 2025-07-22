@@ -147,6 +147,15 @@ async def messaging_webhook(request: Request, db: Session = Depends(get_db), x_l
             try:
                 user_info = fetch_user_info_by_line_id(db, line_id)
                 logger.debug(f"ユーザー情報: {user_info}")
+                
+                # Rich Menu更新処理を追加
+                try:
+                    menu_manager = MenuManager()
+                    menu_result = menu_manager.update_user_menu(line_id, user_info)
+                    logger.debug(f"Rich Menu更新結果: {menu_result}")
+                except Exception as menu_error:
+                    logger.error(f"Rich Menu更新エラー: {str(menu_error)}")
+                    
             except Exception as e:
                 logger.error(f"ユーザー情報取得エラー: {str(e)}")
                 user_info = {"id": None}
