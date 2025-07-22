@@ -41,10 +41,8 @@ class MiniAppService:
         )
         
         if is_dev_mode:
-            print(f"🔧 開発モード検出: IDトークン='{id_token[:20]}...' - LIFF検証をスキップ")
             import uuid
             dev_line_id = f"dev_user_{uuid.uuid4().hex[:12]}"
-            print(f"🆔 開発用LINE ID生成: {dev_line_id}")
             return LiffUserInfo(
                 line_id=dev_line_id,
                 display_name="開発用ユーザー",
@@ -63,16 +61,12 @@ class MiniAppService:
             response = requests.post(verify_url, data=data, timeout=10)
             
             if response.status_code != 200:
-                print(f"LIFF ID token verification failed: {response.status_code}")
-                print(f"Response body: {response.text}")
-                print(f"Using client_id: {self.liff_id}")
                 return None
             
             token_info = response.json()
             
             # トークンの有効性を確認（audフィールドをチェック）
             if token_info.get("aud") != self.liff_id:
-                print(f"Invalid aud in token: expected {self.liff_id}, got {token_info.get('aud')}")
                 return None
             
             # ユーザー情報を構築
@@ -84,11 +78,9 @@ class MiniAppService:
             
             return user_info
             
-        except requests.exceptions.RequestException as e:
-            print(f"Request error during LIFF token verification: {e}")
+        except requests.exceptions.RequestException:
             return None
-        except Exception as e:
-            print(f"Error during LIFF token verification: {e}")
+        except Exception:
             return None
     
     async def register_or_update_user(
@@ -128,16 +120,14 @@ class MiniAppService:
                 # 新規ユーザーの場合、作成
                 return self._create_new_user(user_info, user_type, tracking_id)
                 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
-            print(f"Database error during user registration: {e}")
             return UserRegistrationResponse(
                 success=False,
                 message="データベースエラーが発生しました",
                 is_new_user=False
             )
-        except Exception as e:
-            print(f"Error during user registration: {e}")
+        except Exception:
             return UserRegistrationResponse(
                 success=False,
                 message="予期しないエラーが発生しました",
@@ -153,6 +143,9 @@ class MiniAppService:
             # tracking_idは既存値がない場合のみ更新
             if not user.tracking_id and tracking_id:
                 user.tracking_id = tracking_id
+            
+            # setup_statusをcompletedに更新
+            user.setup_status = 'completed'
             
             self.db.commit()
             self.db.refresh(user)
@@ -188,7 +181,8 @@ class MiniAppService:
                 "nick_name": user_info.display_name,
                 "picture_url": user_info.picture_url,
                 "user_type": user_type,
-                "tracking_id": tracking_id
+                "tracking_id": tracking_id,
+                "setup_status": "completed"  # 初回登録時にcompletedに設定
             }
             
             # AccountServiceを使用してユーザーを作成

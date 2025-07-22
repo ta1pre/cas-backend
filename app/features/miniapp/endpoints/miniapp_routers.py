@@ -67,9 +67,8 @@ async def register_user(
     except HTTPException:
         # HTTPExceptionは再発生
         raise
-    except Exception as e:
+    except Exception:
         # その他の例外はサーバーエラーとして処理
-        print(f"Unexpected error in register_user: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="サーバーエラーが発生しました"
@@ -123,8 +122,7 @@ async def verify_id_token(
         
     except HTTPException:
         raise
-    except Exception as e:
-        print(f"Unexpected error in verify_id_token: {e}")
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="サーバーエラーが発生しました"

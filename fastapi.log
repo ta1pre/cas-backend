@@ -77,3 +77,60 @@ INFO:     Started server process [18000]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 Models initialized
+WARNING:  WatchFiles detected changes in 'app/features/miniapp/services/miniapp_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18000]
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [18311]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Models initialized
+🔧 開発モード検出: IDトークン='mock_test_token...' - LIFF検証をスキップ
+🆔 開発用LINE ID生成: dev_user_639c1d7647ae
+INFO:     172.18.0.1:63796 - "POST /api/v1/miniapp/register HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app/features/miniapp/services/miniapp_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18311]
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [18581]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Models initialized
+WARNING:  WatchFiles detected changes in 'app/features/miniapp/endpoints/miniapp_routers.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18581]
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [18613]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Models initialized
