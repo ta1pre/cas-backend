@@ -64,6 +64,8 @@ class MiniAppService:
             
             if response.status_code != 200:
                 print(f"LIFF ID token verification failed: {response.status_code}")
+                print(f"Response body: {response.text}")
+                print(f"Using client_id: {self.liff_id}")
                 return None
             
             token_info = response.json()
