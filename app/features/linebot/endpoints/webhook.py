@@ -12,6 +12,7 @@ from app.features.linebot.services.user_info import fetch_user_info_by_line_id
 from app.features.linebot.services.faq_search import search_faq
 from app.features.linebot.services.line_client import send_line_reply
 from app.scripts.fetch_microcms_faq import fetch_and_embed_faq
+from app.features.linebot.rich_menu.services.menu_manager import MenuManager
 from fastapi import APIRouter, Query, HTTPException  
 from fastapi.responses import StreamingResponse  
 from app.features.linebot.services.user_info import fetch_user_info_by_line_id  
@@ -113,8 +114,15 @@ async def messaging_webhook(request: Request, db: Session = Depends(get_db), x_l
             
             # イベントタイプの確認
             event_type = event.get("type")
+            
+            # followイベントの処理
+            if event_type == "follow":
+                await handle_follow_event(event, db)
+                continue
+                
+            # messageイベント以外はスキップ
             if event_type != "message":
-                logger.info(f"メッセージ以外のイベント: {event_type}")
+                logger.info(f"未対応のイベント: {event_type}")
                 continue
                 
             # メッセージタイプの確認
@@ -231,3 +239,66 @@ async def event_generator():
     finally:
         logger.info("イベントジェネレーターを終了します")
         yield "data: 処理完了\n\n"
+
+
+async def handle_follow_event(event: dict, db: Session):
+    """
+    followイベント（友だち追加）の処理
+    """
+    try:
+        # LINE IDを取得
+        line_id = event.get("source", {}).get("userId")
+        
+        if not line_id:
+            logger.error("followイベントでLINE IDが取得できません")
+            return
+        
+        logger.info(f"新しいフォロワー: {line_id}")
+        
+        # ユーザー情報を取得
+        try:
+            user_info = fetch_user_info_by_line_id(db, line_id)
+            logger.info(f"フォロワーのユーザー情報: {user_info}")
+        except Exception as e:
+            logger.error(f"ユーザー情報取得エラー: {str(e)}")
+            user_info = {"id": None, "type": None}
+        
+        # Rich Menuを適用
+        try:
+            menu_manager = MenuManager()
+            result = menu_manager.update_user_menu(line_id, user_info)
+            logger.info(f"Rich Menu適用結果: {result}")
+            
+            if result.get("success"):
+                logger.info(f"Rich Menu適用成功: {result.get('menu_type')}")
+            else:
+                logger.error(f"Rich Menu適用失敗: {result.get('message')}")
+                
+        except Exception as e:
+            logger.error(f"Rich Menu適用エラー: {str(e)}")
+        
+        # ウェルカムメッセージを送信（reply_tokenがある場合のみ）
+        reply_token = event.get("replyToken")
+        if reply_token:
+            try:
+                welcome_message = get_welcome_message(user_info)
+                send_line_reply(reply_token, welcome_message)
+                logger.info("ウェルカムメッセージ送信完了")
+            except Exception as e:
+                logger.error(f"ウェルカムメッセージ送信エラー: {str(e)}")
+        
+    except Exception as e:
+        logger.error(f"followイベント処理エラー: {str(e)}")
+
+
+def get_welcome_message(user_info: dict) -> str:
+    """ユーザータイプに応じたウェルカムメッセージを生成"""
+    user_type = user_info.get("type")
+    nickname = user_info.get("nickname", "")
+    
+    if user_type == "cast":
+        return f"キャスト{nickname}さん、PreCas公式LINEへようこそ！\nメニューから予約管理や売上確認ができます。"
+    elif user_type == "customer":
+        return f"{nickname}さん、PreCas公式LINEへようこそ！\nメニューからキャスト検索や予約ができます。"
+    else:
+        return "PreCas公式LINEへようこそ！\nまずはメニューから会員登録をお願いします。"

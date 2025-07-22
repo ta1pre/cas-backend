@@ -134,3 +134,120 @@ INFO:     Started server process [18613]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 Models initialized
+WARNING:  WatchFiles detected changes in 'app/features/linebot/endpoints/webhook.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18613]
+WARNING:  WatchFiles detected changes in 'app/features/linebot/endpoints/webhook.py'. Reloading...
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [19541]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/features/linebot/endpoints/webhook.py'. Reloading...
+WARNING:  WatchFiles detected changes in 'app/features/miniapp/services/miniapp_service.py'. Reloading...
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [19561]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/features/miniapp/services/miniapp_service.py'. Reloading...
+WARNING:  WatchFiles detected changes in 'app/features/miniapp/services/miniapp_service.py'. Reloading...
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [19574]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [19591]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Models initialized
+WARNING:  WatchFiles detected changes in 'app/api/v1/routers/master_router.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [19591]
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+Process SpawnProcess-14:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/app/main.py", line 2, in <module>
+    from app.api.v1.routers.master_router import master_router  # 直接指定
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/api/v1/routers/master_router.py", line 153, in <module>
+    from app.features.linebot.rich_menu.endpoints.rich_menu_routers import rich_menu_router
+ModuleNotFoundError: No module named 'app.features.linebot.rich_menu.endpoints'
+Models initialized
+INFO:     Stopping reloader process [1]

@@ -12,6 +12,7 @@ from app.features.miniapp.schemas.miniapp_schema import (
     UserRegistrationResponse,
     ErrorResponse
 )
+from app.features.linebot.rich_menu.services.menu_manager import MenuManager
 from app.db.models.user import User
 # settings = get_settings()  # 一時的にコメントアウト
 
@@ -150,6 +151,9 @@ class MiniAppService:
             self.db.commit()
             self.db.refresh(user)
             
+            # Rich Menuを更新
+            self._update_user_rich_menu(user.line_id, user.user_type)
+            
             # tracking_idの更新状況をメッセージに反映
             message = "ユーザー情報を更新しました"
             if user.tracking_id and tracking_id and user.tracking_id != tracking_id:
@@ -188,6 +192,9 @@ class MiniAppService:
             # AccountServiceを使用してユーザーを作成
             new_user = self.account_service.create_user(**user_data)
             
+            # Rich Menuを更新
+            self._update_user_rich_menu(new_user.line_id, new_user.user_type)
+            
             return UserRegistrationResponse(
                 success=True,
                 message="新しいユーザーを作成しました",
@@ -203,3 +210,18 @@ class MiniAppService:
     def get_user_by_line_id(self, line_id: str) -> Optional[User]:
         """LINE IDでユーザーを取得"""
         return self.account_service.get_user_by_line_id(line_id)
+    
+    def _update_user_rich_menu(self, line_id: str, user_type: str):
+        """ユーザーのRich Menuを更新"""
+        try:
+            menu_manager = MenuManager()
+            user_info = {"type": user_type, "id": "registered"}
+            result = menu_manager.update_user_menu(line_id, user_info)
+            
+            if result.get("success"):
+                print(f"Rich Menu更新成功: {line_id} -> {result.get('menu_type')}")
+            else:
+                print(f"Rich Menu更新失敗: {line_id} -> {result.get('message')}")
+                
+        except Exception as e:
+            print(f"Rich Menu更新エラー: {line_id} -> {str(e)}")
