@@ -149,13 +149,19 @@ async def messaging_webhook(request: Request, db: Session = Depends(get_db), x_l
                 logger.debug(f"ユーザー情報: {user_info}")
                 
                 # Rich Menu更新処理を追加
+                print(f"[DEBUG] Rich Menu更新開始: line_id={line_id}, user_type={user_info.get('type')}")
                 try:
+                    from app.features.linebot.rich_menu.services.menu_manager import MenuManager
+                    print("[DEBUG] MenuManager import成功")
                     menu_manager = MenuManager()
                     menu_result = menu_manager.update_user_menu(line_id, user_info)
+                    print(f"[DEBUG] Rich Menu更新結果: {menu_result}")
                     logger.info(f"Rich Menu更新結果: {menu_result}")
                 except Exception as menu_error:
+                    print(f"[DEBUG] Rich Menu更新エラー: {str(menu_error)}")
                     logger.error(f"Rich Menu更新エラー: {str(menu_error)}")
                     import traceback
+                    print(f"[DEBUG] トレースバック: {traceback.format_exc()}")
                     logger.error(traceback.format_exc())
                     
             except Exception as e:
