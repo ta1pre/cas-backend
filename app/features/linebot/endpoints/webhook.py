@@ -59,6 +59,71 @@ def simple_set_rich_menu(line_id: str, menu_id: str) -> bool:
         return False
 
 
+def get_rich_menu_list():
+    """
+    LINE公式アカウントに登録されているリッチメニューの一覧を取得
+    """
+    try:
+        url = "https://api.line.me/v2/bot/richmenu/list"
+        headers = {
+            "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}"
+        }
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"リッチメニュー一覧取得失敗: status_code={response.status_code}, response={response.text}")
+            return None
+    except Exception as e:
+        logger.error(f"リッチメニュー一覧取得エラー: {str(e)}")
+        return None
+
+
+@router.get("/rich-menu-list")
+async def list_rich_menus():
+    """
+    リッチメニュー一覧を取得するエンドポイント（デバッグ用）
+    """
+    menus = get_rich_menu_list()
+    if menus:
+        # メニュー情報を整形
+        result = []
+        for menu in menus.get("richmenus", []):
+            result.append({
+                "richMenuId": menu.get("richMenuId"),
+                "name": menu.get("name"),
+                "size": menu.get("size"),
+                "selected": menu.get("selected"),
+                "chatBarText": menu.get("chatBarText")
+            })
+        return {"success": True, "menus": result}
+    else:
+        return {"success": False, "message": "リッチメニュー一覧の取得に失敗しました"}
+
+
+def get_default_rich_menu():
+    """
+    デフォルトのリッチメニューIDを取得
+    """
+    try:
+        url = "https://api.line.me/v2/bot/user/all/richmenu"
+        headers = {
+            "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}"
+        }
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("richMenuId")
+        else:
+            logger.error(f"デフォルトリッチメニュー取得失敗: status_code={response.status_code}")
+            return None
+    except Exception as e:
+        logger.error(f"デフォルトリッチメニュー取得エラー: {str(e)}")
+        return None
+
+
 @router.post("/w")
 async def messaging_webhook(request: Request, db: Session = Depends(get_db), x_line_signature: str = Header(None)):
     """
@@ -174,20 +239,21 @@ async def messaging_webhook(request: Request, db: Session = Depends(get_db), x_l
                 # Rich Menu更新処理を追加（シンプル版）
                 print(f"[DEBUG] Rich Menu更新開始: line_id={line_id}, user_type={user_info.get('type')}")
                 try:
-                    # ユーザータイプに応じてリッチメニューIDを決定
-                    # TODO: これらのメニューIDは実際のLINE公式アカウントで作成したリッチメニューのIDに置き換える必要があります
-                    user_type = user_info.get('type')
-                    if user_type == 'cast':
-                        menu_id = "CAST_MENU_ID"  # キャスト用メニューID
-                    elif user_type == 'customer':
-                        menu_id = "CUSTOMER_MENU_ID"  # カスタマー用メニューID
+                    # 利用可能なリッチメニューの一覧を取得
+                    menu_list = get_rich_menu_list()
+                    if menu_list and menu_list.get("richmenus"):
+                        # 最初に見つかったリッチメニューを使用（とりあえずテスト用）
+                        first_menu = menu_list["richmenus"][0]
+                        menu_id = first_menu["richMenuId"]
+                        print(f"[DEBUG] 使用するリッチメニュー: {menu_id} (name: {first_menu.get('name', 'N/A')})")
+                        
+                        # シンプルなリッチメニュー設定
+                        result = simple_set_rich_menu(line_id, menu_id)
+                        print(f"[DEBUG] Rich Menu更新結果: {result}")
+                        logger.info(f"Rich Menu更新結果: success={result}, menu_id={menu_id}")
                     else:
-                        menu_id = "UNREGISTERED_MENU_ID"  # 未登録ユーザー用メニューID
-                    
-                    # シンプルなリッチメニュー設定
-                    result = simple_set_rich_menu(line_id, menu_id)
-                    print(f"[DEBUG] Rich Menu更新結果: {result}")
-                    logger.info(f"Rich Menu更新結果: success={result}, menu_id={menu_id}")
+                        print("[DEBUG] 利用可能なリッチメニューがありません")
+                        logger.warning("利用可能なリッチメニューがありません")
                 except Exception as menu_error:
                     print(f"[DEBUG] Rich Menu更新エラー: {str(menu_error)}")
                     logger.error(f"Rich Menu更新エラー: {str(menu_error)}")
@@ -310,22 +376,23 @@ async def handle_follow_event(event: dict, db: Session):
         
         # Rich Menuを適用（シンプル版）
         try:
-            # ユーザータイプに応じてリッチメニューIDを決定
-            user_type = user_info.get('type')
-            if user_type == 'cast':
-                menu_id = "CAST_MENU_ID"  # キャスト用メニューID
-            elif user_type == 'customer':
-                menu_id = "CUSTOMER_MENU_ID"  # カスタマー用メニューID
+            # 利用可能なリッチメニューの一覧を取得
+            menu_list = get_rich_menu_list()
+            if menu_list and menu_list.get("richmenus"):
+                # 最初に見つかったリッチメニューを使用（とりあえずテスト用）
+                first_menu = menu_list["richmenus"][0]
+                menu_id = first_menu["richMenuId"]
+                logger.info(f"使用するリッチメニュー: {menu_id} (name: {first_menu.get('name', 'N/A')})")
+                
+                # シンプルなリッチメニュー設定
+                result = simple_set_rich_menu(line_id, menu_id)
+                
+                if result:
+                    logger.info(f"Rich Menu適用成功: menu_id={menu_id}")
+                else:
+                    logger.error(f"Rich Menu適用失敗: menu_id={menu_id}")
             else:
-                menu_id = "UNREGISTERED_MENU_ID"  # 未登録ユーザー用メニューID
-            
-            # シンプルなリッチメニュー設定
-            result = simple_set_rich_menu(line_id, menu_id)
-            
-            if result:
-                logger.info(f"Rich Menu適用成功: menu_id={menu_id}")
-            else:
-                logger.error(f"Rich Menu適用失敗: menu_id={menu_id}")
+                logger.warning("利用可能なリッチメニューがありません")
                 
         except Exception as e:
             logger.error(f"Rich Menu適用エラー: {str(e)}")
