@@ -101,16 +101,38 @@ def get_menu_id_by_user_type(user_type: str) -> str:
     """
     ユーザータイプに基づいて適切なリッチメニューIDを取得
     """
-    # 現在はdefaultメニューのみなので、将来的に拡張予定
     menu_list = get_rich_menu_list()
-    if menu_list and menu_list.get("richmenus"):
-        # TODO: 将来的にuser_typeに応じてメニューを選択
-        # 現在はdefaultメニューを使用
-        for menu in menu_list["richmenus"]:
-            if "default" in menu.get("name", "").lower():
-                return menu["richMenuId"]
-        # defaultが見つからない場合は最初のメニューを使用
-        return menu_list["richmenus"][0]["richMenuId"]
+    if not menu_list or not menu_list.get("richmenus"):
+        return None
+    
+    richmenus = menu_list["richmenus"]
+    
+    # user_typeに応じたメニュー名を定義
+    menu_name_map = {
+        "cast": "cast_menu",
+        "customer": "customer_menu"
+    }
+    
+    target_menu_name = menu_name_map.get(user_type, "default")
+    
+    # 指定されたメニュー名を探す
+    for menu in richmenus:
+        menu_name = menu.get("name", "").lower()
+        if target_menu_name.lower() in menu_name:
+            print(f"[DEBUG] メニュー選択: {user_type} -> {target_menu_name} (ID: {menu['richMenuId']})")
+            return menu["richMenuId"]
+    
+    # 指定メニューが見つからない場合はdefaultを探す
+    for menu in richmenus:
+        if "default" in menu.get("name", "").lower():
+            print(f"[DEBUG] デフォルトメニューを使用: {user_type} -> default (ID: {menu['richMenuId']})")
+            return menu["richMenuId"]
+    
+    # defaultも見つからない場合は最初のメニューを使用
+    if richmenus:
+        print(f"[DEBUG] 最初のメニューを使用: {user_type} -> {richmenus[0].get('name', 'unknown')} (ID: {richmenus[0]['richMenuId']})")
+        return richmenus[0]["richMenuId"]
+    
     return None
 
 

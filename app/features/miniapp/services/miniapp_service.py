@@ -12,7 +12,8 @@ from app.features.miniapp.schemas.miniapp_schema import (
     UserRegistrationResponse,
     ErrorResponse
 )
-from app.features.linebot.rich_menu.services.menu_manager import MenuManager
+# MenuManagerはエラーの原因のため削除
+# from app.features.linebot.rich_menu.services.menu_manager import MenuManager
 from app.db.models.user import User
 # settings = get_settings()  # 一時的にコメントアウト
 
@@ -214,14 +215,87 @@ class MiniAppService:
     def _update_user_rich_menu(self, line_id: str, user_type: str):
         """ユーザーのRich Menuを更新"""
         try:
-            menu_manager = MenuManager()
-            user_info = {"type": user_type, "id": "registered"}
-            result = menu_manager.update_user_menu(line_id, user_info)
+            # リッチメニュー一覧を取得
+            menu_list = self._get_rich_menu_list()
+            if not menu_list or not menu_list.get("richmenus"):
+                print(f"Rich Menu更新失敗: 利用可能なメニューがありません")
+                return
             
-            if result.get("success"):
-                print(f"Rich Menu更新成功: {line_id} -> {result.get('menu_type')}")
+            # ユーザータイプに応じたメニューIDを取得
+            menu_id = self._get_menu_id_by_user_type(user_type, menu_list)
+            if not menu_id:
+                print(f"Rich Menu更新失敗: {user_type}に対応するメニューが見つかりません")
+                return
+            
+            # リッチメニューを設定
+            success = self._set_rich_menu(line_id, menu_id)
+            if success:
+                print(f"Rich Menu更新成功: {line_id} -> {user_type} (menu_id: {menu_id})")
             else:
-                print(f"Rich Menu更新失敗: {line_id} -> {result.get('message')}")
+                print(f"Rich Menu更新失敗: {line_id} -> {user_type} (menu_id: {menu_id})")
                 
         except Exception as e:
             print(f"Rich Menu更新エラー: {line_id} -> {str(e)}")
+
+    def _get_rich_menu_list(self):
+        """LINE公式アカウントに登録されているリッチメニューの一覧を取得"""
+        try:
+            url = "https://api.line.me/v2/bot/richmenu/list"
+            headers = {
+                "Authorization": f"Bearer {os.getenv('LINE_CHANNEL_ACCESS_TOKEN')}"
+            }
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"リッチメニュー一覧取得失敗: {response.status_code} - {response.text}")
+                return None
+        except Exception as e:
+            print(f"リッチメニュー一覧取得エラー: {str(e)}")
+            return None
+
+    def _get_menu_id_by_user_type(self, user_type: str, menu_list: dict) -> str:
+        """ユーザータイプに基づいて適切なリッチメニューIDを取得"""
+        richmenus = menu_list.get("richmenus", [])
+        
+        # user_typeに応じたメニュー名を定義
+        menu_name_map = {
+            "cast": "cast_menu",
+            "customer": "customer_menu"
+        }
+        
+        target_menu_name = menu_name_map.get(user_type, "default")
+        
+        # 指定されたメニュー名を探す
+        for menu in richmenus:
+            menu_name = menu.get("name", "").lower()
+            if target_menu_name.lower() in menu_name:
+                print(f"メニュー選択: {user_type} -> {target_menu_name} (ID: {menu['richMenuId']})")
+                return menu["richMenuId"]
+        
+        # 指定メニューが見つからない場合はdefaultを探す
+        for menu in richmenus:
+            if "default" in menu.get("name", "").lower():
+                print(f"デフォルトメニューを使用: {user_type} -> default (ID: {menu['richMenuId']})")
+                return menu["richMenuId"]
+        
+        # defaultも見つからない場合は最初のメニューを使用
+        if richmenus:
+            print(f"最初のメニューを使用: {user_type} -> {richmenus[0].get('name', 'unknown')} (ID: {richmenus[0]['richMenuId']})")
+            return richmenus[0]["richMenuId"]
+        
+        return None
+
+    def _set_rich_menu(self, line_id: str, menu_id: str) -> bool:
+        """LINE Messaging APIを直接使用してリッチメニューを設定"""
+        try:
+            url = f"https://api.line.me/v2/bot/user/{line_id}/richmenu/{menu_id}"
+            headers = {
+                "Authorization": f"Bearer {os.getenv('LINE_CHANNEL_ACCESS_TOKEN')}"
+            }
+            response = requests.post(url, headers=headers)
+            return response.status_code == 200
+        except Exception as e:
+            print(f"リッチメニュー設定エラー: {str(e)}")
+            return False
