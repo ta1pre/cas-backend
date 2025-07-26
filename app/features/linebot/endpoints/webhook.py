@@ -42,19 +42,27 @@ def simple_set_rich_menu(line_id: str, menu_id: str) -> bool:
     LINE Messaging APIを直接使用してリッチメニューを設定
     """
     try:
+        print(f"[DEBUG] リッチメニュー設定開始: line_id={line_id}, menu_id={menu_id}")
         url = f"https://api.line.me/v2/bot/user/{line_id}/richmenu/{menu_id}"
         headers = {
             "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}"
         }
+        print(f"[DEBUG] リクエスト URL: {url}")
+        print(f"[DEBUG] LINE_CHANNEL_ACCESS_TOKEN 存在: {bool(LINE_CHANNEL_ACCESS_TOKEN)}")
+        
         response = requests.post(url, headers=headers)
+        print(f"[DEBUG] レスポンス: status_code={response.status_code}, content={response.text}")
         
         if response.status_code == 200:
+            print(f"[DEBUG] リッチメニュー設定成功!")
             logger.info(f"リッチメニュー設定成功: line_id={line_id}, menu_id={menu_id}")
             return True
         else:
+            print(f"[DEBUG] リッチメニュー設定失敗: {response.status_code} - {response.text}")
             logger.error(f"リッチメニュー設定失敗: status_code={response.status_code}, response={response.text}")
             return False
     except Exception as e:
+        print(f"[DEBUG] リッチメニュー設定エラー: {str(e)}")
         logger.error(f"リッチメニュー設定エラー: {str(e)}")
         return False
 
@@ -64,18 +72,27 @@ def get_rich_menu_list():
     LINE公式アカウントに登録されているリッチメニューの一覧を取得
     """
     try:
+        print("[DEBUG] リッチメニュー一覧取得開始")
         url = "https://api.line.me/v2/bot/richmenu/list"
         headers = {
             "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}"
         }
         response = requests.get(url, headers=headers)
+        print(f"[DEBUG] リッチメニュー一覧レスポンス: status_code={response.status_code}")
         
         if response.status_code == 200:
-            return response.json()
+            data = response.json()
+            menu_count = len(data.get("richmenus", []))
+            print(f"[DEBUG] 取得したリッチメニュー数: {menu_count}")
+            for i, menu in enumerate(data.get("richmenus", [])):
+                print(f"[DEBUG] メニュー{i+1}: ID={menu.get('richMenuId')}, name={menu.get('name', 'N/A')}")
+            return data
         else:
+            print(f"[DEBUG] リッチメニュー一覧取得失敗: {response.status_code} - {response.text}")
             logger.error(f"リッチメニュー一覧取得失敗: status_code={response.status_code}, response={response.text}")
             return None
     except Exception as e:
+        print(f"[DEBUG] リッチメニュー一覧取得エラー: {str(e)}")
         logger.error(f"リッチメニュー一覧取得エラー: {str(e)}")
         return None
 
