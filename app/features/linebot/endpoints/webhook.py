@@ -97,6 +97,34 @@ def get_rich_menu_list():
         return None
 
 
+def create_rich_menu(menu_definition):
+    """
+    リッチメニューを動的に作成
+    """
+    try:
+        print(f"[DEBUG] リッチメニュー作成開始: {menu_definition.get('name', 'unnamed')}")
+        url = "https://api.line.me/v2/bot/richmenu"
+        headers = {
+            "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}",
+            "Content-Type": "application/json"
+        }
+        response = requests.post(url, headers=headers, json=menu_definition)
+        print(f"[DEBUG] リッチメニュー作成レスポンス: status_code={response.status_code}")
+        
+        if response.status_code == 200:
+            rich_menu_id = response.json().get("richMenuId")
+            print(f"[DEBUG] リッチメニュー作成成功: ID={rich_menu_id}")
+            return rich_menu_id
+        else:
+            print(f"[DEBUG] リッチメニュー作成失敗: {response.status_code} - {response.text}")
+            logger.error(f"リッチメニュー作成失敗: status_code={response.status_code}, response={response.text}")
+            return None
+    except Exception as e:
+        print(f"[DEBUG] リッチメニュー作成エラー: {str(e)}")
+        logger.error(f"リッチメニュー作成エラー: {str(e)}")
+        return None
+
+
 @router.get("/rich-menu-list")
 async def list_rich_menus():
     """
