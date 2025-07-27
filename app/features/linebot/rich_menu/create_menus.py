@@ -156,7 +156,7 @@ class RichMenuCreator:
             img.save(img_byte_arr, format='PNG')
             img_byte_arr.seek(0)
             
-            url = f"{self.base_url}/{menu_id}/content"
+            url = f"https://api-data.line.me/v2/bot/richmenu/{menu_id}/content"
             headers = {
                 "Authorization": f"Bearer {self.access_token}",
                 "Content-Type": "image/png"

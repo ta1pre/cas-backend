@@ -47,17 +47,7 @@ def main():
     
     # 新しいメニューを作成
     print("\n新しいメニューを作成中...")
-    menu_types = ["cast_menu", "customer_menu", "default"]
-    created_menus = {}
-    
-    for menu_type in menu_types:
-        print(f"\n{menu_type}を作成中...")
-        menu_id = creator.create_rich_menu(menu_type)
-        if menu_id:
-            created_menus[menu_type] = menu_id
-            print(f"✓ {menu_type}: {menu_id}")
-        else:
-            print(f"✗ {menu_type}: 作成失敗")
+    created_menus = creator.create_all_menus()  # 画像アップロードも含む
     
     if created_menus:
         print(f"\n作成成功: {len(created_menus)}個のメニュー")
