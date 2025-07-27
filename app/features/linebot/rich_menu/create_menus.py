@@ -5,6 +5,9 @@ import json
 import os
 from typing import Dict, Any, Optional
 
+# 環境に応じたAPI URLを設定
+API_BASE_URL = os.getenv('FRONTEND_URL', 'https://cas.tokyo')
+
 class RichMenuCreator:
     def __init__(self):
         self.access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
@@ -43,23 +46,23 @@ class RichMenuCreator:
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/api/v1/account/line/login?tr=menu_cast"}
+                    "action": {"type": "uri", "uri": f"https://api.cas.tokyo/api/v1/account/line/login?tr=menu_cast"}
                 },
                 {
                     "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/cast/earnings"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/cast/earnings"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/cast/profile"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/cast/profile"}
                 },
                 {
                     "bounds": {"x": 0, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/cast/messages"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/cast/messages"}
                 },
                 {
                     "bounds": {"x": 833, "y": 843, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/cast/settings"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/cast/settings"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 843, "width": 833, "height": 843},
@@ -70,23 +73,23 @@ class RichMenuCreator:
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/api/v1/account/line/login?tr=menu_customer"}
+                    "action": {"type": "uri", "uri": f"https://api.cas.tokyo/api/v1/account/line/login?tr=menu_customer"}
                 },
                 {
                     "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/favorites"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/customer/favorites"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/reservations"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/customer/reservations"}
                 },
                 {
                     "bounds": {"x": 0, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/history"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/customer/history"}
                 },
                 {
                     "bounds": {"x": 833, "y": 843, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/profile"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/customer/profile"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 843, "width": 833, "height": 843},
@@ -97,15 +100,15 @@ class RichMenuCreator:
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/api/v1/account/line/login?tr=menu_default"}
+                    "action": {"type": "uri", "uri": f"https://api.cas.tokyo/api/v1/account/line/login?tr=menu_default"}
                 },
                 {
                     "bounds": {"x": 1250, "y": 0, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/about"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/about"}
                 },
                 {
                     "bounds": {"x": 0, "y": 843, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/howto"}
+                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/howto"}
                 },
                 {
                     "bounds": {"x": 1250, "y": 843, "width": 1250, "height": 843},
