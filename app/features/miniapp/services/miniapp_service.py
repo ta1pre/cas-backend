@@ -285,6 +285,15 @@ class MiniAppService:
             print(f"最初のメニューを使用: {user_type} -> {richmenus[0].get('name', 'unknown')} (ID: {richmenus[0]['richMenuId']})")
             return richmenus[0]["richMenuId"]
         
+        # メニューが見つからない場合は作成を試みる
+        print(f"リッチメニューが見つからないため、作成を試みます: {user_type}")
+        self._ensure_menus_exist()
+        
+        # 再度取得を試みる
+        menu_list_retry = self._get_rich_menu_list()
+        if menu_list_retry and menu_list_retry.get("richmenus"):
+            return self._get_menu_id_by_user_type(user_type, menu_list_retry)
+        
         return None
 
     def _set_rich_menu(self, line_id: str, menu_id: str) -> bool:
@@ -299,3 +308,42 @@ class MiniAppService:
         except Exception as e:
             print(f"リッチメニュー設定エラー: {str(e)}")
             return False
+    
+    def _ensure_menus_exist(self):
+        """必要なリッチメニューが存在することを確認し、なければ作成"""
+        try:
+            # リッチメニュー作成スクリプトを実行
+            from app.features.linebot.rich_menu.create_menus import RichMenuCreator
+            creator = RichMenuCreator()
+            
+            # 既存のメニューを確認
+            menu_list = self._get_rich_menu_list()
+            existing_menus = {}
+            if menu_list and menu_list.get("richmenus"):
+                for menu in menu_list["richmenus"]:
+                    name = menu.get("name", "").lower()
+                    existing_menus[name] = menu["richMenuId"]
+            
+            # 必要なメニューが存在するか確認
+            required_menus = ["cast_menu", "customer_menu", "default"]
+            menus_to_create = []
+            
+            for menu_type in required_menus:
+                if menu_type not in existing_menus:
+                    menus_to_create.append(menu_type)
+            
+            # 不足しているメニューを作成
+            if menus_to_create:
+                print(f"以下のメニューを作成します: {menus_to_create}")
+                for menu_type in menus_to_create:
+                    menu_id = creator.create_rich_menu(menu_type)
+                    if menu_id:
+                        # 画像のアップロードは一旦スキップ（プレースホルダー画像が必要）
+                        print(f"メニュー作成成功: {menu_type} -> {menu_id}")
+                    else:
+                        print(f"メニュー作成失敗: {menu_type}")
+            else:
+                print("全ての必要なメニューが既に存在します")
+                
+        except Exception as e:
+            print(f"メニュー作成エラー: {str(e)}")

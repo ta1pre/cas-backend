@@ -37,3 +37,6 @@ numpy==1.26.4
 
 # OpenAI API
 openai==1.30.0
+
+# 画像処理（リッチメニュー用）
+Pillow==10.3.0
