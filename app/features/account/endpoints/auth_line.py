@@ -45,6 +45,11 @@ async def line_login(tr: str = None, tracking_id: str = None):
     logger.info(f"🔗 生成されたLINE認証URL: {login_url}")
     logger.info(f"🔗 stateパラメータ: '{state}'")
     
+    # リッチメニューからの直接アクセスの場合はリダイレクト
+    if tr and tr.startswith("menu_"):
+        return RedirectResponse(url=login_url)
+    
+    # 通常のAPIレスポンス（既存のフロントエンドとの互換性維持）
     return {"auth_url": login_url}
 
 
