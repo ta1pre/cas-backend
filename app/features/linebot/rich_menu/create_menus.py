@@ -43,7 +43,7 @@ class RichMenuCreator:
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/cast/schedule"}
+                    "action": {"type": "uri", "uri": "https://precas.jp/api/v1/account/line/login?tr=menu_cast"}
                 },
                 {
                     "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
@@ -70,7 +70,7 @@ class RichMenuCreator:
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/search"}
+                    "action": {"type": "uri", "uri": "https://precas.jp/api/v1/account/line/login?tr=menu_customer"}
                 },
                 {
                     "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
@@ -97,7 +97,7 @@ class RichMenuCreator:
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": "https://precas.jp/register"}
+                    "action": {"type": "uri", "uri": "https://precas.jp/api/v1/account/line/login?tr=menu_default"}
                 },
                 {
                     "bounds": {"x": 1250, "y": 0, "width": 1250, "height": 843},
