@@ -139,22 +139,16 @@ class RichMenuCreator:
             return None
     
     def upload_image(self, menu_id: str, menu_type: str) -> bool:
-        """リッチメニューに画像をアップロード（プレースホルダー画像）"""
+        """リッチメニューに画像をアップロード"""
         try:
-            # 実際の実装では適切な画像ファイルを使用
-            # ここではプレースホルダーとして単色画像を生成
-            from PIL import Image
+            from .menu_designer import MenuDesigner
             import io
             
-            # 2500x1686の画像を生成
-            colors = {
-                "cast_menu": (255, 200, 200),  # 薄い赤
-                "customer_menu": (200, 200, 255),  # 薄い青
-                "default": (200, 255, 200)  # 薄い緑
-            }
-            color = colors.get(menu_type, (220, 220, 220))
+            # デザイナーで画像を生成
+            designer = MenuDesigner()
+            img = designer.create_menu_image(menu_type)
             
-            img = Image.new('RGB', (2500, 1686), color=color)
+            # バイト配列に変換
             img_byte_arr = io.BytesIO()
             img.save(img_byte_arr, format='PNG')
             img_byte_arr.seek(0)
