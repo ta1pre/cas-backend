@@ -34,7 +34,7 @@ class MenuDesigner:
             {"icon": "📅", "text": "予約管理", "color": "#4ECDC4"},
             {"icon": "💰", "text": "売上", "color": "#45B7D1"},
             {"icon": "👤", "text": "プロフィール", "color": "#96CEB4"},
-            {"icon": "💬", "text": "メッセージ", "color": "#FECA57"},
+            {"icon": "📝", "text": "ポスト", "color": "#FECA57"},
             {"icon": "⚙️", "text": "設定", "color": "#DDA0DD"}
         ]
         

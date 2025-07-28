@@ -67,7 +67,7 @@ class RichMenuCreator:
                 },
                 {
                     "bounds": {"x": 833, "y": 843, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/message?type=cast"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/p/cast/cont/posts"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 843, "width": 833, "height": 843},

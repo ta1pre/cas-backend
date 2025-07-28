@@ -19,7 +19,7 @@ PAGE_MAPPINGS = {
         "reserve": "/p/cast/reserve", 
         "sales": "/p/cast/earnings",
         "profile": "/p/cast/profile",
-        "message": "/p/cast/messages",
+        "message": "/p/cast/cont/posts",
         "settings": "/p/cast/settings"
     },
     "customer": {
