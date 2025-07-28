@@ -22,9 +22,7 @@ class IdentityVerificationRepository:
         ).first()
 
     def create_verification_request(self, cast_id: int, service_type: str, id_photo_media_id: int, juminhyo_media_id: Optional[int] = None,
-                                   bank_name: Optional[str] = None, branch_name: Optional[str] = None, 
-                                   branch_code: Optional[str] = None, account_type: Optional[str] = None, 
-                                   account_number: Optional[str] = None, account_holder: Optional[str] = None) -> CastIdentityVerification:
+                                   document_type: Optional[str] = None) -> CastIdentityVerification:
         """
         本人確認申請を取得
         """
@@ -32,8 +30,7 @@ class IdentityVerificationRepository:
         if hasattr(cast_id, "id"):
             cast_id = cast_id.id
         
-        print(f"メッセージ: create_verification_request呼び出し - cast_id={cast_id}, service_type={service_type}, id_photo_media_id={id_photo_media_id}, juminhyo_media_id={juminhyo_media_id}")
-        print(f"口座情報: bank_name={bank_name}, branch_name={branch_name}, branch_code={branch_code}, account_type={account_type}, account_number={account_number}, account_holder={account_holder}")
+        print(f"メッセージ: create_verification_request呼び出し - cast_id={cast_id}, service_type={service_type}, id_photo_media_id={id_photo_media_id}, juminhyo_media_id={juminhyo_media_id}, document_type={document_type}")
         
         # 既存の本人確認申請を取得
         existing = self.get_verification_status(cast_id)
@@ -59,14 +56,7 @@ class IdentityVerificationRepository:
             existing.service_type = service_type
             existing.id_photo_media_id = id_photo_media_id
             existing.juminhyo_media_id = juminhyo_media_id
-            
-            # 口座情報を更新
-            existing.bank_name = bank_name
-            existing.branch_name = branch_name
-            existing.branch_code = branch_code
-            existing.account_type = account_type
-            existing.account_number = account_number
-            existing.account_holder = account_holder
+            existing.document_type = document_type
             
             try:
                 self.db.commit()
@@ -87,13 +77,7 @@ class IdentityVerificationRepository:
                 service_type=service_type,
                 id_photo_media_id=id_photo_media_id,
                 juminhyo_media_id=juminhyo_media_id,
-                # 口座情報を設定
-                bank_name=bank_name,
-                branch_name=branch_name,
-                branch_code=branch_code,
-                account_type=account_type,
-                account_number=account_number,
-                account_holder=account_holder
+                document_type=document_type
             )
             self.db.add(new_verification)
             self.db.commit()
@@ -133,10 +117,9 @@ class IdentityVerificationRepository:
             MediaFile.target_id == cast_id
         ).all()
 
-    def update_bank_account(self, cast_id: int, bank_name: str, branch_name: str, branch_code: str, 
-                        account_type: str, account_number: str, account_holder: str) -> CastIdentityVerification:
+    def upload_basic_document(self, cast_id: int, id_photo_media_id: int, document_type: str) -> CastIdentityVerification:
         """
-        口座情報を更新します
+        基本身分証をアップロードします
         """
         # cast_id が User オブジェクトの場合は id を取り出して数値化
         if hasattr(cast_id, "id"):
@@ -149,24 +132,47 @@ class IdentityVerificationRepository:
             # 本人確認申請が見つからない場合、新規作成
             verification = CastIdentityVerification(
                 cast_id=cast_id,
-                status='unsubmitted',  # 未提出
-                service_type='A',      # デフォルトサービス
-                bank_name=bank_name,
-                branch_name=branch_name,
-                branch_code=branch_code,
-                account_type=account_type,
-                account_number=account_number,
-                account_holder=account_holder
+                status='unsubmitted',
+                service_type='A',
+                id_photo_media_id=id_photo_media_id,
+                document_type=document_type
             )
             self.db.add(verification)
         else:
             # 既存の本人確認申請を更新
-            verification.bank_name = bank_name
-            verification.branch_name = branch_name
-            verification.branch_code = branch_code
-            verification.account_type = account_type
-            verification.account_number = account_number
-            verification.account_holder = account_holder
+            verification.id_photo_media_id = id_photo_media_id
+            verification.document_type = document_type
+        
+        try:
+            self.db.commit()
+            self.db.refresh(verification)
+            return verification
+        except Exception as e:
+            self.db.rollback()
+            raise HTTPException(status_code=500, detail=f"データベース更新エラー: {str(e)}")
+
+    def upload_residence_document(self, cast_id: int, juminhyo_media_id: int) -> CastIdentityVerification:
+        """
+        住民票をアップロードします
+        """
+        # cast_id が User オブジェクトの場合は id を取り出して数値化
+        if hasattr(cast_id, "id"):
+            cast_id = cast_id.id
+        
+        # 既存の本人確認申請を取得
+        verification = self.get_verification_status(cast_id)
+        
+        if not verification:
+            # 本人確認申請が見つからない場合、エラー
+            raise HTTPException(status_code=400, detail="基本身分証を先にアップロードしてください")
+        
+        # 住民票を更新
+        verification.juminhyo_media_id = juminhyo_media_id
+        
+        # 両方の書類が揃ったらステータスをpendingに
+        if verification.id_photo_media_id and verification.juminhyo_media_id:
+            verification.status = 'pending'
+            verification.submitted_at = func.now()
         
         try:
             self.db.commit()

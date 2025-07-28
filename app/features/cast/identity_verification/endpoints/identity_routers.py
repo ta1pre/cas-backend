@@ -8,14 +8,18 @@ from app.features.cast.identity_verification.schemas.identity_schema import (
     IdentityVerificationResponse,
     ReviewVerificationRequest,
     IdentityDocumentsResponse,
-    BankAccountUpdateRequest
+    BasicDocumentUploadRequest,
+    ResidenceDocumentUploadRequest,
+    UploadProgressResponse
 )
 from app.features.cast.identity_verification.services.identity_service import (
     create_verification_request,
     get_verification_status,
     review_verification,
     get_verification_documents,
-    update_bank_account
+    upload_basic_document,
+    upload_residence_document,
+    get_upload_progress
 )
 
 # 認証が必要なルーター
@@ -64,12 +68,7 @@ def submit_verification(
             request.service_type, 
             request.id_photo_media_id, 
             request.juminhyo_media_id,
-            request.bank_name,
-            request.branch_name,
-            request.branch_code,
-            request.account_type,
-            request.account_number,
-            request.account_holder,
+            request.document_type,
             db
         )
         print(f"申請作成結果: {result}")
@@ -78,38 +77,80 @@ def submit_verification(
         print(f"エラー発生: {str(e)}")
         raise
 
-# 口座情報のみを更新するエンドポイント
-@identity_router.post("/update-bank-account", response_model=IdentityVerificationResponse)
-def update_bank_account_endpoint(
-    request: BankAccountUpdateRequest,
+# 基本身分証をアップロードするエンドポイント
+@identity_router.post("/upload-basic")
+def upload_basic_document_endpoint(
+    request: BasicDocumentUploadRequest,
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user)
 ):
     """
-    口座情報のみを更新する
-    - 身分証明書や住民票は不要
-    - 既存レコードがあれば更新、なければ新規作成
+    基本身分証をアップロードする
+    - 写真付き身分証明書のメディアIDと書類タイプを受け取る
     """
-    # デバッグ情報を出力
-    print(f"口座情報更新リクエスト受信: user_id={user_id}, request={request}")
+    print(f"基本身分証アップロードリクエスト受信: user_id={user_id}, request={request}")
     
     # キャストIDを使用
-    cast_id = request.cast_id if request.cast_id is not None else user_id
+    cast_id = user_id
     print(f"使用するcast_id: {cast_id}")
     
-    # 口座情報を更新
     try:
-        result = update_bank_account(
+        result = upload_basic_document(
             cast_id,
-            request.bank_name,
-            request.branch_name,
-            request.branch_code,
-            request.account_type,
-            request.account_number,
-            request.account_holder,
+            request.id_photo_media_id,
+            request.document_type,
             db
         )
-        print(f"口座情報更新結果: {result}")
+        print(f"基本身分証アップロード結果: {result}")
+        return result
+    except Exception as e:
+        print(f"エラー発生: {str(e)}")
+        raise
+
+# 住民票をアップロードするエンドポイント
+@identity_router.post("/upload-residence")
+def upload_residence_document_endpoint(
+    request: ResidenceDocumentUploadRequest,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user)
+):
+    """
+    住民票をアップロードする
+    - 住民票のメディアIDを受け取る
+    """
+    print(f"住民票アップロードリクエスト受信: user_id={user_id}, request={request}")
+    
+    # キャストIDを使用
+    cast_id = user_id
+    print(f"使用するcast_id: {cast_id}")
+    
+    try:
+        result = upload_residence_document(
+            cast_id,
+            request.juminhyo_media_id,
+            db
+        )
+        print(f"住民票アップロード結果: {result}")
+        return result
+    except Exception as e:
+        print(f"エラー発生: {str(e)}")
+        raise
+
+# アップロード進捗を取得するエンドポイント
+@identity_router.get("/progress", response_model=UploadProgressResponse)
+def get_upload_progress_endpoint(
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user)
+):
+    """
+    アップロード進捗を取得する
+    - 基本身分証と住民票のアップロード状況を返す
+    """
+    print(f"アップロード進捗取得リクエスト受信: user_id={user_id}")
+    
+    try:
+        result = get_upload_progress(user_id, db)
+        print(f"アップロード進捗取得結果: {result}")
         return result
     except Exception as e:
         print(f"エラー発生: {str(e)}")
