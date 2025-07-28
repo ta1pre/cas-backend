@@ -1,10 +1,22 @@
 # app/features/linebot/rich_menu/create_menus.py
 
+"""
+リッチメニュー作成・管理モジュール
+
+設定ベースでリッチメニューをLINEに登録します。
+新しいメニュータイプは menu_config.py に設定を追加するだけで対応できます。
+"""
+
 import requests
 import json
 import os
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
+from .menu_config import (
+    get_menu_config,
+    get_routing_map,
+    MENU_CONFIGURATIONS
+)
 
 # .envファイルを明示的に読み込み
 dotenv_path = os.path.join(os.path.dirname(__file__), "../../../../.env")
@@ -23,7 +35,17 @@ class RichMenuCreator:
         }
     
     def create_menu_config(self, menu_type: str) -> Dict[str, Any]:
-        """メニュータイプに応じた設定を生成"""
+        """
+        メニュータイプに応じた設定を生成
+        
+        Args:
+            menu_type: メニュータイプ
+        
+        Returns:
+            Dict: LINE API用のメニュー設定
+        """
+        config = get_menu_config(menu_type)
+        
         base_config = {
             "size": {
                 "width": 2500,
@@ -31,95 +53,75 @@ class RichMenuCreator:
             },
             "selected": True,
             "name": menu_type,
-            "chatBarText": self._get_chat_bar_text(menu_type),
+            "chatBarText": config.get('chat_bar_text', config['name']),
             "areas": self._get_menu_areas(menu_type)
         }
         return base_config
     
-    def _get_chat_bar_text(self, menu_type: str) -> str:
-        """メニュータイプに応じたチャットバーテキストを返す"""
-        texts = {
-            "cast_menu": "キャストメニュー",
-            "customer_menu": "カスタマーメニュー",
-            "default": "メニュー"
-        }
-        return texts.get(menu_type, "メニュー")
+    def _get_user_type_from_menu_type(self, menu_type: str) -> str:
+        """
+        メニュータイプからユーザータイプを取得
+        
+        Args:
+            menu_type: メニュータイプ
+        
+        Returns:
+            str: ユーザータイプ（cast, customer, default）
+        """
+        if menu_type.startswith('cast'):
+            return 'cast'
+        elif menu_type.startswith('customer'):
+            return 'customer'
+        else:
+            return 'default'
     
     def _get_menu_areas(self, menu_type: str) -> list:
-        """メニュータイプに応じたエリア設定を返す"""
-        if menu_type == "cast_menu":
-            return [
-                {
-                    "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/p/cast/cont/dashboard"}
+        """
+        メニュータイプに応じたエリア設定を返す
+        
+        Args:
+            menu_type: メニュータイプ
+        
+        Returns:
+            list: LINE API用のエリア設定
+        """
+        config = get_menu_config(menu_type)
+        user_type = self._get_user_type_from_menu_type(menu_type)
+        
+        areas = []
+        grid = config.get('grid', {'cols': 3, 'rows': 2})
+        
+        # グリッド設定に基づいてセルサイズを計算
+        cell_width = 2500 // grid['cols']
+        cell_height = 1686 // grid['rows']
+        
+        # 各アイテムのエリアを設定
+        for idx, area in enumerate(config['areas']):
+            position = area.get('position', idx)
+            col = position % grid['cols']
+            row = position // grid['cols']
+            
+            x = col * cell_width
+            y = row * cell_height
+            
+            # 中央の列は幅を1増やす（端数調整）
+            width = cell_width + 1 if col == 1 and grid['cols'] == 3 else cell_width
+            
+            area_config = {
+                "bounds": {
+                    "x": x,
+                    "y": y,
+                    "width": width,
+                    "height": cell_height
                 },
-                {
-                    "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/reserve?type=cast"}
-                },
-                {
-                    "bounds": {"x": 1667, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/sales?type=cast"}
-                },
-                {
-                    "bounds": {"x": 0, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/profile?type=cast"}
-                },
-                {
-                    "bounds": {"x": 833, "y": 843, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/p/cast/cont/posts"}
-                },
-                {
-                    "bounds": {"x": 1667, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/settings?type=cast"}
+                "action": {
+                    "type": "uri",
+                    "uri": f"https://cas.tokyo/api/v1/r/{area['action']}?type={user_type}"
                 }
-            ]
-        elif menu_type == "customer_menu":
-            return [
-                {
-                    "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/home?type=customer"}
-                },
-                {
-                    "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/search?type=customer"}
-                },
-                {
-                    "bounds": {"x": 1667, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/favorite?type=customer"}
-                },
-                {
-                    "bounds": {"x": 0, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/history?type=customer"}
-                },
-                {
-                    "bounds": {"x": 833, "y": 843, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/profile?type=customer"}
-                },
-                {
-                    "bounds": {"x": 1667, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/payment?type=customer"}
-                }
-            ]
-        else:  # default
-            return [
-                {
-                    "bounds": {"x": 0, "y": 0, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/login?type=default"}
-                },
-                {
-                    "bounds": {"x": 1250, "y": 0, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/about?type=default"}
-                },
-                {
-                    "bounds": {"x": 0, "y": 843, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/help?type=default"}
-                },
-                {
-                    "bounds": {"x": 1250, "y": 843, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/terms?type=default"}
-                }
-            ]
+            }
+            areas.append(area_config)
+        
+        return areas
     
     def create_rich_menu(self, menu_type: str) -> Optional[str]:
         """リッチメニューを作成してメニューIDを返す"""
@@ -146,9 +148,7 @@ class RichMenuCreator:
     def upload_image(self, menu_id: str, menu_type: str) -> bool:
         """リッチメニューに画像をアップロード"""
         try:
-            import sys
-            sys.path.append(os.path.join(os.path.dirname(__file__)))
-            from menu_designer import MenuDesigner
+            from app.features.linebot.rich_menu.menu_designer import MenuDesigner
             import io
             
             # デザイナーで画像を生成
@@ -184,11 +184,22 @@ class RichMenuCreator:
             return False
     
     def create_all_menus(self) -> Dict[str, str]:
-        """全てのメニューを作成して、メニューIDのマップを返す"""
-        menu_types = ["cast_menu", "customer_menu", "default"]
+        """
+        全てのメニューを作成して、メニューIDのマップを返す
+        
+        Returns:
+            Dict[str, str]: メニュータイプ -> メニューIDのマップ
+        """
+        # 設定に登録されているすべてのメニュータイプを取得
+        menu_types = list(MENU_CONFIGURATIONS.keys())
         menu_ids = {}
         
+        print(f"\n作成予定のメニュー: {menu_types}")
+        
         for menu_type in menu_types:
+            print(f"\n{'='*50}")
+            print(f"メニュータイプ: {menu_type}")
+            
             menu_id = self.create_rich_menu(menu_type)
             if menu_id:
                 # 画像をアップロード

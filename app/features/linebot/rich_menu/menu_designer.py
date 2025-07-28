@@ -1,10 +1,22 @@
 # app/features/linebot/rich_menu/menu_designer.py
 
+"""
+リッチメニュー画像生成モジュール
+
+設定ベースでメニュー画像を生成するモジュールです。
+新しいメニュータイプは menu_config.py に設定を追加することで対応できます。
+"""
+
 from PIL import Image, ImageDraw, ImageFont
 import os
-from typing import Tuple, List
+from typing import Tuple, List, Dict, Any
 import requests
 from io import BytesIO
+from .menu_config import (
+    get_menu_config, 
+    get_button_colors,
+    MENU_CONFIGURATIONS
+)
 
 class MenuDesigner:
     def __init__(self):
@@ -14,59 +26,61 @@ class MenuDesigner:
         self.grid_rows = 2
         
     def create_menu_image(self, menu_type: str) -> Image:
-        """メニュータイプに応じた画像を生成"""
+        """
+        メニュータイプに応じた画像を生成
+        
+        Args:
+            menu_type: メニュータイプ（cast_menu, cast_unverified_menu, customer_menu, default）
+        
+        Returns:
+            Image: 生成されたメニュー画像
+        """
         # ベース画像を作成
         img = Image.new('RGB', (self.width, self.height), color='white')
         draw = ImageDraw.Draw(img)
         
-        # メニュー設定を取得
-        if menu_type == "cast_menu":
-            return self._create_cast_menu(img, draw)
-        elif menu_type == "customer_menu":
-            return self._create_customer_menu(img, draw)
+        # 設定からメニューを生成
+        config = get_menu_config(menu_type)
+        return self._create_menu_from_config(img, draw, menu_type, config)
+    
+    def _create_menu_from_config(self, img: Image, draw: ImageDraw.Draw, menu_type: str, config: Dict[str, Any]) -> Image:
+        """
+        設定に基づいてメニューを生成
+        
+        Args:
+            img: ベース画像
+            draw: 描画オブジェクト
+            menu_type: メニュータイプ
+            config: メニュー設定
+        
+        Returns:
+            Image: 生成されたメニュー画像
+        """
+        # アイテムリストを作成
+        items = []
+        colors = get_button_colors(menu_type)
+        
+        for idx, area in enumerate(config['areas']):
+            item = {
+                "icon": area['icon'],
+                "text": area['text'],
+                "color": colors[idx] if idx < len(colors) else "#999999"
+            }
+            items.append(item)
+        
+        # グリッド設定を取得
+        grid = config.get('grid', {'cols': 3, 'rows': 2})
+        background_color = config.get('background_color', '#FFFFFF')
+        
+        # グリッドサイズに応じて描画メソッドを選択
+        if grid['cols'] == 2 and grid['rows'] == 2:
+            self._draw_2x2_menu(img, draw, items, base_color=background_color)
         else:
-            return self._create_default_menu(img, draw)
-    
-    def _create_cast_menu(self, img: Image, draw: ImageDraw.Draw) -> Image:
-        """キャストメニューのデザイン"""
-        items = [
-            {"icon": "🏠", "text": "ホーム", "color": "#FF6B6B"},
-            {"icon": "📅", "text": "予約管理", "color": "#4ECDC4"},
-            {"icon": "💰", "text": "売上", "color": "#45B7D1"},
-            {"icon": "👤", "text": "プロフィール", "color": "#96CEB4"},
-            {"icon": "📝", "text": "ポスト", "color": "#FECA57"},
-            {"icon": "⚙️", "text": "設定", "color": "#DDA0DD"}
-        ]
+            # デフォルトは3x2グリッド
+            self.grid_cols = grid['cols']
+            self.grid_rows = grid['rows']
+            self._draw_grid_menu(img, draw, items, base_color=background_color)
         
-        self._draw_grid_menu(img, draw, items, base_color="#FFE5E5")
-        return img
-    
-    def _create_customer_menu(self, img: Image, draw: ImageDraw.Draw) -> Image:
-        """カスタマーメニューのデザイン"""
-        items = [
-            {"icon": "🏠", "text": "ホーム", "color": "#6C5CE7"},
-            {"icon": "🔍", "text": "検索", "color": "#A29BFE"},
-            {"icon": "❤️", "text": "お気に入り", "color": "#FD79A8"},
-            {"icon": "📅", "text": "履歴", "color": "#74B9FF"},
-            {"icon": "👤", "text": "プロフィール", "color": "#81ECEC"},
-            {"icon": "💳", "text": "支払い", "color": "#FDCB6E"}
-        ]
-        
-        self._draw_grid_menu(img, draw, items, base_color="#E5E5FF")
-        return img
-    
-    def _create_default_menu(self, img: Image, draw: ImageDraw.Draw) -> Image:
-        """デフォルトメニューのデザイン（未登録ユーザー用）"""
-        # 4つの大きなボタン
-        items = [
-            {"icon": "🚀", "text": "今すぐ\nログイン", "color": "#00B894"},
-            {"icon": "❓", "text": "使い方", "color": "#00CEC9"},
-            {"icon": "📱", "text": "アプリ\nについて", "color": "#6C5CE7"},
-            {"icon": "📋", "text": "利用規約", "color": "#636E72"}
-        ]
-        
-        # 2x2のグリッドで描画
-        self._draw_2x2_menu(img, draw, items, base_color="#E5FFF5")
         return img
     
     def _draw_grid_menu(self, img: Image, draw: ImageDraw.Draw, items: List[dict], base_color: str):
@@ -254,7 +268,8 @@ class MenuDesigner:
         output_dir = "/tmp/rich_menu_images"
         os.makedirs(output_dir, exist_ok=True)
         
-        for menu_type in ["cast_menu", "customer_menu", "default"]:
+        # 設定に登録されているすべてのメニュータイプの画像を生成
+        for menu_type in MENU_CONFIGURATIONS.keys():
             img = self.create_menu_image(menu_type)
             img.save(f"{output_dir}/{menu_type}.png")
             print(f"画像保存: {output_dir}/{menu_type}.png")

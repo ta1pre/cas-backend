@@ -213,29 +213,130 @@ class MiniAppService:
         return self.account_service.get_user_by_line_id(line_id)
     
     def _update_user_rich_menu(self, line_id: str, user_type: str):
-        """ユーザーのRich Menuを更新"""
+        """
+        ユーザーのRich Menuを更新（新しいメニューシステム対応）
+        
+        Args:
+            line_id: LINE ID
+            user_type: ユーザータイプ（cast, customer, など）
+        """
+        try:
+            # 新しいメニューシステムを使用
+            from app.features.linebot.rich_menu.menu_selector import MenuSelector
+            
+            # ユーザー情報を取得
+            user = self.get_user_by_line_id(line_id)
+            if not user:
+                print(f"Rich Menu更新失敗: ユーザーが見つかりません - LINE ID: {line_id}")
+                return
+            
+            # メニューセレクターを初期化
+            selector = MenuSelector()
+            
+            # ユーザーコンテキストを構築
+            user_context = {
+                'user_type': user.user_type,
+                'identity_status': self._get_identity_status(user)
+            }
+            
+            # 適切なメニューを選択
+            menu_type = selector.select_menu(user_context)
+            print(f"選択されたメニュータイプ: {menu_type} (LINE ID: {line_id})")
+            
+            # メニューを設定
+            self._set_menu_by_type(line_id, menu_type)
+                
+        except Exception as e:
+            print(f"Rich Menu更新エラー: {line_id} -> {str(e)}")
+    
+    def _get_identity_status(self, user) -> Optional[str]:
+        """
+        ユーザーの身分証確認ステータスを取得
+        
+        Args:
+            user: Userモデルのインスタンス
+        
+        Returns:
+            Optional[str]: 身分証ステータス（approved, pending, rejected, unsubmitted, None）
+        """
+        try:
+            # キャスト以外の場合はNoneを返す
+            if user.user_type != 'cast':
+                return None
+            
+            # cast_identity_verificationテーブルから情報を取得
+            from app.db.models.cast_identity_verification import CastIdentityVerification
+            
+            verification = self.db.query(CastIdentityVerification).filter(
+                CastIdentityVerification.cast_id == user.id
+            ).first()
+            
+            if verification:
+                return verification.status
+            else:
+                # レコードがない場合は未提出扱い
+                return None
+                
+        except Exception as e:
+            print(f"身分証ステータス取得エラー: {user.id} -> {str(e)}")
+            return None
+    
+    def _set_menu_by_type(self, line_id: str, menu_type: str):
+        """
+        メニュータイプに基づいてリッチメニューを設定
+        
+        Args:
+            line_id: LINE ID
+            menu_type: メニュータイプ
+        """
         try:
             # リッチメニュー一覧を取得
             menu_list = self._get_rich_menu_list()
             if not menu_list or not menu_list.get("richmenus"):
-                print(f"Rich Menu更新失敗: 利用可能なメニューがありません")
+                print(f"Rich Menu設定失敗: 利用可能なメニューがありません")
                 return
             
-            # ユーザータイプに応じたメニューIDを取得
-            menu_id = self._get_menu_id_by_user_type(user_type, menu_list)
+            # メニュータイプに対応するメニューIDを取得
+            menu_id = self._find_menu_id_by_type(menu_type, menu_list)
             if not menu_id:
-                print(f"Rich Menu更新失敗: {user_type}に対応するメニューが見つかりません")
+                print(f"Rich Menu設定失敗: {menu_type}に対応するメニューが見つかりません")
                 return
             
             # リッチメニューを設定
             success = self._set_rich_menu(line_id, menu_id)
             if success:
-                print(f"Rich Menu更新成功: {line_id} -> {user_type} (menu_id: {menu_id})")
+                print(f"Rich Menu設定成功: {line_id} -> {menu_type} (menu_id: {menu_id})")
             else:
-                print(f"Rich Menu更新失敗: {line_id} -> {user_type} (menu_id: {menu_id})")
+                print(f"Rich Menu設定失敗: {line_id} -> {menu_type} (menu_id: {menu_id})")
                 
         except Exception as e:
-            print(f"Rich Menu更新エラー: {line_id} -> {str(e)}")
+            print(f"Rich Menu設定エラー: {line_id} -> {str(e)}")
+    
+    def _find_menu_id_by_type(self, menu_type: str, menu_list: dict) -> Optional[str]:
+        """
+        メニュータイプに対応するメニューIDを検索
+        
+        Args:
+            menu_type: メニュータイプ
+            menu_list: LINE APIから取得したメニューリスト
+        
+        Returns:
+            Optional[str]: メニューID
+        """
+        richmenus = menu_list.get("richmenus", [])
+        
+        # 完全一致で検索
+        for menu in richmenus:
+            if menu.get("name") == menu_type:
+                return menu["richMenuId"]
+        
+        # 見つからない場合はデフォルトメニューを検索
+        for menu in richmenus:
+            if menu.get("name") == "default":
+                print(f"デフォルトメニューを使用: {menu_type} -> default")
+                return menu["richMenuId"]
+        
+        return None
 
     def _get_rich_menu_list(self):
         """LINE公式アカウントに登録されているリッチメニューの一覧を取得"""

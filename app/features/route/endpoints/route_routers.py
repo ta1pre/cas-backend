@@ -20,7 +20,8 @@ PAGE_MAPPINGS = {
         "sales": "/p/cast/earnings",
         "profile": "/p/cast/profile",
         "message": "/p/cast/cont/posts",
-        "settings": "/p/cast/settings"
+        "settings": "/p/cast/settings",
+        "identity": "/p/cast/identity-verification"  # 本人確認ページ
     },
     "customer": {
         "home": "/p/customer/dashboard",
