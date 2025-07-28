@@ -21,7 +21,7 @@ PAGE_MAPPINGS = {
         "profile": "/p/cast/profile",
         "message": "/p/cast/cont/posts",
         "settings": "/p/cast/settings",
-        "identity": "/p/cast/identity-verification"  # 本人確認ページ
+        "identity": "/p/cast/cont/identity_verification"  # 本人確認ページ
     },
     "customer": {
         "home": "/p/customer/dashboard",
