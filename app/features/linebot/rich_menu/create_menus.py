@@ -4,6 +4,11 @@ import requests
 import json
 import os
 from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+# .envファイルを明示的に読み込み
+dotenv_path = os.path.join(os.path.dirname(__file__), "../../../../.env")
+load_dotenv(dotenv_path)
 
 # 環境に応じたAPI URLを設定
 API_BASE_URL = os.getenv('FRONTEND_URL', 'https://cas.tokyo')
@@ -46,73 +51,73 @@ class RichMenuCreator:
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://api.cas.tokyo/api/v1/account/line/login?tr=menu_cast"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/home?type=cast"}
                 },
                 {
                     "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/cast/earnings"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/reserve?type=cast"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/cast/profile"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/sales?type=cast"}
                 },
                 {
                     "bounds": {"x": 0, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/cast/messages"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/profile?type=cast"}
                 },
                 {
                     "bounds": {"x": 833, "y": 843, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/cast/settings"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/message?type=cast"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "message", "text": "ヘルプ"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/settings?type=cast"}
                 }
             ]
         elif menu_type == "customer_menu":
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://api.cas.tokyo/api/v1/account/line/login?tr=menu_customer"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/home?type=customer"}
                 },
                 {
                     "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/customer/favorites"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/search?type=customer"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/customer/reservations"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/favorite?type=customer"}
                 },
                 {
                     "bounds": {"x": 0, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/customer/history"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/history?type=customer"}
                 },
                 {
                     "bounds": {"x": 833, "y": 843, "width": 834, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/p/customer/profile"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/profile?type=customer"}
                 },
                 {
                     "bounds": {"x": 1667, "y": 843, "width": 833, "height": 843},
-                    "action": {"type": "message", "text": "お問い合わせ"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/payment?type=customer"}
                 }
             ]
         else:  # default
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://api.cas.tokyo/api/v1/account/line/login?tr=menu_default"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/login?type=default"}
                 },
                 {
                     "bounds": {"x": 1250, "y": 0, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/about"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/about?type=default"}
                 },
                 {
                     "bounds": {"x": 0, "y": 843, "width": 1250, "height": 843},
-                    "action": {"type": "uri", "uri": f"{API_BASE_URL}/howto"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/help?type=default"}
                 },
                 {
                     "bounds": {"x": 1250, "y": 843, "width": 1250, "height": 843},
-                    "action": {"type": "message", "text": "利用規約"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/terms?type=default"}
                 }
             ]
     
@@ -141,7 +146,9 @@ class RichMenuCreator:
     def upload_image(self, menu_id: str, menu_type: str) -> bool:
         """リッチメニューに画像をアップロード"""
         try:
-            from .menu_designer import MenuDesigner
+            import sys
+            sys.path.append(os.path.join(os.path.dirname(__file__)))
+            from menu_designer import MenuDesigner
             import io
             
             # デザイナーで画像を生成

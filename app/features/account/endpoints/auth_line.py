@@ -26,12 +26,19 @@ logger = logging.getLogger(__name__)
 
 # 1. LINE
 @router.get("/login")
-async def line_login(tr: str = None, tracking_id: str = None):
+async def line_login(tr: str = None, tracking_id: str = None, destination: str = None):
     # trパラメータを優先し、なければtracking_idを使用
     actual_tracking_id = tr or tracking_id
-    logger.info(f"📥 LINE認証リクエスト受信 - tr={tr}, tracking_id={tracking_id}, actual={actual_tracking_id}")
+    logger.info(f"📥 LINE認証リクエスト受信 - tr={tr}, tracking_id={tracking_id}, actual={actual_tracking_id}, destination={destination}")
     
-    state = f"tracking_id={actual_tracking_id}" if actual_tracking_id else ""
+    # stateパラメータにtracking_idとdestinationを含める
+    state_params = []
+    if actual_tracking_id:
+        state_params.append(f"tracking_id={actual_tracking_id}")
+    if destination:
+        state_params.append(f"destination={destination}")
+    
+    state = "&".join(state_params) if state_params else ""
     login_url = (
         f"https://access.line.me/oauth2/v2.1/authorize"
         f"?response_type=code"
@@ -87,11 +94,13 @@ async def line_callback(request: Request, db: Session = Depends(get_db)):
     display_name = profile.get("displayName")
     picture_url = profile.get("pictureUrl")
 
-    # `tracking_id` 
+    # `tracking_id` と `destination` を抽出
     tracking_id = None
+    destination = None
     if state:
         state_params = dict(param.split('=') for param in state.split('&') if '=' in param)
         tracking_id = state_params.get('tracking_id')
+        destination = state_params.get('destination')
 
     # AccountService
     account_service = AccountService(db)
@@ -144,9 +153,14 @@ async def line_callback(request: Request, db: Session = Depends(get_db)):
     # refresh_token 
     refresh_token = create_refresh_token(user.id)
 
-    # `refresh_token` `HttpOnly Cookie` 
-    #response = RedirectResponse(url=f"{FRONTEND_URL}/auth/callback?token={jwt_token}")
-    response = RedirectResponse(url=f"{FRONTEND_URL}/auth/callback?token={jwt_token}&refresh_token={refresh_token}")
+    # コールバックURLを構築（destinationがある場合は含める）
+    callback_url = f"{FRONTEND_URL}/auth/callback?token={jwt_token}&refresh_token={refresh_token}"
+    if destination:
+        from urllib.parse import quote
+        callback_url += f"&destination={quote(destination)}"
+        logger.info(f"🎯 認証後のリダイレクト先: {destination}")
+    
+    response = RedirectResponse(url=callback_url)
     
     #response.set_cookie(
     #    key="refresh_token",

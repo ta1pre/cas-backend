@@ -30,12 +30,12 @@ class MenuDesigner:
     def _create_cast_menu(self, img: Image, draw: ImageDraw.Draw) -> Image:
         """キャストメニューのデザイン"""
         items = [
-            {"icon": "🏠", "text": "HOME", "color": "#FF6B6B"},
-            {"icon": "📅", "text": "RESERVE", "color": "#4ECDC4"},
-            {"icon": "💰", "text": "SALES", "color": "#45B7D1"},
-            {"icon": "👤", "text": "PROFILE", "color": "#96CEB4"},
-            {"icon": "💬", "text": "MESSAGE", "color": "#FECA57"},
-            {"icon": "⚙️", "text": "SETTINGS", "color": "#DDA0DD"}
+            {"icon": "🏠", "text": "ホーム", "color": "#FF6B6B"},
+            {"icon": "📅", "text": "予約管理", "color": "#4ECDC4"},
+            {"icon": "💰", "text": "売上", "color": "#45B7D1"},
+            {"icon": "👤", "text": "プロフィール", "color": "#96CEB4"},
+            {"icon": "💬", "text": "メッセージ", "color": "#FECA57"},
+            {"icon": "⚙️", "text": "設定", "color": "#DDA0DD"}
         ]
         
         self._draw_grid_menu(img, draw, items, base_color="#FFE5E5")
@@ -44,12 +44,12 @@ class MenuDesigner:
     def _create_customer_menu(self, img: Image, draw: ImageDraw.Draw) -> Image:
         """カスタマーメニューのデザイン"""
         items = [
-            {"icon": "🏠", "text": "HOME", "color": "#6C5CE7"},
-            {"icon": "🔍", "text": "SEARCH", "color": "#A29BFE"},
-            {"icon": "❤️", "text": "FAVORITE", "color": "#FD79A8"},
-            {"icon": "📅", "text": "HISTORY", "color": "#74B9FF"},
-            {"icon": "👤", "text": "PROFILE", "color": "#81ECEC"},
-            {"icon": "💳", "text": "PAYMENT", "color": "#FDCB6E"}
+            {"icon": "🏠", "text": "ホーム", "color": "#6C5CE7"},
+            {"icon": "🔍", "text": "検索", "color": "#A29BFE"},
+            {"icon": "❤️", "text": "お気に入り", "color": "#FD79A8"},
+            {"icon": "📅", "text": "履歴", "color": "#74B9FF"},
+            {"icon": "👤", "text": "プロフィール", "color": "#81ECEC"},
+            {"icon": "💳", "text": "支払い", "color": "#FDCB6E"}
         ]
         
         self._draw_grid_menu(img, draw, items, base_color="#E5E5FF")
@@ -59,10 +59,10 @@ class MenuDesigner:
         """デフォルトメニューのデザイン（未登録ユーザー用）"""
         # 4つの大きなボタン
         items = [
-            {"icon": "🚀", "text": "LOGIN\nNOW", "color": "#00B894"},
-            {"icon": "❓", "text": "HOW TO\nUSE", "color": "#00CEC9"},
-            {"icon": "📱", "text": "ABOUT\nAPP", "color": "#6C5CE7"},
-            {"icon": "📋", "text": "TERMS\nOF USE", "color": "#636E72"}
+            {"icon": "🚀", "text": "今すぐ\nログイン", "color": "#00B894"},
+            {"icon": "❓", "text": "使い方", "color": "#00CEC9"},
+            {"icon": "📱", "text": "アプリ\nについて", "color": "#6C5CE7"},
+            {"icon": "📋", "text": "利用規約", "color": "#636E72"}
         ]
         
         # 2x2のグリッドで描画

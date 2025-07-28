@@ -153,3 +153,7 @@ master_router.include_router(miniapp_router, prefix="/miniapp", tags=["MiniApp"]
 # 現在はwebhook.pyでシンプルな実装を使用中
 # from app.features.linebot.rich_menu.endpoints.rich_menu_routers import rich_menu_router
 # master_router.include_router(rich_menu_router, prefix="/rich-menu", tags=["Rich Menu"])
+
+# ROUTE - リッチメニューからのルーティング
+from app.features.route.endpoints.route_routers import router as route_router
+master_router.include_router(route_router, prefix="/r", tags=["Route"])
