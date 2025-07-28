@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 # ページマッピング定義
 PAGE_MAPPINGS = {
     "cast": {
-        "home": "/p/cast/dashboard",
+        "home": "/p/cast/cont/dashboard",
         "reserve": "/p/cast/reserve", 
         "sales": "/p/cast/earnings",
         "profile": "/p/cast/profile",

@@ -51,7 +51,7 @@ class RichMenuCreator:
             return [
                 {
                     "bounds": {"x": 0, "y": 0, "width": 833, "height": 843},
-                    "action": {"type": "uri", "uri": f"https://cas.tokyo/api/v1/r/home?type=cast"}
+                    "action": {"type": "uri", "uri": f"https://cas.tokyo/p/cast/cont/dashboard"}
                 },
                 {
                     "bounds": {"x": 833, "y": 0, "width": 834, "height": 843},
