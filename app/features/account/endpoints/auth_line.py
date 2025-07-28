@@ -53,7 +53,7 @@ async def line_login(tr: str = None, tracking_id: str = None, destination: str =
     logger.info(f"🔗 stateパラメータ: '{state}'")
     
     # リッチメニューからの直接アクセスの場合はリダイレクト
-    if tr and tr.startswith("menu_"):
+    if tr and (tr.startswith("menu_") or tr.startswith("route_")):
         return RedirectResponse(url=login_url)
     
     # 通常のAPIレスポンス（既存のフロントエンドとの互換性維持）
