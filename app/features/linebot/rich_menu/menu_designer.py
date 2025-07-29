@@ -62,7 +62,6 @@ class MenuDesigner:
         
         for idx, area in enumerate(config['areas']):
             item = {
-                "icon": area['icon'],
                 "text": area['text'],
                 "color": colors[idx] if idx < len(colors) else "#999999"
             }
@@ -154,8 +153,8 @@ class MenuDesigner:
             
             for font_path in font_paths:
                 try:
-                    font_large = ImageFont.truetype(font_path, 80)
-                    font_small = ImageFont.truetype(font_path, 35)
+                    font_large = ImageFont.truetype(font_path, 60)  # テキスト用のフォントサイズを大きく
+                    font_small = ImageFont.truetype(font_path, 60)  # 同じサイズに統一
                     break
                 except:
                     continue
@@ -169,20 +168,13 @@ class MenuDesigner:
             font_large = ImageFont.load_default()
             font_small = ImageFont.load_default()
         
-        # アイコン（絵文字）
-        icon_bbox = draw.textbbox((0, 0), item["icon"], font=font_large)
-        icon_width = icon_bbox[2] - icon_bbox[0]
-        icon_height = icon_bbox[3] - icon_bbox[1]
-        icon_x = x + (width - icon_width) // 2
-        icon_y = y + height // 2 - icon_height - 20
-        draw.text((icon_x, icon_y), item["icon"], fill="white", font=font_large)
-        
-        # テキスト
-        text_bbox = draw.textbbox((0, 0), item["text"], font=font_small)
+        # テキストのみを中央に配置（アイコンは削除）
+        text_bbox = draw.textbbox((0, 0), item["text"], font=font_large)
         text_width = text_bbox[2] - text_bbox[0]
+        text_height = text_bbox[3] - text_bbox[1]
         text_x = x + (width - text_width) // 2
-        text_y = y + height // 2 + 20
-        draw.text((text_x, text_y), item["text"], fill="white", font=font_small)
+        text_y = y + (height - text_height) // 2
+        draw.text((text_x, text_y), item["text"], fill="white", font=font_large)
     
     def _draw_large_cell(self, draw: ImageDraw.Draw, x: int, y: int, width: int, height: int, item: dict):
         """大きなセルを描画（デフォルトメニュー用）"""
@@ -219,8 +211,8 @@ class MenuDesigner:
             
             for font_path in font_paths:
                 try:
-                    font_large = ImageFont.truetype(font_path, 120)
-                    font_small = ImageFont.truetype(font_path, 45)
+                    font_large = ImageFont.truetype(font_path, 80)  # テキスト用のフォントサイズを調整
+                    font_small = ImageFont.truetype(font_path, 80)  # 同じサイズに統一
                     break
                 except:
                     continue
@@ -233,26 +225,18 @@ class MenuDesigner:
             font_large = ImageFont.load_default()
             font_small = ImageFont.load_default()
         
-        # アイコン
-        icon_bbox = draw.textbbox((0, 0), item["icon"], font=font_large)
-        icon_width = icon_bbox[2] - icon_bbox[0]
-        icon_height = icon_bbox[3] - icon_bbox[1]
-        icon_x = x + (width - icon_width) // 2
-        icon_y = y + height // 2 - icon_height - 40
-        draw.text((icon_x, icon_y), item["icon"], fill="white", font=font_large)
-        
-        # マルチラインテキスト
+        # マルチラインテキストのみを中央に配置（アイコンは削除）
         lines = item["text"].split("\n")
-        line_height = 60
+        line_height = 90  # 行間を広くする
         total_height = len(lines) * line_height
-        start_y = y + height // 2 + 40
+        start_y = y + (height - total_height) // 2
         
         for i, line in enumerate(lines):
-            text_bbox = draw.textbbox((0, 0), line, font=font_small)
+            text_bbox = draw.textbbox((0, 0), line, font=font_large)
             text_width = text_bbox[2] - text_bbox[0]
             text_x = x + (width - text_width) // 2
             text_y = start_y + i * line_height
-            draw.text((text_x, text_y), line, fill="white", font=font_small)
+            draw.text((text_x, text_y), line, fill="white", font=font_large)
     
     def _draw_rounded_rectangle(self, draw, x1, y1, x2, y2, radius, fill):
         """角丸矩形を描画"""

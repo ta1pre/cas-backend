@@ -1,36 +1,3 @@
-[ROUTER DEBUG] Returning result: {'cast_id': 410, 'status': 'unsubmitted', 'message': '本人確認申請がまだ行われていません。'}
-INFO:     172.18.0.1:63734 - "GET /api/v1/cast/identity-verification/progress HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60782 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 410, type: <class 'int'>
-[DEBUG] Using cast_id: 410
-アップロード進捗取得リクエスト受信: user_id=<User id=410>
-[ROUTER DEBUG] Returning result: {'cast_id': 410, 'status': 'unsubmitted', 'message': '本人確認申請がまだ行われていません。'}
-アップロード進捗取得結果: {'status': 'unsubmitted', 'progress': {'basic_document': {'uploaded': None, 'uploaded_at': None, 'file_name': None}, 'residence_document': {'uploaded': None, 'uploaded_at': None, 'file_name': None}}, 'completion_rate': 0, 'current_step': 'basic', 'next_action': '基本身分証をアップロードしてください'}
-INFO:     172.18.0.1:63734 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60798 - "GET /api/v1/cast/identity-verification/progress HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60796 - "GET /api/v1/setup/status/setup_status/410 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:60796 - "GET /api/v1/setup/status/setup_status/410 HTTP/1.1" 200 OK
-[DEBUG] Received cast_id: 410, type: <class 'int'>
-[DEBUG] Using cast_id: 410
-アップロード進捗取得リクエスト受信: user_id=<User id=410>
-アップロード進捗取得結果: {'status': 'unsubmitted', 'progress': {'basic_document': {'uploaded': None, 'uploaded_at': None, 'file_name': None}, 'residence_document': {'uploaded': None, 'uploaded_at': None, 'file_name': None}}, 'completion_rate': 0, 'current_step': 'basic', 'next_action': '基本身分証をアップロードしてください'}
-[ROUTER DEBUG] Returning result: {'cast_id': 410, 'status': 'unsubmitted', 'message': '本人確認申請がまだ行われていません。'}
-INFO:     172.18.0.1:58248 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58246 - "GET /api/v1/cast/identity-verification/progress HTTP/1.1" 200 OK
-アップロード進捗取得リクエスト受信: user_id=<User id=410>
-[DEBUG] Received cast_id: 410, type: <class 'int'>
-[DEBUG] Using cast_id: 410
-アップロード進捗取得結果: {'status': 'unsubmitted', 'progress': {'basic_document': {'uploaded': None, 'uploaded_at': None, 'file_name': None}, 'residence_document': {'uploaded': None, 'uploaded_at': None, 'file_name': None}}, 'completion_rate': 0, 'current_step': 'basic', 'next_action': '基本身分証をアップロードしてください'}
-[ROUTER DEBUG] Returning result: {'cast_id': 410, 'status': 'unsubmitted', 'message': '本人確認申請がまだ行われていません。'}
-INFO:     172.18.0.1:58248 - "GET /api/v1/cast/identity-verification/progress HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58256 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58266 - "GET /api/v1/setup/status/setup_status/410 HTTP/1.1" 200 OK
-INFO:     172.18.0.1:58266 - "GET /api/v1/setup/status/setup_status/410 HTTP/1.1" 200 OK
-アップロード進捗取得リクエスト受信: user_id=<User id=410>
-[DEBUG] Received cast_id: 410, type: <class 'int'>
-[DEBUG] Using cast_id: 410
-アップロード進捗取得結果: {'status': 'unsubmitted', 'progress': {'basic_document': {'uploaded': None, 'uploaded_at': None, 'file_name': None}, 'residence_document': {'uploaded': None, 'uploaded_at': None, 'file_name': None}}, 'completion_rate': 0, 'current_step': 'basic', 'next_action': '基本身分証をアップロードしてください'}
-[ROUTER DEBUG] Returning result: {'cast_id': 410, 'status': 'unsubmitted', 'message': '本人確認申請がまだ行われていません。'}
 INFO:     172.18.0.1:59546 - "GET /api/v1/cast/identity-verification/status HTTP/1.1" 200 OK
 INFO:     172.18.0.1:59548 - "GET /api/v1/cast/identity-verification/progress HTTP/1.1" 200 OK
 アップロード進捗取得リクエスト受信: user_id=<User id=410>
@@ -298,3 +265,36 @@ INFO:     Started server process [1400]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 Models initialized
+WARNING:  WatchFiles detected changes in 'app/features/linebot/rich_menu/menu_designer.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1400]
+WARNING:  WatchFiles detected changes in 'app/features/linebot/rich_menu/menu_designer.py'. Reloading...
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [3513]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/features/linebot/rich_menu/menu_config.py', 'app/features/linebot/rich_menu/menu_designer.py'. Reloading...
+WARNING:  WatchFiles detected changes in 'app/features/linebot/rich_menu/menu_config.py'. Reloading...
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/usr/local/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:app.main:ローカル環境で動作中、デバッグログを有効にします
+INFO:app.main:ローカル環境でCORS設定: ['http://localhost:3000', 'https://cas.tokyo', 'http://localhost:3000', 'http://localhost:3001']
+INFO:app.main:Application startup complete. Running in local environment.
+INFO:     Started server process [3533]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/features/linebot/rich_menu/create_menus.py', 'app/features/linebot/rich_menu/menu_designer.py'. Reloading...

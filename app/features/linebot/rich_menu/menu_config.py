@@ -22,12 +22,12 @@ MENU_CONFIGURATIONS: Dict[str, Dict[str, Any]] = {
         'name': 'キャストメニュー',
         'chat_bar_text': 'キャストメニュー',
         'areas': [
-            {'action': 'home', 'icon': '🏠', 'text': 'ホーム', 'position': 0},
-            {'action': 'reserve', 'icon': '📅', 'text': '予約管理', 'position': 1},
-            {'action': 'sales', 'icon': '💰', 'text': '売上', 'position': 2},
-            {'action': 'profile', 'icon': '👤', 'text': 'プロフィール', 'position': 3},
-            {'action': 'message', 'icon': '📝', 'text': 'ポスト', 'position': 4},
-            {'action': 'settings', 'icon': '⚙️', 'text': '設定', 'position': 5}
+            {'action': 'home', 'text': 'ホーム', 'position': 0},
+            {'action': 'reserve', 'text': '予約管理', 'position': 1},
+            {'action': 'sales', 'text': '売上', 'position': 2},
+            {'action': 'profile', 'text': 'プロフィール', 'position': 3},
+            {'action': 'message', 'text': 'ポスト', 'position': 4},
+            {'action': 'settings', 'text': '設定', 'position': 5}
         ],
         'background_color': '#FFE5E5',  # 薄いピンク
         'grid': {'cols': 3, 'rows': 2}
@@ -38,12 +38,12 @@ MENU_CONFIGURATIONS: Dict[str, Dict[str, Any]] = {
         'name': 'キャストメニュー（本人確認必要）',
         'chat_bar_text': 'キャストメニュー',
         'areas': [
-            {'action': 'home', 'icon': '🏠', 'text': 'ホーム', 'position': 0},
-            {'action': 'reserve', 'icon': '📅', 'text': '予約管理', 'position': 1},
-            {'action': 'identity', 'icon': '⚠️', 'text': '本人確認', 'position': 2},  # 売上の位置に本人確認
-            {'action': 'profile', 'icon': '👤', 'text': 'プロフィール', 'position': 3},
-            {'action': 'message', 'icon': '📝', 'text': 'ポスト', 'position': 4},
-            {'action': 'settings', 'icon': '⚙️', 'text': '設定', 'position': 5}
+            {'action': 'home', 'text': 'ホーム', 'position': 0},
+            {'action': 'reserve', 'text': '予約管理', 'position': 1},
+            {'action': 'identity', 'text': '本人確認', 'position': 2},
+            {'action': 'profile', 'text': 'プロフィール', 'position': 3},
+            {'action': 'message', 'text': 'ポスト', 'position': 4},
+            {'action': 'settings', 'text': '設定', 'position': 5}
         ],
         'background_color': '#FFE5E5',  # 薄いピンク
         'grid': {'cols': 3, 'rows': 2}
@@ -54,12 +54,12 @@ MENU_CONFIGURATIONS: Dict[str, Dict[str, Any]] = {
         'name': 'カスタマーメニュー',
         'chat_bar_text': 'カスタマーメニュー',
         'areas': [
-            {'action': 'home', 'icon': '🏠', 'text': 'ホーム', 'position': 0},
-            {'action': 'search', 'icon': '🔍', 'text': '検索', 'position': 1},
-            {'action': 'favorite', 'icon': '❤️', 'text': 'お気に入り', 'position': 2},
-            {'action': 'history', 'icon': '📅', 'text': '履歴', 'position': 3},
-            {'action': 'profile', 'icon': '👤', 'text': 'プロフィール', 'position': 4},
-            {'action': 'payment', 'icon': '💳', 'text': '支払い', 'position': 5}
+            {'action': 'home', 'text': 'ホーム', 'position': 0},
+            {'action': 'search', 'text': '検索', 'position': 1},
+            {'action': 'favorite', 'text': 'お気に入り', 'position': 2},
+            {'action': 'history', 'text': '履歴', 'position': 3},
+            {'action': 'profile', 'text': 'プロフィール', 'position': 4},
+            {'action': 'payment', 'text': '支払い', 'position': 5}
         ],
         'background_color': '#E5E5FF',  # 薄い紫
         'grid': {'cols': 3, 'rows': 2}
@@ -70,10 +70,10 @@ MENU_CONFIGURATIONS: Dict[str, Dict[str, Any]] = {
         'name': 'デフォルトメニュー',
         'chat_bar_text': 'メニュー',
         'areas': [
-            {'action': 'login', 'icon': '🚀', 'text': '今すぐ\nログイン', 'position': 0},
-            {'action': 'help', 'icon': '❓', 'text': '使い方', 'position': 1},
-            {'action': 'about', 'icon': '📱', 'text': 'アプリ\nについて', 'position': 2},
-            {'action': 'terms', 'icon': '📋', 'text': '利用規約', 'position': 3}
+            {'action': 'login', 'text': '今すぐ\nログイン', 'position': 0},
+            {'action': 'help', 'text': '使い方', 'position': 1},
+            {'action': 'about', 'text': 'アプリ\nについて', 'position': 2},
+            {'action': 'terms', 'text': '利用規約', 'position': 3}
         ],
         'background_color': '#E5FFF5',  # 薄い緑
         'grid': {'cols': 2, 'rows': 2}  # 2x2のグリッド
