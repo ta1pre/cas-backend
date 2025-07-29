@@ -116,7 +116,8 @@ class RichMenuCreator:
                 },
                 "action": {
                     "type": "uri",
-                    "uri": f"https://cas.tokyo/api/v1/r/{area['action']}?type={user_type}"
+                    "uri": f"https://cas.tokyo/api/v1/r/{area['action']}?type={user_type}",
+                    "label": f"{area.get('text', '')} {area.get('icon', '')}"
                 }
             }
             areas.append(area_config)

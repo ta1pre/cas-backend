@@ -12,9 +12,19 @@ class MenuArea:
     height: int
     action_type: str = "uri"
     uri: str = "https://google.com"
+    label: str = ""
     
     def to_dict(self) -> Dict[str, Any]:
         """LINE API用の辞書形式に変換"""
+        action_dict = {
+            "type": self.action_type,
+            "uri": self.uri
+        }
+        
+        # labelが設定されている場合のみ追加
+        if self.label:
+            action_dict["label"] = self.label
+            
         return {
             "bounds": {
                 "x": self.x,
@@ -22,10 +32,7 @@ class MenuArea:
                 "width": self.width,
                 "height": self.height
             },
-            "action": {
-                "type": self.action_type,
-                "uri": self.uri
-            }
+            "action": action_dict
         }
 
 @dataclass
