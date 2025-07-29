@@ -15,12 +15,12 @@ class CastIdentityVerification(Base):
     document_type = Column(String(50), nullable=True)  # 身分証の種類 (license, mynumber, passport, basic_resident_card)
     
     # 口座情報フィールド（将来のために保持、現在は使用しない）
-    bank_name = Column(String(100), nullable=True)  # 銀行名（例：みずほ銀行）
-    branch_name = Column(String(100), nullable=True)  # 支店名（例：渋谷支店）
-    branch_code = Column(String(10), nullable=True)  # 支店コード（3桁、例：123）
-    account_type = Column(String(20), nullable=True)  # 普通・当座など（例：普通）
-    account_number = Column(String(20), nullable=True)  # 口座番号（例：1234567）
-    account_holder = Column(String(100), nullable=True)  # 口座名義人（例：ヤマダ タロウ）
+    # bank_name = Column(String(100), nullable=True)  # 銀行名（例：みずほ銀行）
+    # branch_name = Column(String(100), nullable=True)  # 支店名（例：渋谷支店）
+    # branch_code = Column(String(10), nullable=True)  # 支店コード（3桁、例：123）
+    # account_type = Column(String(20), nullable=True)  # 普通・当座など（例：普通）
+    # account_number = Column(String(20), nullable=True)  # 口座番号（例：1234567）
+    # account_holder = Column(String(100), nullable=True)  # 口座名義人（例：ヤマダ タロウ）
     
     submitted_at = Column(DateTime, nullable=True)
     reviewed_at = Column(DateTime, nullable=True)

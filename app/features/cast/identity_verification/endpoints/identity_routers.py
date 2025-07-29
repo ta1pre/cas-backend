@@ -90,8 +90,8 @@ def upload_basic_document_endpoint(
     """
     print(f"基本身分証アップロードリクエスト受信: user_id={user_id}, request={request}")
     
-    # キャストIDを使用
-    cast_id = user_id
+    # キャストIDを使用（Userオブジェクトの場合はidを取得）
+    cast_id = user_id.id if hasattr(user_id, 'id') else user_id
     print(f"使用するcast_id: {cast_id}")
     
     try:
@@ -120,8 +120,8 @@ def upload_residence_document_endpoint(
     """
     print(f"住民票アップロードリクエスト受信: user_id={user_id}, request={request}")
     
-    # キャストIDを使用
-    cast_id = user_id
+    # キャストIDを使用（Userオブジェクトの場合はidを取得）
+    cast_id = user_id.id if hasattr(user_id, 'id') else user_id
     print(f"使用するcast_id: {cast_id}")
     
     try:
@@ -148,8 +148,11 @@ def get_upload_progress_endpoint(
     """
     print(f"アップロード進捗取得リクエスト受信: user_id={user_id}")
     
+    # キャストIDを使用（Userオブジェクトの場合はidを取得）
+    cast_id = user_id.id if hasattr(user_id, 'id') else user_id
+    
     try:
-        result = get_upload_progress(user_id, db)
+        result = get_upload_progress(cast_id, db)
         print(f"アップロード進捗取得結果: {result}")
         return result
     except Exception as e:

@@ -14,6 +14,8 @@ class CastItem(BaseModel):
     id: int
     nick_name: Optional[str] = None
     status: str
+    thumbnail_url: Optional[str] = None  # サムネイル画像URL
+    document_count: int = 0  # アップロード済み書類数
 
 class CastListResponse(BaseModel):
     total: int
